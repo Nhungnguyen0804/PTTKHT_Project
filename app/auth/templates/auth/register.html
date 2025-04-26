@@ -23,12 +23,34 @@ block content %}
     {% endif %}
   </div>
 
+  <!-- họ và tên -->
+  <div class="form-group">
+    {{ form.fullname.label }}<br />
+    {{ form.fullname(size=32) }} {% if form.fullname.errors %}
+    <div class="errors">
+      {% for error in form.fullname.errors %} {{ error }}<br />
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+
   <!-- Email -->
   <div class="form-group">
     {{ form.email.label }}<br />
     {{ form.email(size=32) }} {% if form.email.errors %}
     <div class="errors">
       {% for error in form.email.errors %} {{ error }}<br />
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- sdt -->
+  <div class="form-group">
+    {{ form.sdt.label }}<br />
+    {{ form.sdt(size=32) }} {% if form.sdt.errors %}
+    <div class="errors">
+      {% for error in form.sdt.errors %} {{ error }}<br />
       {% endfor %}
     </div>
     {% endif %}

@@ -10,7 +10,9 @@ class LoginForm(FlaskForm):
 
 class RegisterForm(FlaskForm):
     username = StringField('Mã học sinh/ Mã giáo viên', validators=[DataRequired(), Length(min=3, max=50)])
+    fullname = StringField('Họ và tên',validators=[DataRequired()])
     email = StringField('Email', validators=[DataRequired(), Email()])
+    sdt = StringField('Số điện thoại')
     password = PasswordField('Password', validators=[DataRequired(), Length(min=6)])
     confirm = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('password')])
     submit = SubmitField('Register')

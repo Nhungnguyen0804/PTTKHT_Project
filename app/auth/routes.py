@@ -3,6 +3,7 @@ from flask_login import login_user, logout_user, login_required
 from . import auth_blueprint
 from .forms import LoginForm, RegisterForm
 from app.models.user import User
+from app.models.role import Role
 from app.flask_extensions import csdl
 
 #Tạo route /auth/login cho login
@@ -46,9 +47,18 @@ def register():
             return redirect(url_for('auth.register'))
 
         # k trung thi tao user moi 
-        new_user = User(username=form.username.data, email=form.email.data)
+        new_user = User(username=form.username.data, fullname = form.fullname.data, email=form.email.data, sdt = form.sdt.data)
         new_user.set_password(form.password.data)
         csdl.session.add(new_user) #luu vao csdl
+
+        csdl.session.flush()  # Lấy user.id trước khi commit
+
+
+        # Gán vai trò "member" (role_id = 2) vào bảng user_role
+        member_role = Role.query.get(2)  # Lấy vai trò có id = 2
+        if member_role:
+            new_user.roles.append(member_role)  # Thêm vai trò vào mối quan hệ
+
         csdl.session.commit()
         flash('Đăng ký thành công! Quay về đăng nhập', 'success') #kieu flash success
         logout_user()  # clear session
