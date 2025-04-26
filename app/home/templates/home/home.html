@@ -1,0 +1,11 @@
+{% extends 'base.html' %} {% block title %}Trang chủ{% endblock %} {% block
+content %}
+<h2>Home Page</h2>
+<!-- Hiển thị thông báo flash -->
+<p>Welcome to the homepage!.</p>
+{% if current_user.is_authenticated %}
+<p>You are logged in.</p>
+{% else %}
+<p>You are not logged in.</p>
+
+{% endif %} {% endblock %}

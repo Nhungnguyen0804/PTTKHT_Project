@@ -1,0 +1,20 @@
+{% extends 'base.html' %} {% block title %}Admin Login{% endblock %} {% block
+content %}
+<!-- giao dien login -->
+<h1>Admin Login</h1>
+<!-- Hiển thị thông báo flash -->
+{% with messages = get_flashed_messages(with_categories=true) %} {% if messages
+%} {% for category, message in messages %}
+<div class="flash {{ category }}">{{ message }}</div>
+{% endfor %} {% endif %} {% endwith %}
+
+<!-- thẻ form, dạng post, gửi đến url current -->
+<form method="POST">
+  <!-- nhãn + ô điền username, pass, checkbox remember  -->
+  {{ form.hidden_tag() }} {{ form.username.label }} {{ form.username() }}<br />
+  {{ form.password.label }} {{ form.password() }}<br />
+  {{ form.remember() }} {{ form.remember.label }}<br />
+  {{ form.submit() }}
+</form>
+
+{% endblock %}
