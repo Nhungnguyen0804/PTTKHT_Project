@@ -15,9 +15,21 @@ class RegisterForm(FlaskForm):
     sdt = StringField('Số điện thoại')
     password = PasswordField('Password', validators=[DataRequired(), Length(min=6)])
     confirm = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('password')])
-    submit = SubmitField('Register')
+    submit = SubmitField('Đăng ký')
 
-# class ForgotPassForm(FlaskForm):
-#     username = StringField('Username', validators=[DataRequired()])
-#     email = StringField('Email', validators=[DataRequired(), Email()])
-#     submit = SubmitField('Register')
+
+# forgot pass
+class ForgotPasswordForm(FlaskForm):
+    username = StringField('Username', validators=[DataRequired()])
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    submit = SubmitField('Send OTP')
+
+class OTPForm(FlaskForm):
+    otp = StringField('OTP', validators=[DataRequired()])
+    submit = SubmitField('Verify OTP')
+
+class ResetPasswordForm(FlaskForm):
+    password = PasswordField('New Password', validators=[DataRequired()])
+    confirm_password = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('password')])
+    submit = SubmitField('Reset Password')
+

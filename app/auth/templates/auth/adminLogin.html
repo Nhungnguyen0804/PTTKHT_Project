@@ -14,7 +14,11 @@ content %}
   {{ form.hidden_tag() }} {{ form.username.label }} {{ form.username() }}<br />
   {{ form.password.label }} {{ form.password() }}<br />
   {{ form.remember() }} {{ form.remember.label }}<br />
-  {{ form.submit() }}
+  {{ form.submit(class="custom-auth-button") }}
 </form>
+<p>
+  Quên mật khẩu?
+  <a href="{{ url_for('auth.forgot_password') }}">Đặt lại mật khẩu!</a>
+</p>
 
 {% endblock %}

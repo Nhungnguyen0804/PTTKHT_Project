@@ -1,0 +1,21 @@
+{% extends 'base.html' %} {% block title %}Verify OTP{% endblock %} {% block
+content %}
+<!-- container -->
+<div class="container">
+  <h1>Verify OTP</h1>
+  <!-- Hiển thị thông báo flash -->
+  {% with messages = get_flashed_messages(with_categories=true) %} {% if
+  messages %} {% for category, message in messages %}
+  <div class="flash {{ category }}">{{ message }}</div>
+  {% endfor %} {% endif %} {% endwith %}
+
+  <!-- thẻ form, dạng post, gửi đến url current -->
+  <form method="POST">
+    {{ form.hidden_tag() }}
+    <div class="form-group">
+      {{ form.otp.label }} {{ form.otp(class="form-control") }}
+    </div>
+    {{ form.submit(class="custom-auth-button") }}
+  </form>
+</div>
+{% endblock %}
