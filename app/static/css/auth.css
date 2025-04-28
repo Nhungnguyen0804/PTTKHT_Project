@@ -1,0 +1,320 @@
+:root {
+  --btn-login-text: black;
+  --btn-login-border: black;
+  --btn-login-background: transparent;
+  --mau1: #86946d;
+  --mau2: #fdd6c2;
+  --mau3: #ccd9b7;
+  --mau4: #7fa390;
+  --mau5: #b0e1e1;
+  --mau6: #b18a81;
+  --mau7: #d9c297;
+  --mau8: #c4a289;
+  --mau9: #7b544c;
+  --mau10: #549a9a; /* mau image minh hoa*/
+}
+
+.custom-auth-button {
+  color: var(--btn-login-text);
+  border: 2px solid var(--btn-login-border);
+  font-weight: 400;
+  text-align: center;
+
+  background-color: var(--btn-login-background);
+
+  /* --- */
+  padding: 5px 25px;
+  border-radius: 10px; /* bo góc */
+  font-size: 20px;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+
+  /* căn nút ra giữa  */
+  display: block; /* Biến nút thành 1 khối */
+  margin: 0 auto; /* Tự căn giữa ngang */
+  margin-top: 50px;
+}
+
+.custom-auth-button:hover {
+  background-color: #2c2c2c;
+  color: #ffffff;
+}
+
+/* Khung ngoài cùng chứa cả 2 phần trái-phải */
+.login-container {
+  display: flex; /* Chia container thành 2 cột */
+  /* height: 70%; */
+  background-color: var(--mau5);
+  border-radius: 20px;
+  overflow: hidden;
+  animation: hien-dan-phai 1.5s ease-in-out;
+}
+
+.admin-login-page .login-container {
+  background-color: var(--mau2);
+}
+.login-left-side {
+  flex: 1; /* Chiếm 1 phần */
+  background-color: transparent;
+  padding: 40px;
+  position: relative;
+  border-top-left-radius: 20px; /* Bo góc trên-trái */
+  border-bottom-left-radius: 20px; /* Bo góc dưới-trái */
+}
+/* Bên phải: phần form login */
+.login-right-side {
+  flex: 1; /* Chiếm 1 phần */
+  background: white; /* Nền trắng */
+  padding: 40px;
+  border-top-right-radius: 20px; /* Bo góc trên-phải */
+  border-bottom-right-radius: 20px; /* Bo góc dưới-phải */
+  border-top-left-radius: 20px;
+  border-bottom-left-radius: 20px;
+  /* ------- */
+  /* display: flex; Dùng flex để căn giữa */
+  /* align-items: center;
+  justify-content: center; */
+}
+
+/* Tiêu đề form */
+.login-form h1,
+.register-form h1 {
+  margin-bottom: 20px;
+  font-size: 45px;
+  font-weight: bold;
+  color: #333; /* Màu chữ xám đậm */
+  text-align: center;
+}
+
+/* Phần text dưới form: đăng ký nếu chưa có tài khoản */
+.signup-text,
+.forgot-password-text {
+  margin-top: 15px;
+  font-size: 20px;
+  text-align: center;
+}
+
+/* Link "Sign up" */
+.signup-text a,
+.forgot-password-text a {
+  color: #4ecdc4; /* Màu xanh nhẹ */
+  text-decoration: none; /* Bỏ gạch dưới */
+  font-weight: bold;
+}
+
+.admin-login-page .forgot-password-text a {
+  color: var(--mau9);
+}
+/* Khi hover vào link */
+.signup-text a:hover,
+.forgot-password-text a:hover {
+  text-decoration: underline; /* Gạch dưới khi hover */
+}
+
+/* Form tổng thể: dàn input theo cột */
+.login-form {
+  /* display: flex; Sắp xếp các phần tử theo trục dọc */
+  /* flex-direction: column; Dọc từ trên xuống */
+  gap: 5px; /* Khoảng cách giữa các input */
+}
+.register-form {
+  gap: 3px;
+}
+
+/* Label của input (ví dụ: "Username", "Password") */
+form label {
+  font-size: 17px; /* Cỡ chữ nhỏ vừa phải */
+  color: #555; /* Màu chữ xám nhẹ cho dễ nhìn */
+  margin: 10 0px;
+  padding-top: 5px;
+}
+
+/* Các ô nhập liệu: username, password, email */
+form input[type="text"],
+form input[type="password"],
+form input[type="email"] {
+  width: 100%; /* Rộng 100% container cha */
+  padding: 12px 15px; /* Khoảng cách giữa viền và chữ bên trong input */
+  border: 2px solid black; /* Viền mỏng màu xám nhạt */
+  border-radius: 8px; /* Bo tròn góc */
+  font-size: 14px; /* Cỡ chữ vừa phải */
+  transition: 0.3s; /* Làm hiệu ứng mượt mà khi hover hoặc focus */
+}
+
+/* Khi click vào ô input: đổi màu viền */
+form input[type="text"]:focus,
+form input[type="password"]:focus,
+form input[type="email"]:focus {
+  border-color: #4ecdc4; /* Khi focus, viền chuyển màu xanh nhẹ */
+  outline: none; /* Bỏ viền xanh mặc định của trình duyệt */
+}
+.admin-login-page form input[type="text"]:focus,
+.admin-login-page form input[type="password"]:focus,
+.admin-login-page form input[type="email"]:focus {
+  border-color: var(--mau9);
+  outline: none;
+}
+
+/* Checkbox: remember me */
+form input[type="checkbox"] {
+  margin-right: 8px; /* Khoảng cách giữa ô checkbox và chữ "Remember Me" */
+}
+
+/* Thông báo flash (ví dụ: login thất bại) */
+.flash {
+  padding: 10px; /* Khoảng cách bên trong flash */
+  border-radius: 5px; /* Bo góc */
+  margin-bottom: 15px; /* Cách flash với phần dưới */
+  font-size: 18px; /* Cỡ chữ vừa phải */
+  text-align: center; /* Căn giữa chữ */
+}
+
+/* Flash thành công (đăng nhập thành công) */
+.flash.success {
+  background-color: #d4edda !important; /* Nền xanh nhạt */
+  color: #155724 !important; /* Chữ xanh đậm */
+}
+
+/* Flash lỗi (sai mật khẩu) */
+.flash.danger {
+  background-color: #f8d7da !important; /* Nền đỏ nhạt */
+  color: #721c24 !important; /* Chữ đỏ đậm */
+}
+.flash.warning {
+  background-color: yellow !important; /* Nền đỏ nhạt */
+  color: black !important; /* Chữ đỏ đậm */
+}
+.flash.info {
+  background-color: lightblue !important; /* Nền đỏ nhạt */
+  color: blue !important; /* Chữ đỏ đậm */
+}
+
+.login-image {
+  /* căn nút ra giữa  */
+  display: block; /* Biến nút thành 1 khối */
+  margin: 0 auto; /* Tự căn giữa ngang */
+  animation: hien-dan-phai 1.5s ease-in-out;
+}
+.register-image {
+  /* căn nút ra giữa  */
+  display: block; /* Biến nút thành 1 khối */
+  margin: 0 auto; /* Tự căn giữa ngang */
+  animation: hien-dan-trai 1.5s ease-in-out;
+}
+
+/* dang ky tai khoan */
+/* Khung ngoài cùng chứa cả 2 phần trái-phải */
+.register-container {
+  display: flex; /* Chia container thành 2 cột */
+  /* height: 70%; */
+  background-color: var(--mau5);
+  border-radius: 20px;
+  overflow: hidden;
+  animation: hien-dan-trai 1.5s ease-in-out;
+}
+.register-right-side {
+  flex: 1; /* Chiếm 1 phần */
+  background-color: transparent;
+  padding: 40px;
+  position: relative;
+  border-top-left-radius: 20px; /* Bo góc trên-trái */
+  border-bottom-left-radius: 20px; /* Bo góc dưới-trái */
+}
+/* Bên phải: phần form login */
+.register-left-side {
+  flex: 1; /* Chiếm 1 phần */
+  background: white; /* Nền trắng */
+  padding: 40px;
+  border-top-right-radius: 20px; /* Bo góc trên-phải */
+  border-bottom-right-radius: 20px; /* Bo góc dưới-phải */
+  border-top-left-radius: 20px;
+  border-bottom-left-radius: 20px;
+  /* ------- */
+  /* display: flex; Dùng flex để căn giữa */
+  /* align-items: center;
+  justify-content: center; */
+}
+
+/* Style chung cho tất cả input trong form */
+/* Tổng thể */
+form .form-group {
+  display: flex; /* label r đến ô , k row */
+  align-items: center; /* label + input căn giữa theo chiều dọc */
+  margin-bottom: 15px;
+}
+
+/* input register  */
+.register-container form .form-control {
+  flex-direction: column;
+  flex: 1; /* input chiếm hết phần còn lại */
+  padding: 12px 15px;
+  border: 0;
+  border-bottom: 2px solid var(--mau10);
+  border-radius: 0;
+  font-size: 14px;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+/* Hover vào input */
+.register-container form .form-control:hover {
+  border-color: var(--mau6);
+}
+
+/* Focus vào input */
+.register-container form .form-control:focus {
+  border-color: #4ecdc4; /* Khi focus, viền chuyển màu xanh nhẹ */
+  outline: none;
+}
+
+/* Nếu có lỗi */
+form .errors {
+  color: red;
+  font-size: 12px;
+  margin-top: 5px;
+}
+
+.forgot-password-container {
+  border-radius: 20px;
+  width: 30%;
+  display: block;
+  margin: auto;
+  border: 1px solid black;
+  padding: 40px;
+  animation: hien-dan 1.5s;
+}
+.forgot-password-container h1 {
+  text-align: center;
+  font-weight: bold;
+}
+@keyframes hien-dan-phai {
+  from {
+    transform: translateX(60px); /* Dịch di 30px */
+    opacity: 0; /* Mờ hoàn toàn */
+  }
+  to {
+    transform: translateX(0); /* Trở về vị trí ban đầu */
+    opacity: 1; /* Hiện rõ */
+  }
+}
+
+@keyframes hien-dan-trai {
+  from {
+    transform: translateX(-60px); /* Dịch di 30px */
+    opacity: 0; /* Mờ hoàn toàn */
+  }
+  to {
+    transform: translateX(0); /* Trở về vị trí ban đầu */
+    opacity: 1; /* Hiện rõ */
+  }
+}
+
+@keyframes hien-dan {
+  from {
+    transform: translateX(0); /* Dịch di 30px */
+    opacity: 0; /* Mờ hoàn toàn */
+  }
+  to {
+    transform: translateX(0); /* Trở về vị trí ban đầu */
+    opacity: 1; /* Hiện rõ */
+  }
+}

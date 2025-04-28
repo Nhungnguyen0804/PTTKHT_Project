@@ -1,93 +1,139 @@
-{% extends 'base.html' %} {% block title %}Đăng ký tài khoản{% endblock %} {%
-block content %}
+{% extends 'base.html' %}
+<!-- .. -->
+{% block title %}Đăng ký tài khoản{% endblock %}
+<!-- .. -->
+{% block extra_css %}
 
-<h1>Đăng ký tài khoản</h1>
-<!-- Hiển thị thông báo flash -->
-{% with messages = get_flashed_messages(with_categories=true) %} {% if messages
-%} {% for category, message in messages %}
-<div class="flash {{ category }}">{{ message }}</div>
-{% endfor %} {% endif %} {% endwith %}
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/auth.css') }}"
+/>
 
-<!-- thẻ form, dạng post, gửi đến url current -->
-<form method="POST">
-  <!-- nhãn + ô điền username, pass, checkbox remember  -->
-  {{ form.hidden_tag() }}
-  <!-- Tên đăng nhập -->
-  <div class="form-group">
-    {{ form.username.label }}<br />
-    {{ form.username(size=32) }} {% if form.username.errors %}
-    <div class="errors">
-      {% for error in form.username.errors %} {{ error }}<br />
-      {% endfor %}
-    </div>
-    {% endif %}
-  </div>
-
-  <!-- họ và tên -->
-  <div class="form-group">
-    {{ form.fullname.label }}<br />
-    {{ form.fullname(size=32) }} {% if form.fullname.errors %}
-    <div class="errors">
-      {% for error in form.fullname.errors %} {{ error }}<br />
-      {% endfor %}
-    </div>
-    {% endif %}
-  </div>
-
-  <!-- Email -->
-  <div class="form-group">
-    {{ form.email.label }}<br />
-    {{ form.email(size=32) }} {% if form.email.errors %}
-    <div class="errors">
-      {% for error in form.email.errors %} {{ error }}<br />
-      {% endfor %}
-    </div>
-    {% endif %}
-  </div>
-
-  <!-- sdt -->
-  <div class="form-group">
-    {{ form.sdt.label }}<br />
-    {{ form.sdt(size=32) }} {% if form.sdt.errors %}
-    <div class="errors">
-      {% for error in form.sdt.errors %} {{ error }}<br />
-      {% endfor %}
-    </div>
-    {% endif %}
-  </div>
-<!-- Mật khẩu -->
-<div class="form-group">
-    {{ form.password.label }}<br>
-    {{ form.password(size=32) }}
-    {% if form.password.errors %}
+{% endblock %}
+<!-- .. -->
+{% block content %}
+<div class="register-page">
+<div class="register-container">
+ <!-- 1 -->
+ <div class="register-left-side">
+  <!-- form  --> 
+  <div class="register-form">
+    <h1>Đăng ký tài khoản</h1>
+    <!-- Hiển thị thông báo flash -->
+    {% with messages = get_flashed_messages(with_categories=true) %} {% if messages
+    %} {% for category, message in messages %}
+    <div class="flash {{ category }}">{{ message }}</div>
+    {% endfor %} {% endif %} {% endwith %}
+    
+    <!-- thẻ form, dạng post, gửi đến url current -->
+    <form method="POST">
+      <!-- nhãn + ô điền username, pass, checkbox remember  -->
+      {{ form.hidden_tag() }}
+      <!-- Tên đăng nhập -->
+      <div class="form-group">
+        {{ form.username(class="form-control", placeholder=form.username.label.text) }}
+        <!-- ---- -->
+        {% if form.username.errors %}
+        <!-- ---  -->
         <div class="errors">
-            {% for error in form.password.errors %}
-                {{ error }}<br>
-            {% endfor %}
+          {% for error in form.username.errors %} {{ error }}<br />
+          {% endfor %}
         </div>
-    {% endif %}
-</div>
-
-<!-- Nhập lại mật khẩu -->
-<div class="form-group">
-    {{ form.confirm.label }}<br>
-    {{ form.confirm(size=32) }}
-    {% if form.confirm.errors %}
+        {% endif %}
+      </div>
+    
+      <!-- họ và tên -->
+      <div class="form-group">
+        {{ form.fullname(class="form-control", placeholder=form.fullname.label.text) }}
+        <!-- ---- -->
+        {% if form.fullname.errors %}
+        <!-- ---  -->
         <div class="errors">
-            {% for error in form.confirm.errors %}
-                {{ error }}<br>
-            {% endfor %}
+          {% for error in form.fullname.errors %} {{ error }}<br />
+          {% endfor %}
         </div>
-    {% endif %}
-</div>
+        {% endif %}
+      </div>
+    
+      <!-- Email -->
+      <div class="form-group">
+        {{ form.email(class="form-control", placeholder=form.email.label.text) }}
+        <!-- ---- -->
+        {% if form.email.errors %}
+        <!-- ---  -->
+     
+        <div class="errors">
+          {% for error in form.email.errors %} {{ error }}<br />
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+    
+      <!-- sdt -->
+      <div class="form-group">
+        {{ form.sdt(class="form-control", placeholder=form.sdt.label.text) }}
+        <!-- ---- -->
+        {% if form.sdt.errors %}
+        <!-- ---  -->
+        <div class="errors">
+          {% for error in form.sdt.errors %} {{ error }}<br />
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+    <!-- Mật khẩu -->
+    <div class="form-group">
+      {{ form.password(class="form-control", placeholder=form.password.label.text) }}
 
-<!-- Nút gửi form -->
-{{ form.submit(class="custom-auth-button") }}
-</form>
+        <!-- ---- -->
+        {% if form.password.errors %}
+        <!-- ---  -->
+            <div class="errors">
+                {% for error in form.password.errors %}
+                    {{ error }}<br>
+                {% endfor %}
+            </div>
+            {% endif %}
+    </div>
 
-<!-- Link chuyển sang trang đăng nhập -->
-<p>Đã có tài khoản? <a href="{{ url_for('auth.login') }}">Đăng nhập</a></p>
+    
+    <!-- Nhập lại mật khẩu -->
+    <div class="form-group">
+      {{ form.confirm(class="form-control", placeholder=form.confirm.label.text) }}
+        <!-- ---- -->
+        {% if form.confirm.errors %}
+        <!-- ---  -->
+            <div class="errors">
+                {% for error in form.confirm.errors %}
+                    {{ error }}<br>
+                {% endfor %}
+            </div>
+            {% endif %}
+    </div>
+    
+    <!-- Nút gửi form -->
+    {{ form.submit(class="custom-auth-button") }}
+
+    
+    <!-- Link chuyển sang trang đăng nhập -->
+    <p class="signup-text">Đã có tài khoản? <a href="{{ url_for('auth.login') }}">Đăng nhập</a></p> 
+
+  </form> </div>  </div>
+    <!-- form  -->
+ 
+
+  <!-- 1 -->
+   <!-- 2 -->
+   <div class="register-right-side">
+    <img
+   src="./static/image/register.png"
+   alt="login image"
+   style="width: 500px"
+   class="register-image"
+ /> </div> </div>
 </body>
 </html>
+
+</div>
   {% endblock %}
-</form>
+

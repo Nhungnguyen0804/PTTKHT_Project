@@ -92,9 +92,8 @@ def send_otp_email(to_email, otp):
         msg.body = f'Mã OTP của bạn là {otp}. Thời gian hiệu lực là 10 phút.'
         mail.send(msg) 
 
-from datetime import datetime, timedelta, timezone
-now = datetime.now(timezone.utc)
-otp_timeout = (now + timedelta(minutes=10))
+
+
 
 @auth_blueprint.route('/forgot-password', methods=['GET', 'POST'])
 def forgot_password():
@@ -112,16 +111,18 @@ def forgot_password():
             flash('1 mã OTP đã được gửi đến email của bạn. Hãy nhập OTP!', 'success')
             return redirect(url_for('auth.verify_otp'))
         else:
-            flash('Username hoặc Password không tồn tại!', 'danger')
+            flash('Username hoặc Gmail không tồn tại!', 'danger')
     else:
         print("not form validate_on_submit")
 
     return render_template('auth/forgotPassword.html', form=form)
     
-
+from datetime import datetime, timedelta, timezone
 @auth_blueprint.route('/verify-otp', methods=['GET', 'POST'])
 def verify_otp():
     form = OTPForm()
+    now = datetime.now(timezone.utc)
+    otp_timeout = (now + timedelta(minutes=10))
     if form.validate_on_submit():
         user_id = session.get('reset_user_id')
         otp = session.get('reset_otp')

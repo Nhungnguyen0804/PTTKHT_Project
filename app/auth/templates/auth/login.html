@@ -1,26 +1,57 @@
-{% extends 'base.html' %} {% block title %}Đăng nhập{% endblock %} {% block
-content %}
+{% extends 'base.html' %}
+<!-- .. -->
+{% block title %}Đăng nhập{% endblock %}
+<!-- .. -->
+{% block extra_css %}
+
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/auth.css') }}"
+/>
+
+{% endblock %}
+<!-- .. -->
+{% block content %}
 <!-- giao dien login -->
-<h1>Đăng nhập</h1>
-<!-- Hiển thị thông báo flash -->
-{% with messages = get_flashed_messages(with_categories=true) %} {% if messages
-%} {% for category, message in messages %}
-<div class="flash {{ category }}">{{ message }}</div>
-{% endfor %} {% endif %} {% endwith %}
+<div class="login-page">
+  <div class="login-container">
+    <div class="login-left-side">
+      <img
+        src="./static/image/login.png"
+        alt="login image"
+        style="width: 500px"
+        class="login-image"
+      />
+    </div>
+    <div class="login-right-side">
+      <div class="login-form">
+        <h1>Đăng nhập</h1>
+        <!-- Hiển thị thông báo flash -->
+        {% with messages = get_flashed_messages(with_categories=true) %} {% if
+        messages %} {% for category, message in messages %}
+        <div class="flash {{ category }}">{{ message }}</div>
+        {% endfor %} {% endif %} {% endwith %}
 
-<!-- thẻ form, dạng post, gửi đến url current -->
-<form method="POST">
-  <!-- nhãn + ô điền username, pass, checkbox remember  -->
-  {{ form.hidden_tag() }} {{ form.username.label }} {{ form.username() }}<br />
-  {{ form.password.label }} {{ form.password() }}<br />
-  {{ form.remember() }} {{ form.remember.label }}<br />
-  {{ form.submit(class="custom-auth-button") }}
-</form>
+        <!-- thẻ form, dạng post, gửi đến url current -->
+        <form method="POST">
+          <!-- nhãn + ô điền username, pass, checkbox remember  -->
+          {{ form.hidden_tag() }} {{ form.username.label }} {{ form.username()
+          }}<br />
+          {{ form.password.label }} {{ form.password() }}<br />
+          {{ form.remember() }} {{ form.remember.label }}<br />
+          {{ form.submit(class="custom-auth-button") }}
+        </form>
 
-<p>Chưa có tài khoản? <a href="{{ url_for('auth.register') }}">Đăng ký!</a></p>
-<p>
-  Quên mật khẩu?
-  <a href="{{ url_for('auth.forgot_password') }}">Đặt lại mật khẩu!</a>
-</p>
-
+        <p class="signup-text">
+          Chưa có tài khoản?
+          <a href="{{ url_for('auth.register') }}">Đăng ký!</a>
+        </p>
+        <p class="forgot-password-text">
+          Quên mật khẩu?
+          <a href="{{ url_for('auth.forgot_password') }}">Đặt lại mật khẩu!</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}

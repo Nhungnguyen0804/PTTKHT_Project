@@ -1,7 +1,19 @@
-{% extends 'base.html' %} {% block title %}Verify OTP{% endblock %} {% block
-content %}
+{% extends 'base.html' %}
+<!-- .. -->
+{% block title %}Đăng nhập{% endblock %}
+<!-- .. -->
+{% block extra_css %}
+
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/auth.css') }}"
+/>
+
+{% endblock %}
+<!-- .. -->
+{% block content %}
 <!-- container -->
-<div class="container">
+<div class="forgot-password-container">
   <h1>Verify OTP</h1>
   <!-- Hiển thị thông báo flash -->
   {% with messages = get_flashed_messages(with_categories=true) %} {% if
@@ -12,9 +24,7 @@ content %}
   <!-- thẻ form, dạng post, gửi đến url current -->
   <form method="POST">
     {{ form.hidden_tag() }}
-    <div class="form-group">
-      {{ form.otp.label }} {{ form.otp(class="form-control") }}
-    </div>
+    <div>{{ form.otp.label }} {{ form.otp(class="form-control") }}</div>
     {{ form.submit(class="custom-auth-button") }}
   </form>
 </div>
