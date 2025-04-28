@@ -2,7 +2,7 @@ from flask import render_template, redirect, url_for, flash, request, session
 from flask_login import login_user, logout_user, login_required
 from . import auth_blueprint
 from .forms import LoginForm, RegisterForm, ForgotPasswordForm, OTPForm, ResetPasswordForm
-from app.models.user import User
+from app.models.user import User, user_role
 from app.models.role import Role
 from app.flask_extensions import csdl
 
@@ -32,8 +32,14 @@ def adminLogin():
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first() 
         if user and user.check_password(form.password.data): # + role là 1 admin
-            login_user(user, remember=form.remember.data) #remember = true/false - luu login or k
-            return redirect(url_for('admin.adminPage'))
+            # Kiểm tra user có phải admin không (role_id = 1)
+            if user.has_role('admin'): # = true tuc la dung la admin
+                login_user(user, remember=form.remember.data)
+                return redirect(url_for('admin.adminPage'))
+            else:
+                flash('Username không phải là admin!', 'danger')
+                return redirect(url_for('auth.adminLogin'))
+        
         flash('Username hoặc Password không hợp lệ!', 'danger') 
     return render_template('auth/adminLogin.html', form=form)
     
