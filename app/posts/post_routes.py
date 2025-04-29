@@ -39,12 +39,13 @@ def create_post():
 
         return redirect(url_for('posts.view_posts.html'))
 
-    return render_template('posts/create_post.html')
+    return render_template('post/create_post.html')
+
 
 # Route xem tất cả bài viết đã được duyệt
 @post_blueprint.route('/posts')
 def view_posts():
     # Chỉ hiển thị bài viết đã được admin duyệt
     posts = post.query.filter_by(is_approved=True).all()
-    return render_template('posts/view_posts.html', posts=posts)
+    return render_template('posts/view_post.html', posts=posts)
 
