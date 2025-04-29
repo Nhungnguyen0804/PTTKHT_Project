@@ -8,3 +8,5 @@ home_blueprint = Blueprint('home', __name__,template_folder='templates')
 
 def homepage():
     return render_template('home/home.html')
+
+

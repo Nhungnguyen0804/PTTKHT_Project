@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% block title %}Đăng Bài{% endblock %}
+
+{% block add_header %}
+<h2 class="text-center mt-4">📝 Tạo Bài Đăng Mới</h2>
+{% endblock %}
+
+{% block content %}
+<!-- Navbar giống home -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
+  <a class="navbar-brand" href="{{ url_for('home.homepage') }}">
+    <img src="{{ url_for('static', filename='image/home.png') }}" style="width: 30px" alt="home image" />
+  </a>
+  <button
+    class="navbar-toggler"
+    type="button"
+    data-toggle="collapse"
+    data-target="#navbarSupportedContent"
+    aria-controls="navbarSupportedContent"
+    aria-expanded="false"
+    aria-label="Toggle navigation"
+  >
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('home.homepage') }}">Home</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('post.view_posts') }}">Xem Bài Đăng</a>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+<div class="container">
+  <form method="POST">
+    <div class="form-group">
+      <label for="content">Nội dung bài viết</label>
+      <textarea name="content" id="content" class="form-control" rows="4" placeholder="Nhập nội dung..." required></textarea>
+    </div>
+    <div class="form-group mt-3">
+      <label for="image_url">URL hình ảnh</label>
+      <input type="url" name="image_url" id="image_url" class="form-control" placeholder="https://example.com/image.jpg">
+    </div>
+    <button type="submit" class="btn btn-primary mt-3">Đăng bài</button>
+  </form>
+
+  {% if posts is not defined or posts|length == 0 %}
+    <div class="alert alert-info text-center mt-4">
+      Hiện tại chưa có bài đăng nào!
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

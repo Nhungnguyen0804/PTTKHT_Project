@@ -1,11 +1,8 @@
-# post_routes.py
-
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask import render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
-from models import csdl, post
+from . import post_blueprint 
+from app.models import post
 import uuid
-
-post_blueprint = Blueprint('post', __name__, template_folder='templates')
 
 # Route tạo bài đăng mới
 @post_blueprint.route('/create_post', methods=['GET', 'POST'])
@@ -32,21 +29,22 @@ def create_post():
             is_approved=is_approved
         )
 
-        csdl.session.add(new_post)
-        csdl.session.commit()
+        post.session.add(new_post)
+        post.session.commit()
 
         if is_approved:
             flash('Bài viết đã được đăng thành công!', 'success')
         else:
             flash('Bài viết đã gửi thành công, vui lòng đợi admin duyệt.', 'info')
 
-        return redirect(url_for('home'))
+        return redirect(url_for('posts.view_posts.html'))
 
-    return render_template('create_post.html')
+    return render_template('posts/create_post.html')
 
 # Route xem tất cả bài viết đã được duyệt
 @post_blueprint.route('/posts')
 def view_posts():
     # Chỉ hiển thị bài viết đã được admin duyệt
     posts = post.query.filter_by(is_approved=True).all()
-    return render_template('view_posts.html', posts=posts)
+    return render_template('posts/view_posts.html', posts=posts)
+

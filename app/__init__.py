@@ -7,6 +7,7 @@ from .auth import auth_blueprint
 from .home import home_blueprint
 from .test import test_blueprint
 from .admin import admin_blueprint
+from .posts import post_blueprint
 
 def create_app():
     app = Flask(__name__)
@@ -36,8 +37,11 @@ def create_app():
     app.register_blueprint(admin_blueprint)
     app.register_blueprint(test_blueprint)
     app.register_blueprint(auth_blueprint)
+    app.register_blueprint(post_blueprint)
 
     # Thiết lập route cho trang đăng nhập
     login_manager.login_view = 'auth.login'
     return app
+
+
 
