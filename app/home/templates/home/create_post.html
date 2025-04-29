@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng bài mới</title>
+</head>
+<body>
+    <h1>Đăng bài mới</h1>
+
+    <!-- Hiển thị thông báo nếu có -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <ul>
+                {% for category, message in messages %}
+                    <li class="{{ category }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+
+    <!-- Form đăng bài -->
+    <form method="POST">
+        <label for="title">Tiêu đề:</label><br>
+        <input type="text" id="title" name="title" placeholder="Nhập tiêu đề bài viết" required><br><br>
+
+        <label for="content">Nội dung:</label><br>
+        <textarea id="content" name="content" rows="10" cols="50" placeholder="Nhập nội dung bài viết" required></textarea><br><br>
+
+        <button type="submit">Đăng bài</button>
+    </form>
+
+    <br><br>
+    <a href="{{ url_for('home') }}">Trở về trang chủ</a>
+</body>
+</html>
