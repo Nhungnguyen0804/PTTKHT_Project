@@ -1,7 +1,7 @@
 from flask import render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
 from . import post_blueprint 
-from app.models import post
+from app.models.post import Post
 import uuid
 
 # Route tạo bài đăng mới
@@ -22,15 +22,15 @@ def create_post():
         is_approved = True if current_user.role == 'admin' else False
 
         # Tạo bài viết mới
-        new_post = post(
+        new_post = Post(
             post_id=str(uuid.uuid4()),   # Tạo ID ngẫu nhiên
             content=content,
             image_url=image_url,
             is_approved=is_approved
         )
 
-        post.session.add(new_post)
-        post.session.commit()
+        Post.session.add(new_post)
+        Post.session.commit()
 
         if is_approved:
             flash('Bài viết đã được đăng thành công!', 'success')
@@ -46,6 +46,7 @@ def create_post():
 @post_blueprint.route('/posts')
 def view_posts():
     # Chỉ hiển thị bài viết đã được admin duyệt
-    posts = post.query.filter_by(is_approved=True).all()
+    posts = Post.query.filter_by(is_approved=True).all()
     return render_template('posts/view_post.html', posts=posts)
+
 

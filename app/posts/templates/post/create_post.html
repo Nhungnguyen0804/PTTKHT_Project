@@ -1,10 +1,6 @@
 {% extends 'base.html' %}
 {% block title %}Đăng Bài{% endblock %}
 
-{% block add_header %}
-<h2 class="text-center mt-4">📝 Tạo Bài Đăng Mới</h2>
-{% endblock %}
-
 {% block content %}
 <!-- Navbar giống home -->
 <nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
@@ -25,9 +21,6 @@
 
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
-      <li class="nav-item">
-        <a class="nav-link" href="{{ url_for('home.homepage') }}">Home</a>
-      </li>
       <li class="nav-item">
         <a class="nav-link" href="{{ url_for('post.view_posts') }}">Xem Bài Đăng</a>
       </li>
