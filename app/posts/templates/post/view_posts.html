@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block title %}Xem Bài Đăng{% endblock %}
+
+{% block content %}
+<!-- Navbar giống home -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
+  <a class="navbar-brand" href="{{ url_for('home.homepage') }}">
+    <img src="{{ url_for('static', filename='image/home.png') }}" style="width: 30px" alt="home image" />
+  </a>
+  <button
+    class="navbar-toggler"
+    type="button"
+    data-toggle="collapse"
+    data-target="#navbarSupportedContent"
+    aria-controls="navbarSupportedContent"
+    aria-expanded="false"
+    aria-label="Toggle navigation"
+  >
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('post.create_post') }}">Tạo Bài Đăng</a>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+<h2 style="text-align: center; font-weight: bold;">Các bài đăng đã được duyệt</h2>
+
+<div class="container mt-4">
+  {% if posts and posts|length > 0 %}
+    {% for post in posts %}
+      <div class="card mb-4">
+        <div class="card-body">
+          <p class="card-text">{{ post.content }}</p>
+          {% if post.image_url %}
+            <img src="{{ post.image_url }}" alt="Hình ảnh bài viết" class="img-fluid mt-2">
+          {% endif %}
+        </div>
+      </div>
+    {% endfor %}
+  {% else %}
+    <div class="alert alert-info text-center">
+      Hiện tại chưa có bài đăng nào!
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -28,6 +28,8 @@
   </div>
 </nav>
 
+<h2 style="text-align: center; font-weight: bold;">Tạo bài đăng</h2>
+
 <div class="container">
   <form method="POST">
     <div class="form-group">
@@ -41,6 +43,7 @@
     <button type="submit" class="btn btn-primary mt-3">Đăng bài</button>
   </form>
 
+  
   {% if posts is not defined or posts|length == 0 %}
     <div class="alert alert-info text-center mt-4">
       Hiện tại chưa có bài đăng nào!

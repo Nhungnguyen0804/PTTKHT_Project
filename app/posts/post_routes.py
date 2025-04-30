@@ -37,7 +37,7 @@ def create_post():
         else:
             flash('Bài viết đã gửi thành công, vui lòng đợi admin duyệt.', 'info')
 
-        return redirect(url_for('posts.view_posts.html'))
+        return redirect(url_for('posts.view_posts'))
 
     return render_template('post/create_post.html')
 
@@ -47,6 +47,6 @@ def create_post():
 def view_posts():
     # Chỉ hiển thị bài viết đã được admin duyệt
     posts = Post.query.filter_by(is_approved=True).all()
-    return render_template('posts/view_post.html', posts=posts)
+    return render_template('post/view_posts.html', posts=posts)
 
 
