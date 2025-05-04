@@ -1,8 +1,106 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, flash, redirect, render_template, request, url_for
+from flask_login import current_user, login_required
 
+from app.admin.forms import EventAdderForm, DonationCategoryAdderForm
+from app.models.event import Event
+from app.models.donation_category import DonationCategory
+from app.flask_extensions import csdl
 admin_blueprint = Blueprint('admin', __name__,template_folder='templates')
 
-@admin_blueprint.route('/admin')
 
+@admin_blueprint.route('/admin')
 def adminPage():
-    return render_template('admin/adminDashboard.html')
+    events = current_user.managed_events
+    return render_template('admin/adminDashboard.html', events=events)
+
+@admin_blueprint.route('/admin/event', methods=['GET', 'POST'])
+@admin_blueprint.route('/admin/event/<int:event_id>', methods=['GET', 'POST'])
+@login_required
+def manageEvent(event_id=None):
+    event = Event.query.get(event_id) if event_id else None
+    form = EventAdderForm(obj=event)
+
+    # Gán giá trị datetime khi đang GET (hiển thị form với dữ liệu cũ)
+    if request.method == 'GET' and event:
+        form.startTime.data = event.start_time.replace(microsecond=0)
+        form.endTime.data = event.end_time.replace(microsecond=0)
+
+    if form.validate_on_submit():
+        if event:
+            form.populate_obj(event)
+            csdl.session.commit()
+            flash('Đã cập nhật sự kiện.', 'success')
+        else:
+            # Kiểm tra logic start < end
+            if form.startTime.data >= form.endTime.data:
+                flash("Thời gian bắt đầu phải nhỏ hơn thời gian kết thúc!", "danger")
+                return render_template('admin/addEvent.html', form=form)
+
+            # Tạo đối tượng sự kiện mới
+            event = Event(
+                name=form.name.data,
+                start_time=form.startTime.data,
+                end_time=form.endTime.data,
+                event_type=form.eventType.data,
+                status='đang triển khai',  # có thể sửa logic sau
+                fee=form.fee.data
+            )
+
+            # Gán user hiện tại làm người quản lý
+            event.managed_by.append(current_user)
+            csdl.session.add(event)
+            csdl.session.commit()
+            flash("Thêm sự kiện thành công!", "success")
+
+        return redirect(url_for('admin.adminPage'))
+
+    return render_template('admin/addEvent.html', form=form)
+
+@admin_blueprint.route('/admin/<int:event_id>')
+def showEventDetails(event_id):
+    event = Event.query.get(event_id)
+    if event:
+        return render_template('admin/eventDetails.html', event=event)
+    else:
+        return
+    
+@admin_blueprint.route('/admin/<int:event_id>/dc', methods=['GET', 'POST'])
+@admin_blueprint.route('/admin/<int:event_id>/dc/<int:donation_category_id>', methods=['GET', 'POST'])
+def manageDonationCategory(event_id, donation_category_id=None):
+    event = Event.query.get(event_id)
+    donation_category = DonationCategory.query.get(donation_category_id) if donation_category_id else None
+    form = DonationCategoryAdderForm(obj=donation_category)
+    # Gán giá trị datetime khi đang GET (hiển thị form với dữ liệu cũ)
+    if request.method == 'GET' and donation_category:
+        form.startDate.data = event.start_date.replace(microsecond=0)
+        form.endDate.data = event.end_date.replace(microsecond=0)
+
+    if form.validate_on_submit():
+        if donation_category:
+            form.populate_obj(donation_category)
+            csdl.session.commit()
+            flash('Đã cập nhật hạng mục quyên góp.', 'success')
+        else:
+            # Kiểm tra logic start < end
+            if form.startDate.data >= form.endDate.data:
+                flash("Thời gian bắt đầu phải nhỏ hơn thời gian kết thúc!", "danger")
+                return render_template('admin/addDonationCategory.html', form=form)
+
+            # Tạo đối tượng sự kiện mới
+            donation_category = DonationCategory(
+                dc_name=form.name.data,
+                donation_type = form.donationType.data,
+                target_quantity = form.targetQuantity.data,
+                start_date = form.startDate.data,
+                end_date = form.endDate.data,
+                event_id = event_id
+            )
+            
+            csdl.session.add(donation_category)
+            csdl.session.commit()
+            flash("Thêm sự kiện thành công!", "success")
+        
+
+        return redirect(url_for('admin.adminPage'))
+
+    return render_template('admin/addDonationCategory.html', form=form)

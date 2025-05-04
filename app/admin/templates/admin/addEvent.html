@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+<!--...-->
+{% block title %}Trang chủ{% endblock %}
+
+<!--...-->
+{% block add_header %}
+
+<!-- Hiển thị thông báo flash -->
+<p>Welcome to the admin page!</p>
+{% if current_user.is_authenticated %}
+<p>Bạn đã đăng nhập!</p>
+{% else %}
+<p>Bạn chưa đăng nhập</p>
+
+{% endif %}
+<!--...-->
+{% endblock %}
+
+{% block content %}
+<!-- <h1>Trang Admin</h1> -->
+<!-- thanh dieu huong navbar -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+<!-- navbar -->
+</nav>
+
+<!-- Container with full width -->
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <h2 class="mb-4 text-center">
+                {{ 'Cập nhật sự kiện' if form.name.data else 'Thêm sự kiện mới' }}
+            </h2>
+            <div class="row justify-content-center">
+                <div class="col-md-10 col-lg-8">
+                    <form method="post">
+                        {{ form.hidden_tag() }}
+                        <div class="form-group">
+                            {{ form.name.label(class="form-label") }}
+                            {{ form.name(class="form-control") }}
+                        </div>
+                        <div class="form-group">
+                            {{ form.startTime.label(class="form-label") }}
+                            {{ form.startTime(class="form-control") }}
+                        </div>
+                        <div class="form-group">
+                            {{ form.endTime.label(class="form-label") }}
+                            {{ form.endTime(class="form-control") }}
+                        </div>
+                        <div class="form-group">
+                            {{ form.eventType.label(class="form-label") }}
+                            {{ form.eventType(class="form-control") }}
+                        </div>
+                        <div class="form-group">
+                            {{ form.fee.label(class="form-label") }}
+                            {{ form.fee(class="form-control") }}
+                        </div>
+                        <div class="form-group mt-3 text-center">
+                            {{ form.submit(class="btn btn-primary px-4") }}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

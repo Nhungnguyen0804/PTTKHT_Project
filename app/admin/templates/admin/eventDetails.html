@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block title %}Trang chủ{% endblock %}
+
+{% block add_header %}
+<p>Welcome to the admin page!</p>
+{% if current_user.is_authenticated %}
+<p>Bạn đã đăng nhập!</p>
+{% else %}
+<p>Bạn chưa đăng nhập</p>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">Trang Admin</a>
+    <!-- Add more navbar content if needed -->
+  </div>
+</nav>
+
+{% if event %}
+<div class="mb-3">
+  <h3>{{ event.name }}</h3>
+  <p><strong>Loại sự kiện:</strong> {{ event.event_type }}</p>
+</div>
+
+<div class="d-flex justify-content-between mb-3">
+  <div>
+    <strong>Bắt đầu:</strong> {{ event.start_time.strftime('%d/%m/%Y %H:%M') }}
+  </div>
+  <div>
+    <strong>Kết thúc:</strong> {{ event.end_time.strftime('%d/%m/%Y %H:%M') }}
+  </div>
+</div>
+
+<h5 class="mt-4">Các hạng mục quyên góp</h5>
+<div class="mb-3">
+  <!-- Hiển thị danh sách hạng mục nếu có -->
+  {% if event.donation_categories.count() > 0 %}
+    <ul class="list-group">
+      {% for dc in event.donation_categories %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          {{ dc.dc_name }} ({{ dc.donation_type }})
+          <span class="badge bg-secondary">
+            {{ dc.start_date.strftime('%d/%m/%Y') }} - {{ dc.end_date.strftime('%d/%m/%Y') }}
+          </span>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="text-muted">Chưa có hạng mục nào.</p>
+  {% endif %}
+</div>
+
+<a href="{{ url_for('admin.manageDonationCategory', event_id=event.id) }}" class="btn btn-primary">
+  Thêm hạng mục quyên góp
+</a>
+{% else %}
+  <p class="text-muted">Không tìm thấy sự kiện nào.</p>
+{% endif %}
+
+{% endblock %}

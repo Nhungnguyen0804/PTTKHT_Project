@@ -2,11 +2,15 @@
 
 from flask import Flask
 from flask_mail import Mail
+
+from app.models.donation_status import init_status
+from app.models.item_category import init_categories
 from .flask_extensions import csdl, login_manager, migrate
 from .auth import auth_blueprint
 from .home import home_blueprint
 from .test import test_blueprint
 from .admin import admin_blueprint
+from .event import event_blueprint
 
 def create_app():
     app = Flask(__name__)
@@ -24,18 +28,24 @@ def create_app():
     # Import các model để đăng ký với SQLAlchemy
     from .models.user import User, user_role  # Import cả User và user_role
     from .models.role import Role, init_roles
-    
+    from .models.event import Event, event_manager
+    from .models.donation_category import DonationCategory
+    from .models.item_category import ItemCategory
+    from .models.donation_status import DonationStatus
 
     # Tạo các bảng trong csdl (chỉ cần cho lần đầu)
     with app.app_context():
         csdl.create_all()
         init_roles()# Khởi tạo gt bang role
+        init_categories()
+        init_status()
     
     # Đăng ký các blueprint
     app.register_blueprint(home_blueprint)
     app.register_blueprint(admin_blueprint)
     app.register_blueprint(test_blueprint)
     app.register_blueprint(auth_blueprint)
+    app.register_blueprint(event_blueprint)
 
     # Thiết lập route cho trang đăng nhập
     login_manager.login_view = 'auth.login'

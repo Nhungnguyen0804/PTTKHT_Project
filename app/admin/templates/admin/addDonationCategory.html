@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+<!--...-->
+{% block title %}Trang chủ{% endblock %}
+
+<!--...-->
+{% block add_header %}
+
+<!-- Hiển thị thông báo flash -->
+<p>Welcome to the admin page!</p>
+{% if current_user.is_authenticated %}
+<p>Bạn đã đăng nhập!</p>
+{% else %}
+<p>Bạn chưa đăng nhập</p>
+
+{% endif %}
+<!--...-->
+{% endblock %}
+
+{% block content %}
+<!-- <h1>Trang Admin</h1> -->
+<!-- thanh dieu huong navbar -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+<!-- navbar -->
+</nav>
+
+<!-- Container with full width -->
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <h2 class="mb-4 text-center">
+                {{ 'Chỉnh sửa hạng mục quyên góp' if form.name.data else 'Thêm hạng mục quyên góp mới' }}
+            </h2>
+            <div class="row justify-content-center">
+                <div class="col-md-10 col-lg-8">
+                    <form method="post">
+                        {{ form.hidden_tag() }}
+                        <div class="form-group">
+                            {{ form.name.label(class="form-label") }}
+                            {{ form.name(class="form-control") }}
+                        </div>
+                        <div class="form-group">
+                            {{ form.startDate.label(class="form-label") }}
+                            {{ form.startDate(class="form-control") }}
+                        </div>
+                        <div class="form-group">
+                            {{ form.endDate.label(class="form-label") }}
+                            {{ form.endDate(class="form-control") }}
+                        </div>
+                        <div class="form-group">
+                            {{ form.donationType.label(class="form-label") }}
+                            {{ form.donationType(class="form-control") }}
+                        </div>
+                        <div class="form-group">
+                            {{ form.targetQuantity.label(class="form-label") }}
+                            {{ form.targetQuantity(class="form-control") }}
+                        </div>
+                        <div class="form-group mt-3 text-center">
+                            {{ form.submit(class="btn btn-primary px-4") }}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

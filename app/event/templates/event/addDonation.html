@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block title %}Trang chủ{% endblock %}
+
+{% block add_header %}
+<!-- Hiển thị thông báo flash -->
+<p>Welcome to the admin page!</p>
+{% if current_user.is_authenticated %}
+<p>Bạn đã đăng nhập!</p>
+{% else %}
+<p>Bạn chưa đăng nhập</p>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<!-- navbar -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+<!-- navbar content -->
+</nav>
+
+<!-- Thông tin quyên góp -->
+<div>Quyên góp cho hạng mục: {{ category.dc_name }}</div>
+<div>Thông tin cá nhân</div>
+<div>Tên người quyên góp: {{ current_user.username }}</div>
+<div>Email: {{ current_user.email }}</div>
+
+<!-- Danh sách hiện vật -->
+<h4>Danh sách vật phẩm/hạng mục đã quyên góp:</h4>
+<ul>
+  {% for item in donation_items %}
+    <li>
+      <strong>Tên:</strong> {{ item.item_name }} |
+      <strong>Số lượng:</strong> {{ item.quantity }}
+    </li>
+    <a href="{{url_for('event.manageDonationItem', category_id = category.id, item_number=loop.index0)}}">
+        <button>Thay đổi</button>
+    </a>
+  {% endfor %}
+</ul>
+
+<!-- Form xác nhận -->
+<form action="{{ url_for('event.addDonation', category_id=category.id) }}" method="POST">
+  {% if csrf_token %}
+    {{ csrf_token() }}
+  {% endif %}
+  <button type="submit" class="btn btn-success">Xác nhận đăng kí</button>
+</form>
+
+<!-- Thêm hiện vật -->
+<a href="{{ url_for('event.manageDonationItem', category_id=category.id) }}">
+  <button class="btn btn-primary mt-2">Thêm hiện vật</button>
+</a>
+
+{% endblock %}

@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% block title %}Trang chủ{% endblock %}
+
+{% block add_header %}
+<p>Welcome to the home page!</p>
+{% if current_user.is_authenticated %}
+<p>Bạn đã đăng nhập!</p>
+{% else %}
+<p>Bạn chưa đăng nhập</p>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<!-- navbar -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <!-- navbar code như cũ -->
+</nav>
+
+<!-- danh sách sự kiện -->
+<div class="container mt-4">
+  {% for event in events %}
+  <div class="col-md-12 col-lg-8 offset-lg-2">
+    <div class="card mb-4 shadow-sm">
+      <div class="card-body">
+        <h4 class="card-title">{{ event.name }}</h4>
+        <h6 class="card-subtitle mb-2 text-muted">Loại: {{ event.event_type }}</h6>
+        <p class="card-text mb-1"><strong>Trạng thái:</strong> {{ event.status }}</p>
+        <div class="d-flex justify-content-between mb-3">
+          <div><strong>Bắt đầu:</strong> {{ event.start_time.strftime('%d/%m/%Y %H:%M') }}</div>
+          <div><strong>Kết thúc:</strong> {{ event.end_time.strftime('%d/%m/%Y %H:%M') }}</div>
+        </div>
+        <div>Có {{ event.donationCategoryCount }} hạng mục quyên góp</div>
+
+        <!-- Nút hiện chi tiết -->
+        <a class="btn btn-outline-primary mt-2" data-bs-toggle="collapse" href="#collapse{{ event.id }}" role="button" aria-expanded="false" aria-controls="collapse{{ event.id }}">
+          <i class="bi bi-eye"></i> Chi tiết
+        </a>
+
+        <!-- Nội dung chi tiết -->
+        <div class="collapse mt-3" id="collapse{{ event.id }}">
+          {% if event.donation_categories %}
+          <ul class="list-group">
+            {% for cat in event.donation_categories %}
+            <li class="list-group-item">
+              <strong>{{ cat.dc_name }}</strong> ({{ cat.donation_type }}) — mục tiêu: {{ cat.target_quantity }}
+              <br />
+              Thời gian: {{ cat.start_date.strftime('%d/%m/%Y') }} - {{ cat.end_date.strftime('%d/%m/%Y') }}
+              <br>
+              <a href="{{url_for('event.manageDonationItem', category_id=cat.id, event_id=event.id)}}">Quyên góp</a>
+            </li>
+            {% endfor %}
+          </ul>
+          {% else %}
+          <div class="text-muted mt-2">Không có hạng mục quyên góp nào.</div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

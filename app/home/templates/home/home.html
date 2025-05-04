@@ -82,6 +82,10 @@
 </nav>
 <!-- navbar -->
 
-{% block home%}{% endblock %}
+{% block home%}
+<a href="{{url_for('event.event')}}">
+  <button>Xem các sự kiện</button>
+</a>
+{% endblock %}
 <!--  -->
 {% endblock %}
