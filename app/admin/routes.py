@@ -6,3 +6,4 @@ admin_blueprint = Blueprint('admin', __name__,template_folder='templates')
 
 def adminPage():
     return render_template('admin/adminDashboard.html')
+

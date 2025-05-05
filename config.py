@@ -3,7 +3,7 @@
 # config.py
 import os
 
-
+from flask import current_app
 class Config:
     
     mail_string = 'your_email@gmail.com'
@@ -18,3 +18,5 @@ class Config:
     MAIL_USERNAME = mail_string# <-- Thay bằng email thật
     MAIL_PASSWORD =  mail_pass_string  # <-- Thay bằng App password thật
 
+    #cau hinh upload
+    MAX_CONTENT_LENGTH =  2 * 1024 * 1024  # Giới hạn 2MB ảnh

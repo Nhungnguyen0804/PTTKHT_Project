@@ -30,8 +30,9 @@
       <!-- nhãn + ô điền username, pass, checkbox remember  -->
       {{ form.hidden_tag() }}
       <!-- Tên đăng nhập -->
-      <div class="form-group">
-        {{ form.username(class="form-control", placeholder=form.username.label.text) }}
+      <div>
+        {{form.username.label}}<br />
+        {{ form.username(class="form-control")}}        
         <!-- ---- -->
         {% if form.username.errors %}
         <!-- ---  -->
@@ -43,8 +44,9 @@
       </div>
     
       <!-- họ và tên -->
-      <div class="form-group">
-        {{ form.fullname(class="form-control", placeholder=form.fullname.label.text) }}
+      <div>
+        {{form.fullname.label}}<br />
+        {{ form.fullname(class="form-control")}}
         <!-- ---- -->
         {% if form.fullname.errors %}
         <!-- ---  -->
@@ -54,10 +56,18 @@
         </div>
         {% endif %}
       </div>
-    
+      <div>
+        {{form.ngaySinh.label}}<br />
+        {{ form.ngaySinh(class="form-control",type="date")}}
+      </div>
+      <div>
+        {{form.gender.label}}<br />
+        {{ form.gender(class="form-select") }}
+      </div>
       <!-- Email -->
-      <div class="form-group">
-        {{ form.email(class="form-control", placeholder=form.email.label.text) }}
+      <div>
+        {{form.email.label}}<br />
+        {{ form.email(class="form-control")}} 
         <!-- ---- -->
         {% if form.email.errors %}
         <!-- ---  -->
@@ -68,22 +78,24 @@
         </div>
         {% endif %}
       </div>
-    
+      
       <!-- sdt -->
-      <div class="form-group">
-        {{ form.sdt(class="form-control", placeholder=form.sdt.label.text) }}
+      <div>
+        {{form.phone.label}}<br />
+        {{ form.phone(class="form-control")}} 
         <!-- ---- -->
-        {% if form.sdt.errors %}
+        {% if form.phone.errors %}
         <!-- ---  -->
         <div class="errors">
-          {% for error in form.sdt.errors %} {{ error }}<br />
+          {% for error in form.phone.errors %} {{ error }}<br />
           {% endfor %}
         </div>
         {% endif %}
       </div>
     <!-- Mật khẩu -->
-    <div class="form-group">
-      {{ form.password(class="form-control", placeholder=form.password.label.text) }}
+    <div>
+      {{form.password.label}}<br />
+      {{ form.password(class="form-control")}} 
 
         <!-- ---- -->
         {% if form.password.errors %}
@@ -98,8 +110,9 @@
 
     
     <!-- Nhập lại mật khẩu -->
-    <div class="form-group">
-      {{ form.confirm(class="form-control", placeholder=form.confirm.label.text) }}
+    <div>
+      {{form.confirm.label}}<br />
+      {{ form.confirm(class="form-control")}} 
         <!-- ---- -->
         {% if form.confirm.errors %}
         <!-- ---  -->
@@ -111,6 +124,8 @@
             {% endif %}
     </div>
     
+    
+
     <!-- Nút gửi form -->
     {{ form.submit(class="custom-auth-button") }}
 

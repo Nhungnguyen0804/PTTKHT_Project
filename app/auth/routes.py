@@ -52,10 +52,14 @@ def register():
         if User.query.filter_by(username=form.username.data).first():
             flash('Đã tồn tại Username!', 'warning')
             return redirect(url_for('auth.register'))
-
+        if User.query.filter_by(email=form.email.data).first():
+            flash('Đã tồn tại Email!', 'warning')
+            return redirect(url_for('auth.register'))
         # k trung thi tao user moi 
-        new_user = User(username=form.username.data, fullname = form.fullname.data, email=form.email.data, sdt = form.sdt.data)
+        new_user = User(username=form.username.data, fullname = form.fullname.data, email=form.email.data, phone = form.phone.data, date_of_birth = form.ngaySinh.data, gender = form.gender.data)
         new_user.set_password(form.password.data)
+        default_avatar = url_for('static', filename='image/avatar.png')
+        new_user.set_avatar(default_avatar)
         csdl.session.add(new_user) #luu vao csdl
 
         csdl.session.flush()  # Lấy user.id trước khi commit
