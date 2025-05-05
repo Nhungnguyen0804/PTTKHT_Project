@@ -2,9 +2,11 @@ from flask import Blueprint, flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
 
 from app.admin.forms import EventAdderForm, DonationCategoryAdderForm
+from app.models.donation import Donation
 from app.models.event import Event
 from app.models.donation_category import DonationCategory
 from app.flask_extensions import csdl
+from sqlalchemy.orm import joinedload
 admin_blueprint = Blueprint('admin', __name__,template_folder='templates')
 
 
@@ -104,3 +106,34 @@ def manageDonationCategory(event_id, donation_category_id=None):
         return redirect(url_for('admin.adminPage'))
 
     return render_template('admin/addDonationCategory.html', form=form)
+
+@admin_blueprint.route("/admin/<int:category_id>/details", methods=["POST", "GET"])
+def manageDonationCategories(category_id):
+    category = DonationCategory.query.get(category_id)
+    # list of donations from category here
+    donations_of_category = Donation.query.options(
+    joinedload(Donation.items),
+    joinedload(Donation.status)
+).filter_by(donation_category_id=category.id).all()
+    return render_template("admin/donationCategoryDetails.html", category=category, donations_of_category=donations_of_category)
+
+@admin_blueprint.route('/admin/confirm_donation/<int:donation_id>', methods=['POST'])
+@login_required
+def confirm_donation(donation_id):
+    donation = Donation.query.get_or_404(donation_id)
+    # Giả sử 2 là trạng thái "Đã xác nhận"
+    donation.status_id = 2
+    csdl.session.commit()
+    flash("Đã xác nhận lượt quyên góp.", "success")
+    return redirect(request.referrer or url_for('admin.manageDonationCategories', category_id=donation.donation_category_id))
+
+
+@admin_blueprint.route('/admin/cancel_donation/<int:donation_id>', methods=['POST'])
+@login_required
+def cancel_donation(donation_id):
+    donation = Donation.query.get_or_404(donation_id)
+    # Giả sử 3 là trạng thái "Đã hủy"
+    donation.status_id = 3
+    csdl.session.commit()
+    flash("Đã hủy lượt quyên góp.", "warning")
+    return redirect(request.referrer or url_for('admin.manageDonationCategories', category_id=donation.donation_category_id))

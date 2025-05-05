@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block title %}Trang chủ{% endblock %}
+
+{% block add_header %}
+<p>Welcome to the admin page!</p>
+{% if current_user.is_authenticated %}
+<p>Bạn đã đăng nhập!</p>
+{% else %}
+<p>Bạn chưa đăng nhập</p>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+<!-- navbar content -->
+</nav>
+
+<div>Quyên góp của bạn cho {{ category.dc_name }}</div>
+
+<h4>Danh sách quyên góp:</h4>
+<ul>
+    {% for donation in donations %}
+    <div>
+      <strong>Thời gian:</strong> {{ donation.create_time }}
+    </div>
+    <div>
+      <strong>Trạng thái:</strong> {{ donation.status.name }}
+    </div>
+    <div>
+      <strong>Danh sách vật phẩm:</strong>
+      <ul>
+        {% for item in donation.items %}
+          <li>{{ item.item_name }} - Số lượng: {{ item.quantity }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% endfor %}
+</ul>
+{% endblock %}

@@ -38,7 +38,7 @@
 </ul>
 
 <!-- Form xác nhận -->
-<form action="{{ url_for('event.addDonation', category_id=category.id) }}" method="POST">
+<form action="{{ url_for('event.manageDonation', category_id=category.id) }}" method="POST">
   {% if csrf_token %}
     {{ csrf_token() }}
   {% endif %}

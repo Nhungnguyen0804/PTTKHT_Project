@@ -25,7 +25,7 @@ def event():
     return render_template('event/event.html', events=events)
 
 @event_blueprint.route('/<int:category_id>/details', methods=["GET", "POST"])
-def addDonation(category_id):
+def manageDonation(category_id):
     category = DonationCategory.query.get_or_404(category_id)
 
     if request.method == 'POST':
@@ -34,7 +34,8 @@ def addDonation(category_id):
             donation_category_id=category.id,
             donor_name=current_user.username,
             donor_email=current_user.email,
-            create_time=datetime.utcnow()
+            create_time=datetime.utcnow(),
+            status_id = 1
         )
         csdl.session.add(new_donation)
         csdl.session.commit()  # Cần commit để có được ID
@@ -48,7 +49,7 @@ def addDonation(category_id):
                 item_name=item_data['item_name'],
                 quantity=item_data['quantity'],
                 item_category_id=item_data['item_category_id'],
-                donation_id=new_donation.id
+                donation_id=new_donation.id,
             )
             csdl.session.add(donation_item)
 
@@ -68,7 +69,6 @@ def addDonation(category_id):
 def manageDonationItem(category_id, item_number=None):
     category = DonationCategory.query.get_or_404(category_id)
     donation_items = session.get('donation_items', [])
-
     # Dữ liệu item nếu đang sửa
     donation_data = donation_items[item_number] if item_number is not None and item_number < len(donation_items) else None
 
@@ -87,13 +87,13 @@ def manageDonationItem(category_id, item_number=None):
             new_item = {
                 'item_name': f"Quyên góp tiền cho hạng mục {category.dc_name}",
                 'quantity': form.quantity.data,
-                'item_category_id': 1  # hoặc None
+                'item_category_id': 1,  # hoặc None
             }
         else:
             new_item = {
                 'item_name': form.itemName.data,
                 'quantity': form.quantity.data,
-                'item_category_id': form.itemCategoryId.data
+                'item_category_id': form.itemCategoryId.data,
             }
 
         # Ghi đè nếu đang sửa, thêm mới nếu không
@@ -104,8 +104,17 @@ def manageDonationItem(category_id, item_number=None):
 
         session['donation_items'] = donation_items
         flash("Thêm/Chỉnh sửa vật phẩm thành công", "success")
-        return redirect(url_for('event.addDonation', category_id=category_id))
+        return redirect(url_for('event.manageDonation', category_id=category_id))
 
     return render_template('event/addDonationItem.html', form=form, category=category)
 
+@event_blueprint.route('/<int:category_id>/donations')
+def displayAllDonations(category_id):
+    category = DonationCategory.query.get_or_404(category_id)
 
+    donationList = Donation.query.filter_by(
+        donation_category_id=category.id,
+        donor_email=current_user.email
+    ).all()
+
+    return render_template('event/displayDonation.html', category=category, donations=donationList)

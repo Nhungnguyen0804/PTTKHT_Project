@@ -45,6 +45,7 @@
           <span class="badge bg-secondary">
             {{ dc.start_date.strftime('%d/%m/%Y') }} - {{ dc.end_date.strftime('%d/%m/%Y') }}
           </span>
+          <a href="{{url_for('admin.manageDonationCategories', category_id=dc.id)}}"><button>Xem các lượt quyên góp</button></a>
         </li>
       {% endfor %}
     </ul>

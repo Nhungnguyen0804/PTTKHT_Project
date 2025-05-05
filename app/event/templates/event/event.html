@@ -46,7 +46,8 @@
               <br />
               Thời gian: {{ cat.start_date.strftime('%d/%m/%Y') }} - {{ cat.end_date.strftime('%d/%m/%Y') }}
               <br>
-              <a href="{{url_for('event.manageDonationItem', category_id=cat.id, event_id=event.id)}}">Quyên góp</a>
+              <a href="{{url_for('event.manageDonationItem', category_id=cat.id)}}">Quyên góp</a>
+              <a href="{{url_for('event.displayAllDonations', category_id=cat.id)}}">Xem hạng mục quyên góp của bạn</a>
             </li>
             {% endfor %}
           </ul>
