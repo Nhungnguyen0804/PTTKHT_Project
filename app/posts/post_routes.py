@@ -92,12 +92,6 @@ def create_post():
 
     return render_template('post/create_post.html')
 
-
-@post_blueprint.route('/posts')
-def view_posts():
-    posts = Post.query.filter_by(is_approved=True, status='Not done').all()
-    return render_template('post/view_posts.html', posts=posts)
-
 # Route đánh dấu bài viết là đã hoàn tất
 @post_blueprint.route('/mark_done', methods=['POST'])
 @login_required
@@ -116,14 +110,14 @@ def mark_done():
 
     # Chỉ cho phép đánh dấu nếu là admin hoặc chủ bài viết (nếu có user_id trong bảng Post)
     # Ở đây ta chỉ kiểm tra admin vì bảng chưa có user_id
-    if current_user.roles != 'admin' :
+    if current_user.roles != 'admin' and post.user_id != current_user.id:
         flash('Bạn không có quyền thay đổi trạng thái bài viết này.', 'danger')
         return redirect(url_for('post.view_posts'))
 
     post.status = 'Done'
     csdl.session.commit()
     flash('Bài viết đã được đánh dấu là hoàn tất.', 'success')
-    return redirect(url_for('post.view_posts'))
+    return redirect(url_for('post.my_posts'))
 
 
 # Route xem các bài đăng của user hiện tại
@@ -132,3 +126,39 @@ def mark_done():
 def my_posts():
     posts = Post.query.filter_by(user_id=current_user.id).order_by(Post.is_approved.desc()).all()
     return render_template('post/my_posts.html', posts=posts)
+
+# Route xóa bài viết
+@post_blueprint.route('/delete_post', methods=['POST'])
+@login_required
+def delete_post():
+    post_id = request.form.get('post_id')
+    post = Post.query.filter_by(post_id=post_id, user_id=current_user.id).first()
+
+    if not post:
+        flash('Không tìm thấy bài viết hoặc bạn không có quyền xóa.', 'danger')
+        return redirect(url_for('post.my_posts'))
+
+    csdl.session.delete(post)
+    csdl.session.commit()
+    flash('Bài viết đã được xóa.', 'success')
+    return redirect(url_for('post.my_posts'))
+
+# Route sửa bài viết
+@post_blueprint.route('/edit/<string:post_id>', methods=['GET', 'POST'])
+@login_required
+def edit_post(post_id):
+    post = Post.query.get_or_404(post_id)
+
+    if post.user_id != current_user.id and not current_user.has_role('admin'):
+        flash("Bạn không có quyền sửa bài này.", "danger")
+        return redirect(url_for('post.my_posts'))
+
+    if request.method == 'POST':
+        post.content = request.form['content']
+        # Cập nhật thêm image_url nếu có
+        csdl.session.commit()
+        flash("Bài đăng đã được cập nhật.", "success")
+        return redirect(url_for('post.my_posts'))
+
+    return render_template('post/edit_post.html', post=post)
+
