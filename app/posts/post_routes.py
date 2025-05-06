@@ -1,52 +1,71 @@
-from flask import render_template, request, redirect, url_for, flash
+from flask import render_template, request, redirect, url_for, flash, current_app
 from flask_login import login_required, current_user
+from werkzeug.utils import secure_filename
 from . import post_blueprint 
 from app.models.post import Post
+from app import csdl
 import uuid
+import os
+
+# Thư mục lưu ảnh upload
+UPLOAD_FOLDER = os.path.join('app', 'static', 'uploads')
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 # Route tạo bài đăng mới
 @post_blueprint.route('/create_post', methods=['GET', 'POST'])
 @login_required
 def create_post():
     if request.method == 'POST':
-        # Lấy dữ liệu từ form
         content = request.form.get('content')
-        image_url = request.form.get('image_url')
+        images = request.files.getlist('images')  # Lấy tất cả file ảnh từ input có multiple
 
-        # Kiểm tra dữ liệu
         if not content:
             flash('Nội dung bài viết không được để trống.', 'danger')
-            return redirect(url_for('post.create_post'))
+            return redirect(url_for('post.create_post')) 
 
-        # Xác định trạng thái duyệt dựa trên vai trò người dùng
-        is_approved = True if current_user.role == 'admin' else False
+        image_urls = []  # Danh sách URL các ảnh hợp lệ
+        for image_file in images:
+            if image_file and allowed_file(image_file.filename):
+                filename = secure_filename(image_file.filename)
+                unique_filename = f"{uuid.uuid4().hex}_{filename}"
+                save_path = os.path.join(UPLOAD_FOLDER, unique_filename)
+                os.makedirs(os.path.dirname(save_path), exist_ok=True)
+                image_file.save(save_path)
+                image_urls.append(f'/static/uploads/{unique_filename}')
 
-        # Tạo bài viết mới
+        image_url_str = ','.join(image_urls) if image_urls else None
+
+        is_approved = True if current_user.roles == 'admin' else False
+
         new_post = Post(
-            post_id=str(uuid.uuid4()),   # Tạo ID ngẫu nhiên
+            post_id=str(uuid.uuid4()),
             content=content,
-            image_url=image_url,
+            image_url=image_url_str,
             is_approved=is_approved
         )
 
-        Post.session.add(new_post)
-        Post.session.commit()
+        csdl.session.add(new_post)
+        csdl.session.commit()
 
-        if is_approved:
-            flash('Bài viết đã được đăng thành công!', 'success')
-        else:
-            flash('Bài viết đã gửi thành công, vui lòng đợi admin duyệt.', 'info')
+        # Sau khi tạo bài viết và commit
+        success_message = (
+            'Bài viết đã được đăng thành công!' if current_user.roles == 'admin'
+            else 'Bài viết đã được gửi và đang chờ duyệt. Vui lòng đợi admin xét duyệt.'
+        )
 
-        return redirect(url_for('posts.view_posts'))
+        return render_template('post/create_post.html',
+            success_message=success_message,
+            user_role=current_user.roles
+        )
 
+    # Trường hợp GET hoặc không phải POST
     return render_template('post/create_post.html')
-
 
 # Route xem tất cả bài viết đã được duyệt
 @post_blueprint.route('/posts')
 def view_posts():
-    # Chỉ hiển thị bài viết đã được admin duyệt
     posts = Post.query.filter_by(is_approved=True).all()
     return render_template('post/view_posts.html', posts=posts)
-
-
