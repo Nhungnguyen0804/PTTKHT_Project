@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField,DateField
 from wtforms.validators import DataRequired, Length, Email, EqualTo
 
 class LoginForm(FlaskForm):
@@ -11,8 +11,13 @@ class LoginForm(FlaskForm):
 class RegisterForm(FlaskForm):
     username = StringField('Mã học sinh/ Mã giáo viên', validators=[DataRequired(), Length(min=3, max=50)])
     fullname = StringField('Họ và tên',validators=[DataRequired()])
+    ngaySinh = DateField('Ngày sinh')
+    gender = SelectField('Giới tính', choices=[
+    ('male', 'Nam'),
+    ('female', 'Nữ'),
+    ('other', 'Khác')])
     email = StringField('Email', validators=[DataRequired(), Email()])
-    sdt = StringField('Số điện thoại')
+    phone = StringField('Số điện thoại')
     password = PasswordField('Password', validators=[DataRequired(), Length(min=6)])
     confirm = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('password')])
     submit = SubmitField('Đăng ký')

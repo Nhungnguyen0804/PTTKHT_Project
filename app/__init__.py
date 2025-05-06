@@ -1,12 +1,14 @@
 # Khởi tạo Flask app và register các Blueprint
 
 from flask import Flask
+from flask_login import current_user
 from flask_mail import Mail
 from .flask_extensions import csdl, login_manager, migrate
 from .auth import auth_blueprint
 from .home import home_blueprint
 from .test import test_blueprint
 from .admin import admin_blueprint
+from .accountManagement import accManagement_blueprint
 from .posts import post_blueprint
 
 def create_app():
@@ -38,10 +40,16 @@ def create_app():
     app.register_blueprint(test_blueprint)
     app.register_blueprint(auth_blueprint)
     app.register_blueprint(post_blueprint)
+    app.register_blueprint(accManagement_blueprint)
 
     # Thiết lập route cho trang đăng nhập
     login_manager.login_view = 'auth.login'
+
+    app.jinja_env.globals.update(has_role=User.has_role)
+
+    @app.context_processor
+    def inject_user():
+        return dict(user=current_user)
+
     return app
-
-
 

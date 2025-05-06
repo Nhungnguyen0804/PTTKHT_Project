@@ -2,15 +2,19 @@
 <!--...-->
 {% block title %}Trang chủ{% endblock %}
 
+<!--...-->
 {% block add_header %}
+
+<!-- Hiển thị thông báo flash -->
 <p>Welcome to the home page!</p>
 {% if current_user.is_authenticated %}
-  <p>Bạn đã đăng nhập!</p>
+<p>Bạn đã đăng nhập!</p>
 {% else %}
-  <p>Bạn chưa đăng nhập</p>
-{% endif %}
-{% endblock %}
+<p>Bạn chưa đăng nhập</p>
 
+{% endif %}
+<!--...-->
+{% endblock %}
 
 <!--...-->
 {% block content %}
@@ -38,13 +42,13 @@
         <a class="nav-link" href="{{ url_for('home.homepage') }}">Home</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="{{ url_for('test.afterlogin') }}">Link</a>
+        <a class="nav-link" href="{{ url_for('post.create_post') }}">Create Post</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="{{ url_for('post.create_post') }}">Tạo Bài Đăng</a>
+        <a class="nav-link" href="{{ url_for('post.my_posts') }}">My Posts</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="{{ url_for('post.view_posts') }}">Xem Bài Đăng</a>
+        <a class="nav-link" href="{{ url_for('post.view_posts') }}">Posts</a>
       </li>
       <li class="nav-item dropdown">
         <a

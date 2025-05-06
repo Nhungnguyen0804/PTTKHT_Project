@@ -1,0 +1,265 @@
+:root {
+  --sidebar-background: white;
+  --user-info-background: var(--mau13);
+  --profile-menu-li-hover-background: var(--mau4);
+  --profile-menu-li-hover-color: white; /* text*/
+  --profile-menu-li-active-background: var(--mau3);
+  --profile-menu-li-active-color: black;
+  --accManagement-main-background: var(--mau4);
+  --accManagement-tab-background: var(--mau13);
+  --accManagement-tab-ul-hover-background: var(--mau4);
+  --accManagement-tab-ul-hover-color: white;
+  --profile-content-background: var(--mau13);
+
+  --mau1: #86946d;
+  --mau2: #fdd6c2;
+  --mau3: #ccd9b7;
+  --mau4: #7fa390;
+  --mau5: #b0e1e1;
+  --mau6: #b18a81;
+  --mau7: #d9c297;
+  --mau8: #c4a289;
+  --mau9: #7b544c;
+  --mau10: #f6f0eb;
+  --mau11: #d6e1d1;
+  --mau12: #e8cfc3;
+  --mau13: #fff2e3;
+}
+.profile-container {
+  display: flex;
+  background-color: var(--sidebar-background);
+}
+
+.sidebar {
+  width: 260px;
+  background-color: transparent;
+  /* x  */
+  padding: 5px;
+  /* border-right: 1px solid black; */
+  /* display: flex; */
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.user-info {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 10px;
+  background-color: var(--user-info-background);
+  border-radius: 30px;
+  border: 2px solid black;
+  /* x  */
+}
+.avatar-user-info {
+  border-radius: 30px;
+}
+.profile-menu ul {
+  list-style: none;
+  padding: 0;
+}
+.profile-menu li a {
+  color: black !important;
+  text-decoration: none;
+}
+.profile-menu li {
+  margin: 0px 0;
+  cursor: pointer;
+  background-color: transparent;
+  padding: 12px 16px;
+  transition: background-color 0.2s ease;
+  /* x  */
+}
+
+.profile-menu li:hover {
+  background-color: var(--profile-menu-li-hover-background); /* Màu khi hover */
+  border-radius: 8px;
+  color: var(--profile-menu-li-hover-color) !important;
+}
+
+.profile-menu li.active {
+  background-color: var(
+    --profile-menu-li-active-background
+  ); /* Màu nền mục đang chọn */
+  border-radius: 8px;
+  font-weight: 600;
+  color: var(--profile-menu-li-active-color) !important;
+}
+.profile-menu h1 {
+  font-size: large;
+  font-weight: bold;
+  text-align: center;
+  color: black;
+}
+
+.accManagement-main {
+  flex: 1;
+
+  /* display: flex; */
+  /* padding: 20px 40px; */
+  padding-top: 20px;
+  padding-left: 40px;
+  background-color: var(--accManagement-main-background);
+  width: 100%;
+  box-sizing: border-box;
+  border-top-left-radius: 20px;
+}
+
+.accManagement-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: transparent;
+}
+.accManagement-header h1 {
+  color: white;
+  font-weight: bold;
+}
+.accManagement-tab {
+  display: flex;
+  background-color: var(--accManagement-tab-background);
+  border-radius: 20px;
+}
+
+.accManagement-tab ul {
+  width: 200px;
+  padding: 0;
+  list-style: none;
+}
+.accManagement-tab li a {
+  color: black;
+}
+.accManagement-tab li {
+  padding: 12px 16px; /* 16 la ko de no bam sat le qua*/
+  cursor: pointer;
+  color: #333;
+  /* background-color: var(--accManagement-tab-ul-background); */
+  margin: 10px;
+  transition: background-color 0.2s ease;
+  border-radius: 10px;
+}
+.accManagement-tab ul :hover {
+  background-color: var(--accManagement-tab-ul-hover-background);
+  color: var(--accManagement-tab-ul-hover-color);
+}
+.accManagement-tab ul .active {
+  color: black;
+  background-color: var(--mau11);
+  font-weight: bold;
+}
+.profile-content {
+  flex: 1;
+  padding-left: 40px;
+  padding-right: 20px;
+  width: 100%;
+  box-sizing: border-box;
+  background-color: var(--profile-content-background);
+  border-left: 2px solid var(--mau4);
+  border-top-right-radius: 20px;
+  border-bottom-right-radius: 20px;
+}
+
+.profile-header,
+.profile-info,
+.contact-info {
+  background-color: white;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+  box-sizing: border-box;
+  width: 100%;
+  border: 2px solid black;
+}
+
+.avatar-frame {
+  display: flex;
+}
+
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  /* khoảng cách các item  */
+}
+.profile-header h2,
+.avatar-frame h2 {
+  font-size: 40px;
+  font-weight: bold;
+}
+.profile-header p,
+.avatar-frame p {
+  font-size: 20px;
+}
+.profile-title h2 {
+  font-size: 30px;
+  font-weight: bold;
+}
+.profile-content h1 {
+  font-size: 30px;
+  font-weight: bold;
+}
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #005ef9;
+}
+
+.profile-title {
+  display: flex;
+  justify-content: space-between;
+  padding-right: 20px;
+  padding-top: 30px;
+}
+
+.custom-profile-button {
+  color: black;
+  border: 2px solid black;
+  font-weight: 400;
+  text-align: center;
+
+  background-color: white;
+
+  /* --- */
+  padding: 5px 25px;
+  border-radius: 10px; /* bo góc */
+  font-size: 20px;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+
+  /* căn nút ra giữa  */
+  display: block; /* Biến nút thành 1 khối
+  /* margin: 0 auto; /* Tự căn giữa ngang */
+  /* margin-top: 50px; */
+  margin-bottom: 20px;
+}
+.custom-profile-button:hover {
+  background-color: var(--mau4);
+  color: #ffffff;
+}
+
+.user-info-text {
+  /* color: #48755d; */
+  color: #7b544c;
+  font-size: 18px;
+  /* font-weight: bold; */
+}
+.user-info-text strong {
+  color: black;
+}
+
+.change-pass {
+  padding: 30px;
+  padding-bottom: 60px;
+}
+
+.avatar-container {
+  text-align: center;
+}

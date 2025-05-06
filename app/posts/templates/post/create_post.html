@@ -8,11 +8,18 @@
   </a>
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
-      <li class="nav-item"> 
-        <a class="nav-link" href="{{ url_for('post.create_post') }}">Tạo Bài Đăng</a>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('home.homepage') }}">Home</a>
+      </li>
+      <li class="nav-item active">
+        <a class="nav-link" href="{{ url_for('post.create_post') }}">Create Post</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="{{ url_for('post.view_posts') }}">Xem Bài Đăng</a>
+        <a class="nav-link" href="{{ url_for('post.my_posts') }}">My Post</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('post.view_posts') }}">Posts</a>
+      </li>
     </ul>
   </div>
 </nav>
@@ -22,19 +29,41 @@
 <div class="container">
   <form method="POST" enctype="multipart/form-data">
     <div class="form-group">
+      <label for="post_type">Chọn loại bài đăng</label>
+      <select name="post_type" id="post_type" class="form-control" required>
+        <option value="">-- Chọn loại --</option>
+        <option value="thanh_ly">Thanh lý</option>
+        <option value="trao_doi">Trao đổi</option>
+        <option value="donate">Donate</option>
+      </select>
+    </div>
+  
+    <div class="form-group mt-3">
       <label for="content">Nội dung bài viết</label>
       <textarea name="content" id="content" class="form-control" rows="4" placeholder="Nhập nội dung..." required></textarea>
     </div>
-
+  
     <div class="form-group mt-3">
       <label for="images">Chọn ảnh</label>
       <input type="file" name="images" id="images" multiple accept="image/*">
     </div>
-
+  
+    <!-- Trường chỉ hiển thị khi chọn Thanh lý -->
+    <div id="price_group" class="form-group mt-3" style="display: none;">
+      <label for="price">Giá</label>
+      <input type="number" name="price" id="price" class="form-control" placeholder="Nhập giá...">
+    </div>
+  
+    <!-- Trường contact cho tất cả ngoại trừ khi không chọn gì -->
+    <div id="contact_group" class="form-group mt-3" style="display: none;">
+      <label for="contact">Thông tin liên hệ</label>
+      <input type="text" name="contact" id="contact" class="form-control" placeholder="Nhập số điện thoại, email hoặc Facebook...">
+    </div>
+  
     <div id="preview" class="row mt-3"></div>
-
+  
     <button type="submit" class="btn btn-primary mt-3">Đăng bài</button>
-  </form>
+  </form>  
 </div>
 
 {% if success_message %}
@@ -114,5 +143,27 @@
   });
 </script>
 {% endif %}
+
+
+<script>
+  const postTypeSelect = document.getElementById('post_type');
+  const priceGroup = document.getElementById('price_group');
+  const contactGroup = document.getElementById('contact_group');
+
+  postTypeSelect.addEventListener('change', function () {
+    const type = this.value;
+
+    // Reset visibility
+    priceGroup.style.display = 'none';
+    contactGroup.style.display = 'none';
+
+    if (type === 'thanh_ly') {
+      priceGroup.style.display = 'block';
+      contactGroup.style.display = 'block';
+    } else if (type === 'trao_doi' || type === 'donate') {
+      contactGroup.style.display = 'block';
+    }
+  });
+</script>
 
 {% endblock %}
