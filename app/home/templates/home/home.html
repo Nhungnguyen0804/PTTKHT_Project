@@ -14,7 +14,7 @@
 
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
-      <li class="nav-item active">
+      <li class="nav-item">
         <a class="nav-link" href="{{ url_for('home.homepage') }}">Home</a>
       </li>
       <li class="nav-item">
@@ -34,7 +34,7 @@
     {% for post in posts %}
       <div class="card mb-4">
         <div class="card-body">
-          <p class="card-text" style="white-space: pre-line;">{{ post.content }}</p>
+          <p class="card-text">{{ post.content }}</p>
 
           {% if post.image_url %}
             <div class="row mt-3">
@@ -55,7 +55,7 @@
             {% endif %}
           </p>
 
-          {% if current_user.is_authenticated and post.status != 'đã hoàn tất' and current_user.roles == 'admin' %}
+          {% if current_user.is_authenticated and post.status != 'đã hoàn tất' %}
             <form method="POST" action="{{ url_for('post.mark_done') }}">
               <input type="hidden" name="post_id" value="{{ post.post_id }}">
               <button type="submit" class="btn btn-sm btn-outline-success mt-2">
