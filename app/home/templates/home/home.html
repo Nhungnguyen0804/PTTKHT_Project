@@ -1,27 +1,21 @@
 {% extends 'base.html' %}
-{% block title %}Trang chủ{% endblock %}
+{% block title %}Xem Bài Đăng{% endblock %}
 
 {% block content %}
 <nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
   <a class="navbar-brand" href="{{ url_for('home.homepage') }}">
     <img src="{{ url_for('static', filename='image/home.png') }}" style="width: 30px" alt="home image" />
   </a>
-  <button class="navbar-toggler" type="button" data-toggle="collapse"
-    data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
-    aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
-
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
-      <li class="nav-item">
+      <li class="nav-item active">
         <a class="nav-link" href="{{ url_for('home.homepage') }}">Home</a>
       </li>
       <li class="nav-item">
         <a class="nav-link" href="{{ url_for('post.create_post') }}">Create Post</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="{{ url_for('post.my_posts') }}">My Posts</a>
+        <a class="nav-link" href="{{ url_for('post.my_posts') }}">My Post</a>
       </li>
     </ul>
   </div>
@@ -34,7 +28,12 @@
     {% for post in posts %}
       <div class="card mb-4">
         <div class="card-body">
-          <p class="card-text">{{ post.content }}</p>
+          <!-- Hiển thị post_type riêng biệt -->
+          <h5 class="card-title">
+            <span class="badge bg-primary text-white">{{ post.post_type }}</span>
+          </h5>
+          <h5 class="card-title" style="font-weight: bold; color: #2c3e50;">{{ post.post_type }}</h5>
+          <p class="card-text" style="white-space: pre-line;">{{ post.content }}</p>
 
           {% if post.image_url %}
             <div class="row mt-3">
@@ -54,15 +53,6 @@
               <span class="badge bg-secondary text-white">Chưa hoàn tất</span>
             {% endif %}
           </p>
-
-          {% if current_user.is_authenticated and post.status != 'đã hoàn tất' %}
-            <form method="POST" action="{{ url_for('post.mark_done') }}">
-              <input type="hidden" name="post_id" value="{{ post.post_id }}">
-              <button type="submit" class="btn btn-sm btn-outline-success mt-2">
-                Đánh dấu đã hoàn tất
-              </button>
-            </form>
-          {% endif %}
         </div>
       </div>
     {% endfor %}

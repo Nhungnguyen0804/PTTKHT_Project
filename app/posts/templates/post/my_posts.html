@@ -28,6 +28,12 @@
     {% for post in posts %}
       <div class="card mb-4">
         <div class="card-body">
+          <!-- Hiển thị post_type riêng biệt -->
+          <h5 class="card-title">
+            <span class="badge bg-primary text-white">{{ post.post_type }}</span>
+          </h5>
+          
+          <!-- Hiển thị content -->
           <p class="card-text" style="white-space: pre-line;">{{ post.content }}</p>
 
           {% if post.image_url %}
@@ -56,7 +62,7 @@
             {% else %}
               <span class="badge bg-secondary text-white">Chưa hoàn tất</span>
             {% endif %}
-          </p>
+          </p>  
 
           {% if post.status != 'Done' and (current_user.has_role('admin') or post.user_id == current_user.id) %}
             <form method="POST" action="{{ url_for('post.mark_done') }}" class="mt-2">
