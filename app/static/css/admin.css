@@ -1,0 +1,110 @@
+.table-striped td.row-button {
+  background-color: white !important;
+}
+
+.row-button {
+  background-color: transparent !important;
+  border: 0 !important;
+}
+
+.row-content {
+  border: 1px solid black;
+}
+
+table {
+  border: 2px solid black !important;
+}
+td {
+  border: 1px solid #000; /* Đường viền cho mỗi ô */
+  padding: 10px; /* Tăng khoảng cách giữa nội dung và đường viền */
+  text-align: center; /* Canh giữa nội dung trong ô */
+}
+
+th {
+  border: 2px solid black !important;
+  /*  */
+  text-align: center;
+  /*  */
+}
+
+thead {
+  background-color: green !important;
+}
+
+.manageMenu {
+  display: flex;
+}
+.admin-info {
+  margin-top: 20px;
+  background-color: white;
+}
+.manageMenu-sidebar {
+  width: 250px;
+  /* chieu rong co dinh  */
+  background-color: white;
+  margin-right: 30px;
+}
+.manageMenu-content {
+  flex: 1;
+  background-color: var(--mau4);
+  padding: 20px;
+}
+
+.manageMenu-nav {
+  margin-top: 20px;
+
+  /* height: 100vh; */
+}
+
+.manageMenu-nav ul {
+  list-style: none;
+  padding: 0;
+}
+.manageMenu-nav li a {
+  color: black !important;
+  text-decoration: none;
+}
+.manageMenu-nav li {
+  border-radius: 8px;
+  border: 2px solid black;
+  margin: 10px 0;
+  cursor: pointer;
+  background-color: var(--mau3);
+  padding: 12px 16px;
+  transition: background-color 0.2s ease;
+  text-align: center;
+  font-weight: bold;
+  /* x  */
+}
+
+.manageMenu-nav li:hover {
+  background-color: var(--profile-menu-li-hover-background); /* Màu khi hover */
+
+  color: var(--profile-menu-li-hover-color) !important;
+}
+
+.manageMenu-nav li.active {
+  background-color: var(
+    --profile-menu-li-active-background
+  ); /* Màu nền mục đang chọn */
+  border-radius: 8px;
+  font-weight: 600;
+  color: var(--profile-menu-li-active-color) !important;
+}
+.manageMenu-nav h1 {
+  font-size: large;
+  font-weight: bold;
+  text-align: center;
+  color: black;
+}
+
+/* .manageMenu-content {
+  padding: 20px;
+} */
+
+.manager-user-frame {
+  background-color: #fff;
+  padding: 20px;
+  border: 2px solid black;
+  border-radius: 20px;
+}
