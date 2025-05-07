@@ -83,9 +83,6 @@ class User(UserMixin, csdl.Model):
             if role.name == role_name:
                 return True
         return False
-    
-    def get_role(self):
-        return ', '.join(role.name for role in self.roles)
 
 # Bảng liên kết User_Role (many-to-many)
 user_role = csdl.Table('user_role',

@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+    <h2>Đánh dấu bài viết hoàn tất</h2>
+    
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show">
+                    {{ message }}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <div class="card mb-3">
+        <div class="card-body">
+            <h5 class="card-title">{{ post.title if post.title else "Bài viết không có tiêu đề" }}</h5>
+            <p class="card-text">{{ post.content }}</p>
+            {% if post.image_url %}
+                <div class="post-images">
+                    {% for image in post.image_url.split(',') %}
+                        <img src="{{ image }}" class="img-fluid mb-2" style="max-height: 200px;">
+                    {% endfor %}
+                </div>
+            {% endif %}
+            <p class="text-muted">
+                <small>Trạng thái: {{ post.status }}</small>
+            </p>
+        </div>
+    </div>
+
+    <form method="POST" action="{{ url_for('post.mark_done') }}">
+        <input type="hidden" name="post_id" value="{{ post.post_id }}">
+        <button type="submit" class="btn btn-success">
+            <i class="fas fa-check"></i> Xác nhận hoàn tất
+        </button>
+        <a href="{{ url_for('post.view_posts') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Quay lại
+        </a>
+    </form>
+</div>
+{% endblock %}

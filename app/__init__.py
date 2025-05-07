@@ -3,15 +3,14 @@
 from flask import Flask
 from flask_login import current_user
 from flask_mail import Mail
-
-#from app.userManagement import user_management
 from .flask_extensions import csdl, login_manager, migrate
 from .auth import auth_blueprint
 from .home import home_blueprint
 from .test import test_blueprint
 from .admin import admin_blueprint
 from .accountManagement import accManagement_blueprint
-from .userManagement import userManagement_blueprint
+from .posts import post_blueprint
+
 def create_app():
     app = Flask(__name__)
     app.config.from_object('config.Config') #tải cấu hình từ lớp config từ file config.py
@@ -40,8 +39,7 @@ def create_app():
     app.register_blueprint(admin_blueprint)
     app.register_blueprint(test_blueprint)
     app.register_blueprint(auth_blueprint)
-    app.register_blueprint(userManagement_blueprint)
-    #app.register_blueprint(user_management)
+    app.register_blueprint(post_blueprint)
     app.register_blueprint(accManagement_blueprint)
 
     # Thiết lập route cho trang đăng nhập

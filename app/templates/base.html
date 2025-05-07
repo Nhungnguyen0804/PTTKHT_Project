@@ -37,7 +37,7 @@
           </a>
         </div>  
         <div class="name-web">
-          <p>WebName</p>
+          <p>ReBox</p>
         </div>
         <div class="select-login">
           <nav class="nav-select-login">
@@ -61,8 +61,8 @@
           <!-- Dropdown menu -->
           <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="avatarDropdown">
             <li><a class="dropdown-item" href="{{url_for('accountManagement.view_profile')}}">Quản lý tài khoản</a></li>
-            <li><a class="dropdown-item" href="/test">My Posts</a></li>
-            <li><a class="dropdown-item" href="/test">Create Post</a></li>
+            <li><a class="dropdown-item" href="{{url_for('post.my_posts')}}">My Posts</a></li>
+            <li><a class="dropdown-item" href="{{url_for('post.create_post')}}">Create Post</a></li>
             {% if user.is_authenticated and user.has_role('admin') %}
             <li><hr class="dropdown-divider"></li>
             <li><a class="dropdown-item" href="/test">My Events</a></li>

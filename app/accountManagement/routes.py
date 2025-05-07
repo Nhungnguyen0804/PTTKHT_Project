@@ -14,7 +14,7 @@ def get_user_type(username):
         return 'Học sinh'
     elif username.startswith('gv'):
         return 'Giáo viên'
-    elif username.startswith('admin'):
+    elif username.startwith('admin'):
         return 'Admin'
     else:
         return 'Khác'
