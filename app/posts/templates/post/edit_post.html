@@ -19,18 +19,110 @@
         </li>
       </ul>
     </div>
-  </nav>
+</nav>
 
-
-<div class="container mt-4">
-  <h2 style="text-align: center; font-weight: bold;">Chỉnh sửa bài viết</h2>
-  <form method="POST">
+<div class="container">
+  <form method="POST" enctype="multipart/form-data">
     <div class="form-group">
-      <label for="content">Nội dung</label>
-      <textarea class="form-control" name="content" id="content" rows="6">{{ post.content }}</textarea>
+      <label for="content">Nội dung bài viết</label>
+      <textarea class="form-control" name="content" id="content" rows="6" required>{{ post.content }}</textarea>
     </div>
-    <button type="submit" class="btn btn-primary mt-3">Lưu thay đổi</button>
-    <a href="{{ url_for('post.my_posts') }}" class="btn btn-secondary mt-3">Hủy</a>
-  </form>
+    
+    <!-- Hiển thị ảnh hiện có -->
+    <div class="form-group mt-3">
+      <label>Ảnh hiện tại</label>
+      <div class="row">
+        {% if post.image_url %}
+          {% set image_urls = post.image_url.split(',') %}
+          {% for url in image_urls %}
+            <div class="col-md-3 mb-3">
+              <div class="card">
+                <img src="{{ url }}" class="card-img-top" style="height: 150px; object-fit: cover;">
+                <div class="card-body p-2 text-center">
+                  <button type="button" class="btn btn-sm btn-danger btn-block remove-existing-btn" 
+                          data-url="{{ url }}">Xóa</button>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        {% else %}
+          <p>Không có ảnh nào</p>
+        {% endif %}
+      </div>
+    </div>
+    
+    <!-- Input để xóa ảnh -->
+    <input type="hidden" name="deleted_images" id="deleted_images" value="">
+    
+    <!-- Thêm ảnh mới -->
+    <div class="form-group mt-3">
+      <label for="images">Thêm ảnh mới</label>
+      <input type="file" name="images" id="images" multiple accept="image/*" class="form-control-file">
+      <small class="form-text text-muted">Chọn nhiều ảnh bằng cách kéo giữ ảnh</small>
+    </div>
+    
+    <!-- Preview ảnh mới -->
+    <div id="preview" class="row mt-3"></div>
+    
+    <div class="form-group mt-4">
+      <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+      <a href="{{ url_for('post.my_posts') }}" class="btn btn-secondary">Hủy</a>
+    </div>
+  </form>  
 </div>
+
+<script>
+  // Hiển thị preview ảnh mới
+  const input = document.getElementById('images');
+  const preview = document.getElementById('preview');
+  let files = [];
+
+  input.addEventListener('change', function () {
+    preview.innerHTML = '';
+    files = Array.from(this.files);
+
+    files.forEach((file, index) => {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const col = document.createElement('div');
+        col.classList.add('col-md-3', 'mb-3');
+        col.innerHTML = `
+          <div class="card">
+            <img src="${e.target.result}" class="card-img-top" style="height: 150px; object-fit: cover;">
+            <div class="card-body p-2 text-center">
+              <button type="button" class="btn btn-sm btn-danger btn-block remove-btn" data-index="${index}">Xóa</button>
+            </div>
+          </div>
+        `;
+        preview.appendChild(col);
+      };
+      reader.readAsDataURL(file);
+    });
+  });
+
+  // Xử lý xóa ảnh mới trong preview
+  document.addEventListener('click', function (e) {
+    if (e.target.classList.contains('remove-btn')) {
+      const index = parseInt(e.target.getAttribute('data-index'));
+      files.splice(index, 1);
+      const dataTransfer = new DataTransfer();
+      files.forEach(f => dataTransfer.items.add(f));
+      input.files = dataTransfer.files;
+      input.dispatchEvent(new Event('change'));
+    }
+  });
+
+  // Xử lý xóa ảnh hiện có
+  const deletedImages = new Set();
+
+  document.addEventListener('click', function (e) {
+    if (e.target.classList.contains('remove-existing-btn')) {
+      const url = e.target.getAttribute('data-url');
+      deletedImages.add(url);
+      document.getElementById('deleted_images').value = Array.from(deletedImages).join(',');
+      e.target.closest('.col-md-3').remove();
+    }
+  });
+</script>
+
 {% endblock %}
