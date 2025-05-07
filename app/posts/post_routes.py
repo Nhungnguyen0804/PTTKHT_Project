@@ -57,9 +57,9 @@ def create_post():
         # Ghép thêm thông tin loại bài, giá và liên hệ vào content
         extra_info = ""
         if post_type == 'thanh_ly':
-            extra_info += f"\n\nGiá: {price}"
+            extra_info += f"\nGiá: {price}"
         if contact:
-            extra_info += f"\n\nLiên hệ: {contact}"
+            extra_info += f"\nLiên hệ: {contact}"
 
         type_mapping = {
         'thanh_ly': 'Thanh Lý',
@@ -67,7 +67,7 @@ def create_post():
         'donate': 'Donate'
         }
 
-        full_content = f"[{type_mapping.get(post_type, post_type)}]\n{content}\n{extra_info}"
+        full_content = f"[{type_mapping.get(post_type, post_type)}]\n{content}{extra_info}"
         
         new_post = Post(
             post_id=str(uuid.uuid4()),
@@ -75,7 +75,9 @@ def create_post():
             image_url=image_url_str,
             is_approved=is_approved,
             status = 'Not done',  # Trạng thái mặc định
-            user_id=current_user.id  # Lưu ID của người dùng hiện tại
+            user_id=current_user.id,  # Lưu ID của người dùng hiện tại
+            post_type = type_mapping.get(post_type, post_type)  # Lưu loại bài đăng
+
         )
 
         csdl.session.add(new_post)
@@ -109,7 +111,6 @@ def mark_done():
         return redirect(url_for('post.view_posts'))
 
     # Chỉ cho phép đánh dấu nếu là admin hoặc chủ bài viết (nếu có user_id trong bảng Post)
-    # Ở đây ta chỉ kiểm tra admin vì bảng chưa có user_id
     if current_user.roles != 'admin' and post.user_id != current_user.id:
         flash('Bạn không có quyền thay đổi trạng thái bài viết này.', 'danger')
         return redirect(url_for('post.view_posts'))
