@@ -1,5 +1,3 @@
-# Khởi tạo Flask app và register các Blueprint
-
 from flask import Flask
 from flask_login import current_user
 from flask_mail import Mail
@@ -10,6 +8,9 @@ from .test import test_blueprint
 from .admin import admin_blueprint
 from .accountManagement import accManagement_blueprint
 from .posts import post_blueprint
+from datetime import datetime
+import pytz
+
 
 def create_app():
     app = Flask(__name__)
@@ -46,6 +47,20 @@ def create_app():
     login_manager.login_view = 'auth.login'
 
     app.jinja_env.globals.update(has_role=User.has_role)
+
+    # Thêm vào file __init__.py hoặc nơi khởi tạo app
+    def format_datetime(value, format='%d/%m/%Y %H:%M'):
+        if value is None:
+            return ""
+        if not isinstance(value, datetime):
+            value = datetime.fromisoformat(value)
+        if value.tzinfo is None:  # Nếu không có timezone, mặc định là UTC
+            value = pytz.utc.localize(value)
+        tz = pytz.timezone('Asia/Bangkok')
+        return value.astimezone(tz).strftime(format)
+
+    # Đăng ký bộ lọc
+    app.jinja_env.filters['datetime'] = format_datetime
 
     @app.context_processor
     def inject_user():

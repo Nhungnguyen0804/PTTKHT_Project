@@ -6,6 +6,8 @@ from app.models.post import Post
 from app import csdl
 import uuid
 import os
+from datetime import datetime
+import pytz
 
 # Thư mục lưu ảnh upload
 UPLOAD_FOLDER = os.path.join('app', 'static', 'uploads')
@@ -59,11 +61,13 @@ def create_post():
         new_post = Post(
             post_id=str(uuid.uuid4()),
             content=full_content,
-            image_url=None,  # Tạm để None, sẽ cập nhật sau
+            image_url=None,  
             is_approved=True if current_user.roles == 'admin' else False,
             status='Not done',
             user_id=current_user.id,
-            post_type=type_mapping.get(post_type, post_type)
+            post_type=type_mapping.get(post_type, post_type),
+            start_time=datetime.now(pytz.utc),
+            end_time=None
         )
 
         csdl.session.add(new_post)
@@ -130,6 +134,7 @@ def mark_done():
         return redirect(url_for('post.view_posts'))
 
     post.status = 'Done'
+    post.end_time = datetime.now(pytz.utc)
     csdl.session.commit()
     flash('Bài viết đã được đánh dấu là hoàn tất.', 'success')
     return redirect(url_for('post.my_posts'))

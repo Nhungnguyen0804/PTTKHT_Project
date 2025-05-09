@@ -9,6 +9,8 @@ class Post(csdl.Model):
     is_approved = csdl.Column(csdl.Boolean, default=False)    # Cờ kiểm duyệt bài đăng
     status = csdl.Column(csdl.String(50), default='Not done')  # Trạng thái bài đăng (done, not done)
     post_type = csdl.Column(csdl.String(50), nullable=False)  # Loại bài đăng (thanh lý, trao đổi, donate)
+    start_time = csdl.Column(csdl.DateTime, default=csdl.func.now())  # Thời gian bắt đầu bài đăng
+    end_time = csdl.Column(csdl.DateTime, nullable=True)  # Thời gian kết thúc bài đăng
 
     # Liên kết với User
     user_id = csdl.Column(csdl.Integer, csdl.ForeignKey('user.id'), nullable=False)
