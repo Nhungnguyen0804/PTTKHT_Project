@@ -1,12 +1,12 @@
 {% extends 'base.html' %}
 <!-- .. -->
-{% block title %}Management{% endblock %}
+{% block title %}Report{% endblock %}
 <!-- .. -->
 {% block extra_css %}
 
 <link
   rel="stylesheet"
-  href="{{ url_for('static', filename='css/admin.css') }}"
+  href="{{ url_for('static', filename='css/report.css') }}"
 />
 <link
   rel="stylesheet"
@@ -16,11 +16,11 @@
 <!-- .. -->
 {% block content %}
 <!--  -->
-<div class="manageMenu">
-  <div class="manageMenu-sidebar">
+<div class="reportMenu">
+  <div class="reportMenu-sidebar">
     <!-- <h4 class="text-danger">QLDV</h4> -->
     <!-- Setting Thanh bên -->
-    <aside class="manageMenu-aside">
+    <aside class="reportMenu-aside">
       <div class="admin-info">
         <img
           src="{{ user.avatar or url_for('static', filename='image/avatar.png') }}"
@@ -42,17 +42,18 @@
           </div>
         </div>
       </div>
-      <nav class="manageMenu-nav">
+      <nav class="reportMenu-nav">
         <ul>
-          {% if has_role(current_user,'admin') %}
           <li>
-            <a href="{{ url_for('userManagement.manage_user') }}">
-              Quản lý người dùng
+            <a href="{{ url_for('userReport.show_userReport') }}">
+              Báo cáo & Thống Kê<br />Người Dùng
             </a>
           </li>
-          <li>Quản lý bài đăng</li>
-          <li>Quản lý hoạt động & event</li>
-          {%endif%}
+          <li>Báo cáo & Thống Kê<br />Bài Đăng</li>
+          <li>Báo cáo & Thống Kê Event</li>
+          <!-- {% if has_role(current_user,'admin') %} -->
+
+          <!-- {%endif%} -->
         </ul>
         <h1>Account</h1>
         <ul>
@@ -68,12 +69,12 @@
       </nav>
     </aside>
   </div>
-  <div class="manageMenu-content">
+  <div class="reportMenu-content">
     <p
       style="
         text-align: center;
         font-size: 30px;
-        color: white;
+        color: black;
         font-weight: bold;
         padding-left: 30px;
         padding-right: 30px;
@@ -85,3 +86,4 @@
   </div>
 </div>
 {% endblock %}
+<!--  -->

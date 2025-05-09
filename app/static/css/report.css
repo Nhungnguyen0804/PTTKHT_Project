@@ -1,0 +1,226 @@
+.reportMenu {
+  display: flex;
+}
+
+.admin-info {
+  margin-top: 20px;
+  background-color: transparent;
+}
+
+main {
+  background-color: var(--mau13);
+}
+.reportMenu-aside {
+  padding: 10px;
+}
+.reportMenu-sidebar {
+  width: 250px;
+  /* chieu rong co dinh  */
+  background-color: var(--mau2);
+  margin-right: 30px;
+}
+.reportMenu-content {
+  flex: 1;
+  background-color: var(--mau11);
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  border: 2px solid black;
+}
+
+.reportMenu-nav {
+  margin-top: 20px;
+
+  /* height: 100vh; */
+}
+
+.reportMenu-nav ul {
+  list-style: none;
+  padding: 0;
+}
+.reportMenu-nav li a {
+  color: black !important;
+  text-decoration: none;
+}
+.reportMenu-nav li {
+  border-radius: 8px;
+  border: 2px solid black;
+  margin: 10px 0;
+  cursor: pointer;
+  background-color: var(--mau3);
+  padding: 12px 16px;
+  transition: background-color 0.2s ease;
+  text-align: center;
+  font-weight: bold;
+  /* x  */
+}
+
+.reportMenu-nav li:hover {
+  background-color: var(--profile-menu-li-hover-background); /* Màu khi hover */
+
+  color: var(--profile-menu-li-hover-color) !important;
+}
+
+.reportMenu-nav li.active {
+  background-color: var(
+    --profile-menu-li-active-background
+  ); /* Màu nền mục đang chọn */
+  border-radius: 8px;
+  font-weight: 600;
+  color: var(--profile-menu-li-active-color) !important;
+}
+.reportMenu-nav h1 {
+  font-size: large;
+  font-weight: bold;
+  text-align: center;
+  color: black;
+}
+
+/* .reportMenu-content {
+  padding: 20px;
+} */
+
+body {
+  /* font-family: arial; */
+  /* margin: 20px; */
+  background-color: #f4f4f9;
+  color: #333;
+}
+.container {
+  /* background-color: red; */
+  padding: 20px;
+  /* border-radius: 8px; */
+  /* box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); */
+  /* max-width: 800px; */
+  margin: auto;
+}
+h1 {
+  color: #333;
+  text-align: center;
+  margin-bottom: 20px;
+}
+p {
+  font-size: 1.1em;
+  line-height: 1.6;
+  margin-bottom: 10px;
+}
+strong {
+  color: #555;
+}
+form {
+  margin-top: 20px;
+  margin-bottom: 30px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 15px;
+  background-color: var(--mau4);
+  border-radius: 8px;
+}
+label {
+  font-weight: bold;
+}
+select, input[type="number"] /* Giả sử form.year là input number hoặc select */ {
+  padding: 8px 12px;
+  border: 1px solid black;
+  border-radius: 4px;
+  font-size: 1em;
+}
+button[type="submit"] {
+  padding: 10px 20px;
+  background-color: var(--mau4);
+  color: white;
+  font-weight: bold;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1em;
+  transition: background-color 0.3s ease;
+}
+button[type="submit"]:hover {
+  background-color: #0056b3;
+}
+
+.chart-content {
+  display: flex;
+  gap: 20px;
+}
+.chart-container {
+  /* flex: 1; */
+  /* margin-top: 30px; */
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+canvas {
+  max-width: 100%;
+  /* Đảm bảo canvas responsive */
+  border-radius: 4px;
+}
+
+.select-year {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background-color: #fff;
+  padding: 16px 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  white-space: nowrap; /* chon nam ko xuong dong  */
+}
+
+.h1-container {
+  font-weight: bold;
+  color: #436753;
+}
+
+.mycard {
+  width: 200px;
+  padding: 20px;
+  border: 2px solid #333;
+  border-radius: 20px;
+  text-align: center;
+  font-family: arial;
+  /* font-family: Arial, sans-serif; */
+  background-color: white;
+}
+
+.mycard-title {
+  font-weight: bold;
+  font-size: 17px;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.mycard-number {
+  font-size: 20px;
+  color: #111;
+}
+
+.card-bar {
+  display: flex;
+  gap: 20px;
+  justify-content: center; /* all div nam center */
+}
+
+table {
+  border: 2px solid black !important;
+  margin-top: 20px;
+}
+td {
+  border: 2px solid #000 !important; /* Đường viền cho mỗi ô */
+  padding: 10px; /* Tăng khoảng cách giữa nội dung và đường viền */
+  text-align: center; /* Canh giữa nội dung trong ô */
+}
+
+th {
+  border: 2px solid black !important;
+  /*  */
+  text-align: center;
+  /*  */
+}
+
+thead {
+  background-color: green !important;
+}
