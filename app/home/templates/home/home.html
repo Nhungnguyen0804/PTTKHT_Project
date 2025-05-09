@@ -1,86 +1,25 @@
 {% extends 'base.html' %}
-<!--...-->
-{% block title %}Trang chủ{% endblock %}
+{% block title %}Xem Bài Đăng{% endblock %}
 
-<!--...-->
-{% block add_header %}
-
-<!-- Hiển thị thông báo flash -->
-<p>Welcome to the home page!</p>
-{% if current_user.is_authenticated %}
-<p>Bạn đã đăng nhập!</p>
-{% else %}
-<p>Bạn chưa đăng nhập</p>
-
-{% endif %}
-<!--...-->
-{% endblock %}
-
-<!--...-->
 {% block content %}
-<!-- <h2>Home Page</h2> -->
-<!-- thanh dieu huong navbar -->
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
+<nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
   <a class="navbar-brand" href="{{ url_for('home.homepage') }}">
-    <img src="./static/image/home.png" style="width: 30px" alt="home image" />
+    <img src="{{ url_for('static', filename='image/home.png') }}" style="width: 30px" alt="home image" />
   </a>
-  <button
-    class="navbar-toggler"
-    type="button"
-    data-toggle="collapse"
-    data-target="#navbarSupportedContent"
-    aria-controls="navbarSupportedContent"
-    aria-expanded="false"
-    aria-label="Toggle navigation"
-  >
-    <span class="navbar-toggler-icon"></span>
-  </button>
-
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
       <li class="nav-item active">
         <a class="nav-link" href="{{ url_for('home.homepage') }}">Home</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="{{ url_for('test.afterlogin') }}">Link</a>
-      </li>
-      <li class="nav-item dropdown">
-        <a
-          class="nav-link dropdown-toggle"
-          href="#"
-          id="navbarDropdown"
-          role="button"
-          data-toggle="dropdown"
-          aria-haspopup="true"
-          aria-expanded="false"
-        >
-          Dropdown
-        </a>
-        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-          <a class="dropdown-item" href="#">Action</a>
-          <a class="dropdown-item" href="#">Another action</a>
-          <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="#">Something else here</a>
-        </div>
+        <a class="nav-link" href="{{ url_for('post.create_post') }}">Create Post</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link disabled" href="#">Disabled</a>
+        <a class="nav-link" href="{{ url_for('post.my_posts') }}">My Post</a>
       </li>
     </ul>
-    <form class="form-inline my-2 my-lg-0">
-      <input
-        class="form-control mr-sm-2"
-        type="search"
-        placeholder="Search"
-        aria-label="Search"
-      />
-      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">
-        Search
-      </button>
-    </form>
   </div>
 </nav>
-<!-- navbar -->
 
 {% block home%}
 <a href="{{url_for('event.event')}}">
@@ -88,4 +27,46 @@
 </a>
 {% endblock %}
 <!--  -->
+{% endblock %}
+<h2 style="text-align: center; font-weight: bold;">Các bài đăng đã được duyệt</h2>
+
+<div class="container mt-4">
+  {% if posts and posts|length > 0 %}
+    {% for post in posts %}
+      <div class="card mb-4">
+        <div class="card-body">
+          <!-- Hiển thị post_type riêng biệt -->
+          <h5 class="card-title">
+            <span class="badge bg-primary text-white">{{ post.post_type }}</span>
+          </h5>
+          <h5 class="card-title" style="font-weight: bold; color: #2c3e50;">{{ post.post_type }}</h5>
+          <p class="card-text" style="white-space: pre-line;">{{ post.content }}</p>
+
+          {% if post.image_url %}
+            <div class="row mt-3">
+              {% for img in post.image_url.split(',') %}
+                <div class="col-md-4 col-sm-6 mb-3">
+                  <img src="{{ img.strip() }}" alt="Ảnh bài viết" class="img-fluid rounded shadow-sm">
+                </div>
+              {% endfor %}
+            </div>
+          {% endif %}
+
+          <p class="mt-3">
+            <strong>Trạng thái:</strong>
+            {% if post.status == 'đã hoàn tất' %}
+              <span class="badge bg-success text-white">Đã hoàn tất</span>
+            {% else %}
+              <span class="badge bg-secondary text-white">Chưa hoàn tất</span>
+            {% endif %}
+          </p>
+        </div>
+      </div>
+    {% endfor %}
+  {% else %}
+    <div class="alert alert-info text-center">
+      Hiện tại chưa có bài đăng nào!
+    </div>
+  {% endif %}
+</div>
 {% endblock %}

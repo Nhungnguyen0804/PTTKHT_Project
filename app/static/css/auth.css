@@ -129,25 +129,6 @@ form label {
   padding-top: 5px;
 }
 
-/* Các ô nhập liệu: username, password, email */
-form input[type="text"],
-form input[type="password"],
-form input[type="email"] {
-  width: 100%; /* Rộng 100% container cha */
-  padding: 12px 15px; /* Khoảng cách giữa viền và chữ bên trong input */
-  border: 2px solid black; /* Viền mỏng màu xám nhạt */
-  border-radius: 8px; /* Bo tròn góc */
-  font-size: 14px; /* Cỡ chữ vừa phải */
-  transition: 0.3s; /* Làm hiệu ứng mượt mà khi hover hoặc focus */
-}
-
-/* Khi click vào ô input: đổi màu viền */
-form input[type="text"]:focus,
-form input[type="password"]:focus,
-form input[type="email"]:focus {
-  border-color: #4ecdc4; /* Khi focus, viền chuyển màu xanh nhẹ */
-  outline: none; /* Bỏ viền xanh mặc định của trình duyệt */
-}
 .admin-login-page form input[type="text"]:focus,
 .admin-login-page form input[type="password"]:focus,
 .admin-login-page form input[type="email"]:focus {
@@ -167,26 +148,6 @@ form input[type="checkbox"] {
   margin-bottom: 15px; /* Cách flash với phần dưới */
   font-size: 18px; /* Cỡ chữ vừa phải */
   text-align: center; /* Căn giữa chữ */
-}
-
-/* Flash thành công (đăng nhập thành công) */
-.flash.success {
-  background-color: #d4edda !important; /* Nền xanh nhạt */
-  color: #155724 !important; /* Chữ xanh đậm */
-}
-
-/* Flash lỗi (sai mật khẩu) */
-.flash.danger {
-  background-color: #f8d7da !important; /* Nền đỏ nhạt */
-  color: #721c24 !important; /* Chữ đỏ đậm */
-}
-.flash.warning {
-  background-color: yellow !important; /* Nền đỏ nhạt */
-  color: black !important; /* Chữ đỏ đậm */
-}
-.flash.info {
-  background-color: lightblue !important; /* Nền đỏ nhạt */
-  color: blue !important; /* Chữ đỏ đậm */
 }
 
 .login-image {
@@ -243,27 +204,12 @@ form .form-group {
   margin-bottom: 15px;
 }
 
+/* .form-group-gender {
+  margin-bottom: 20px;
+} */
 /* input register  */
-.register-container form .form-control {
-  flex-direction: column;
-  flex: 1; /* input chiếm hết phần còn lại */
+.form-group-gender {
   padding: 12px 15px;
-  border: 0;
-  border-bottom: 2px solid var(--mau10);
-  border-radius: 0;
-  font-size: 14px;
-  transition: border-color 0.3s, box-shadow 0.3s;
-}
-
-/* Hover vào input */
-.register-container form .form-control:hover {
-  border-color: var(--mau6);
-}
-
-/* Focus vào input */
-.register-container form .form-control:focus {
-  border-color: #4ecdc4; /* Khi focus, viền chuyển màu xanh nhẹ */
-  outline: none;
 }
 
 /* Nếu có lỗi */

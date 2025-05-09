@@ -1,0 +1,189 @@
+{% extends 'base.html' %}
+<!-- .. -->
+{% block title %}Profile{% endblock %}
+<!-- .. -->
+{% block extra_css %}
+
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/accManagement.css') }}"
+/>
+
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/auth.css') }}"
+/>
+
+{% endblock %}
+<!-- .. -->
+{% block content %}
+<!-- body -->
+<div class="profile-container">
+  <!-- Setting Thanh bên -->
+  <aside class="sidebar">
+    <div class="user-info">
+      <img
+        src="{{ url_for('static', filename='image/logo.png') }}"
+        alt="Avatar"
+        width="50px"
+        class="avatar-user-info"
+      />
+      <!-- "{{ user.avatar_url }}"  -->
+      <div>{{ user.fullname }}<br />{{ user.username }}</div>
+    </div>
+    <nav class="profile-menu">
+      <ul>
+        <li><a href="{{ url_for('home.homepage') }}">Home</a></li>
+        <li><a href="{{ url_for('post.create_post') }}">Create Post</a></li>
+        <li><a href="{{ url_for('post.my_posts') }}">My Posts</a></li>
+        <li>Events</li>
+        {% if has_role(current_user,'admin') %}
+        <li>Create Events</li>
+        <li>My Events</li>
+        {%endif%}
+      </ul>
+      <h1>Account</h1>
+      <ul>
+        <li class="active">Quản Lý Tài Khoản</li>
+        <li>Đăng xuất</li>
+      </ul>
+    </nav>
+  </aside>
+  <main class="accManagement-main">
+    <header class="accManagement-header">
+      <h1>Quản lý tài khoản</h1>
+    </header>
+    <div class="accManagement-tab">
+      <ul>
+        <li class="active">Profile</li>
+        <li>
+          <a href="{{url_for('accountManagement.change_password')}}"
+            >Đổi mật khẩu</a
+          >
+        </li>
+        <li><a href="{{ url_for('post.my_posts') }}">My Posts</a></li>
+        <li id="delete-account-li">Xóa tài khoản</li>
+      </ul>
+      <div class="profile-content">
+        <section class="profile-info" , style="margin-top: 20px">
+          <h1 style="text-align: center; font-size: 50px; color: #3b5d4a">
+            Chỉnh sửa hồ sơ
+          </h1>
+          <p style="text-align: center; padding-bottom: 20px">
+            ★━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━★
+          </p>
+
+          <!-- Hiển thị thông báo flash -->
+          {% with messages = get_flashed_messages(with_categories=true) %} {% if
+          messages %} {% for category, message in messages %}
+          <div class="flash {{ category }}">{{ message }}</div>
+          {% endfor %} {% endif %} {% endwith %}
+          <div class="avatar-frame">
+            <div class="avatar-container">
+              <!-- Ảnh xem trước -->
+              <img
+                id="avatar-preview"
+                src="{{ user.avatar }}"
+                alt="Avatar"
+                width="120px"
+              />
+
+              <!-- Form chọn và upload ảnh -->
+              <form
+                method="POST"
+                action="{{ url_for('accountManagement.upload_avatar') }}"
+                enctype="multipart/form-data"
+                style="margin-top: 20px"
+              >
+                <input
+                  type="file"
+                  id="avatar-input"
+                  name="avatar_input_name"
+                  accept="image/*"
+                  required
+                  style="display: block; margin-right: auto; margin-left: auto"
+                />
+
+                <!-- nut upload  -->
+                <button
+                  type="submit"
+                  class="custom-profile-button"
+                  style="
+                    margin-top: 20px;
+                    display: block;
+                    margin-right: auto;
+                    margin-left: auto;
+                  "
+                >
+                  Tải ảnh lên
+                </button>
+              </form>
+            </div>
+            <div>
+              <h2>{{user.fullname}}</h2>
+              <p>{{user_type}}</p>
+              <p class="user-info-text">{{user.username}}</p>
+            </div>
+          </div>
+          <!-- form  -->
+          <div class="form-edit-profile">
+            <form method="POST">
+              {{form.hidden_tag()}}
+              <div>
+                {{form.hoTen.label}} <br />
+                {{ form.hoTen(class="form-control") }}
+              </div>
+
+              <div>
+                {{form.ngaySinh.label}} <br />
+                {{ form.ngaySinh(class="form-control",type="date")}}
+              </div>
+              <div>
+                {{form.gioiTinh.label}} <br />
+                {{ form.gioiTinh(class="form-select") }}
+              </div>
+              <div>
+                {{form.address.label}} <br />
+                {{ form.address(class="form-control") }}
+              </div>
+              <div>
+                {{form.email.label}} <br />
+                {{ form.email(class="form-control") }}
+              </div>
+              <div>
+                {{form.phone.label}} <br />
+                {{ form.phone(class="form-control") }}
+              </div>
+              <div>
+                {{form.fb.label}} <br />
+                {{ form.fb(class="form-control") }}
+              </div>
+              <div>
+                {{form.zalo.label}} <br />
+                {{ form.zalo(class="form-control") }}
+              </div>
+              {{ form.submit(class="custom-auth-button") }}
+            </form>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+</div>
+
+{% endblock %}
+<!--  -->
+{% block extra_js %}
+<!-- JavaScript để hiển thị ảnh -->
+<script>
+  document
+    .getElementById("avatar-input")
+    .addEventListener("change", function (event) {
+      const file = event.target.files[0];
+      if (file) {
+        const preview = document.getElementById("avatar-preview");
+        preview.src = URL.createObjectURL(file);
+      }
+    });
+</script>
+{% endblock %}

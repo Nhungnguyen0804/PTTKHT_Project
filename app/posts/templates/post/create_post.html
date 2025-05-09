@@ -1,0 +1,167 @@
+{% extends 'base.html' %}
+{% block title %}Tạo Bài Đăng{% endblock %}
+
+{% block content %}
+<nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
+  <a class="navbar-brand" href="{{ url_for('home.homepage') }}">
+    <img src="{{ url_for('static', filename='image/home.png') }}" style="width: 30px" alt="home image" />
+  </a>
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('home.homepage') }}">Home</a>
+      </li>
+      <li class="nav-item active">
+        <a class="nav-link" href="{{ url_for('post.create_post') }}">Create Post</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('post.my_posts') }}">My Post</a>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+<h2 style="text-align: center; font-weight: bold;">Tạo bài đăng</h2>
+
+<div class="container">
+  <form method="POST" enctype="multipart/form-data">
+    <div class="form-group">
+      <label for="post_type">Chọn loại bài đăng</label>
+      <select name="post_type" id="post_type" class="form-control" required>
+        <option value="">-- Chọn loại --</option>
+        <option value="thanh_ly">Thanh lý</option>
+        <option value="trao_doi">Trao đổi</option>
+        <option value="donate">Donate</option>
+      </select>
+    </div>
+  
+    <div class="form-group mt-3">
+      <label for="content">Nội dung bài viết</label>
+      <textarea name="content" id="content" class="form-control" rows="4" placeholder="Nhập nội dung..." required></textarea>
+    </div>
+  
+    <div class="form-group mt-3">
+      <label for="images">Chọn ảnh</label>
+      <input type="file" name="images" id="images" multiple accept="image/*">
+    </div>
+  
+    <!-- Trường chỉ hiển thị khi chọn Thanh lý -->
+    <div id="price_group" class="form-group mt-3" style="display: none;">
+      <label for="price">Giá</label>
+      <input type="number" name="price" id="price" class="form-control" placeholder="Nhập giá...">
+    </div>
+  
+    <!-- Trường contact cho tất cả ngoại trừ khi không chọn gì -->
+    <div id="contact_group" class="form-group mt-3" style="display: none;">
+      <label for="contact">Thông tin liên hệ</label>
+      <input type="text" name="contact" id="contact" class="form-control" placeholder="Nhập số điện thoại, email hoặc Facebook..."
+       required></textarea>
+    </div>
+  
+    <div id="preview" class="row mt-3"></div>
+  
+    <button type="submit" class="btn btn-primary mt-3">Đăng bài</button>
+  </form>  
+</div>
+
+{% if success_message %}
+<!-- Modal -->
+<div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      {% if user_role == 'admin' %}
+      <div class="modal-header bg-success text-white">
+        <h5 class="modal-title">🎉 Đăng bài thành công</h5>
+      </div>
+      <div class="modal-body">
+        {{ success_message }}
+      </div>
+      {% else %}
+      <div class="modal-header bg-warning text-dark">
+        <h5 class="modal-title">⏳ Gửi bài thành công</h5>
+      </div>
+      <div class="modal-body">
+        {{ success_message }}
+      </div>
+      {% endif %}
+      <div class="modal-footer">
+        <a href="{{ url_for('post.view_posts') }}" class="btn btn-primary">OK</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<script>
+  const input = document.getElementById('images');
+  const preview = document.getElementById('preview');
+  let files = [];
+
+  input.addEventListener('change', function () {
+    preview.innerHTML = '';
+    files = Array.from(this.files);
+
+    files.forEach((file, index) => {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const col = document.createElement('div');
+        col.classList.add('col-md-3', 'mb-3');
+        col.innerHTML = `
+          <div class="card">
+            <img src="${e.target.result}" class="card-img-top" style="height: 150px; object-fit: cover;">
+            <div class="card-body p-2 text-center">
+              <button type="button" class="btn btn-sm btn-danger btn-block remove-btn" data-index="${index}">Xóa</button>
+            </div>
+          </div>
+        `;
+        preview.appendChild(col);
+      };
+      reader.readAsDataURL(file);
+    });
+  });
+
+  // Ngăn submit file đã bị xóa
+  document.addEventListener('click', function (e) {
+    if (e.target.classList.contains('remove-btn')) {
+      const index = parseInt(e.target.getAttribute('data-index'));
+      files.splice(index, 1);
+      const dataTransfer = new DataTransfer();
+      files.forEach(f => dataTransfer.items.add(f));
+      input.files = dataTransfer.files;
+      input.dispatchEvent(new Event('change'));  // cập nhật preview
+    }
+  });
+</script>
+
+{% if success_message %}
+<script>
+  window.addEventListener('DOMContentLoaded', function () {
+    var modal = new bootstrap.Modal(document.getElementById('successModal'));
+    modal.show();
+  });
+</script>
+{% endif %}
+
+
+<script>
+  const postTypeSelect = document.getElementById('post_type');
+  const priceGroup = document.getElementById('price_group');
+  const contactGroup = document.getElementById('contact_group');
+
+  postTypeSelect.addEventListener('change', function () {
+    const type = this.value;
+
+    // Reset visibility
+    priceGroup.style.display = 'none';
+    contactGroup.style.display = 'none';
+
+    if (type === 'thanh_ly') {
+      priceGroup.style.display = 'block';
+      contactGroup.style.display = 'block';
+    } else if (type === 'trao_doi' || type === 'donate') {
+      contactGroup.style.display = 'block';
+    }
+  });
+</script>
+
+{% endblock %}

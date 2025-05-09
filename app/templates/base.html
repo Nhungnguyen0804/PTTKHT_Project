@@ -26,18 +26,18 @@
     <header>
       <div class="top-bar"></div>
       <div class="header-logo">
-      <div class="logo-image">
-        <!-- logo -->
-        <a href="{{ url_for('home.homepage') }}">
-          <img
-            src="./static/image/logo.png"
-            alt="logo"
-            style="width: 50px"
-          />
-        </a>
+        <div class="logo-image">
+          <!-- logo -->
+          <a href="{{ url_for('home.homepage') }}">
+            <img
+              src="{{ url_for('static', filename='image/logo.png') }}"  
+              alt="logo"
+              style="width: 50px"
+            />
+          </a>
         </div>  
         <div class="name-web">
-        <p>WebName</p>
+          <p>ReBox</p>
         </div>
         <div class="select-login">
           <nav class="nav-select-login">
@@ -52,6 +52,27 @@
           </nav>
           {% block add_header %} {% endblock %}
         </div>
+        <div class="dropdown">
+          <!-- Avatar hình tròn -->
+          <a  id="avatarDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+            <img src="{{ user.avatar or url_for('static', filename='image/avatar.png') }}" alt="avatar" class="rounded-circle" width="40" height="40" style="object-fit: cover; border: 2px solid #ccc; margin-left: 10px; cursor: pointer;">
+          </a>
+        
+          <!-- Dropdown menu -->
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="avatarDropdown">
+            <li><a class="dropdown-item" href="{{url_for('accountManagement.view_profile')}}">Quản lý tài khoản</a></li>
+            <li><a class="dropdown-item" href="{{url_for('post.my_posts')}}">My Posts</a></li>
+            <li><a class="dropdown-item" href="{{url_for('post.create_post')}}">Create Post</a></li>
+            {% if user.is_authenticated and user.has_role('admin') %}
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="/test">My Events</a></li>
+            <li><a class="dropdown-item" href="/test">Create Event</a></li>
+            <li><hr class="dropdown-divider"></li>
+            {% endif %}
+            <li><a class="dropdown-item" href="/logout">Đăng xuất</a></li>
+          </ul>
+        </div>
+        
       </div> 
       
     </div>
@@ -86,10 +107,28 @@
       integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
       crossorigin="anonymous"
     ></script>
+    <!-- Bootstrap 5 Bundle (bao gồm Popper) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
     <script src="{{ url_for('static', filename='js/base.js') }}"></script>
 <!-- Bootstrap Bundle JS (gồm Popper) -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
   </script>
+
+
+    <!-- // Thêm js xác nhận -->
+    <script>
+    document
+      .getElementById("delete-account-li")
+      .addEventListener("click", function () {
+        if (confirm("Bạn chắc chắn muốn xóa tài khoản?")) {
+          // Redirect đến route xóa tài khoản
+          window.location.href =
+            "{{ url_for('accountManagement.delete_account') }}";
+        }
+      });
+      </script>
+
 
     {% block extra_js %}{% endblock %}
     <!--neu co bo sung file js-->
