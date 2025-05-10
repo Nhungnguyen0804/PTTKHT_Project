@@ -1,91 +1,143 @@
-{% extends 'base.html' %}
-{% block title %}Sửa Bài Đăng{% endblock %}
+{% extends 'base.html' %} {% block title %}Sửa Bài Đăng{% endblock %}
+<!--  -->
 
+{% block extra_css %}
+
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/post.css') }}"
+/>
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/color.css') }}"
+/>
+{% endblock %}
+
+<!--  -->
 {% block content %}
 <nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
-    <a class="navbar-brand" href="{{ url_for('home.homepage') }}">
-      <img src="{{ url_for('static', filename='image/home.png') }}" style="width: 30px" alt="home image" />
-    </a>
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav mr-auto">
-        <li class="nav-item">
-          <a class="nav-link" href="{{ url_for('home.homepage') }}">Home</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="{{ url_for('post.create_post') }}">Create Post</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="{{ url_for('post.my_posts') }}">My Post</a>
-        </li>
-      </ul>
-    </div>
+  <a class="navbar-brand" href="{{ url_for('home.homepage') }}">
+    <img
+      src="{{ url_for('static', filename='image/home.png') }}"
+      style="width: 30px"
+      alt="home image"
+    />
+  </a>
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('home.homepage') }}">Home</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('post.create_post') }}"
+          >Create Post</a
+        >
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('post.my_posts') }}">My Post</a>
+      </li>
+    </ul>
+  </div>
 </nav>
 
 <div class="container">
-  <form method="POST" enctype="multipart/form-data">
-    <div class="form-group">
-      <label for="content">Nội dung bài viết</label>
-      <textarea class="form-control" name="content" id="content" rows="6" required>{{ post.content }}</textarea>
-    </div>
-    
-    <!-- Hiển thị ảnh hiện có -->
-    <div class="form-group mt-3">
-      <label>Ảnh hiện tại</label>
-      <div class="row">
-        {% if post.image_url %}
-          {% set image_urls = post.image_url.split(',') %}
-          {% for url in image_urls %}
-            <div class="col-md-3 mb-3">
-              <div class="card">
-                <img src="{{ url }}" class="card-img-top" style="height: 150px; object-fit: cover;">
-                <div class="card-body p-2 text-center">
-                  <button type="button" class="btn btn-sm btn-danger btn-block remove-existing-btn" 
-                          data-url="{{ url }}">Xóa</button>
-                </div>
+  <div class="form-section">
+    <h2 style="font-weight: bold">Chỉnh sửa bài đăng</h2>
+    <hr
+      style="border: none; height: 2px; background-color: gray; margin: 20px 0"
+    />
+    <form method="POST" enctype="multipart/form-data" style="margin: 20px">
+      <div class="form-group">
+        <label for="content" style="font-weight: bold">Nội dung bài viết</label>
+        <textarea
+          class="form-control"
+          name="content"
+          id="content"
+          rows="6"
+          required
+          style="border: 2px solid black; background-color: var(--mau14)"
+        >
+{{ post.content }}</textarea
+        >
+      </div>
+
+      <!-- Hiển thị ảnh hiện có -->
+      <div class="form-group mt-3">
+        <label style="font-weight: bold">Ảnh hiện tại</label>
+        <div class="row">
+          {% if post.image_url %} {% set image_urls = post.image_url.split(',')
+          %} {% for url in image_urls %}
+          <div class="col-md-3 mb-3">
+            <div class="card">
+              <img
+                src="{{ url }}"
+                class="card-img-top"
+                style="height: 150px; object-fit: cover"
+              />
+              <div class="card-body p-2 text-center">
+                <button
+                  type="button"
+                  class="btn btn-sm btn-danger btn-block remove-existing-btn"
+                  data-url="{{ url }}"
+                >
+                  Xóa
+                </button>
               </div>
             </div>
-          {% endfor %}
-        {% else %}
+          </div>
+          {% endfor %} {% else %}
           <p>Không có ảnh nào</p>
-        {% endif %}
+          {% endif %}
+        </div>
       </div>
-    </div>
-    
-    <!-- Input để xóa ảnh -->
-    <input type="hidden" name="deleted_images" id="deleted_images" value="">
-    
-    <!-- Thêm ảnh mới -->
-    <div class="form-group mt-3">
-      <label for="images">Thêm ảnh mới</label>
-      <input type="file" name="images" id="images" multiple accept="image/*" class="form-control-file">
-      <small class="form-text text-muted">Chọn nhiều ảnh bằng cách kéo giữ ảnh</small>
-    </div>
-    
-    <!-- Preview ảnh mới -->
-    <div id="preview" class="row mt-3"></div>
-    
-    <div class="form-group mt-4">
-      <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
-      <a href="{{ url_for('post.my_posts') }}" class="btn btn-secondary">Hủy</a>
-    </div>
-  </form>  
+
+      <!-- Input để xóa ảnh -->
+      <input type="hidden" name="deleted_images" id="deleted_images" value="" />
+
+      <!-- Thêm ảnh mới -->
+      <div class="form-group mt-3">
+        <label for="images" style="font-weight: bold">Thêm ảnh mới</label>
+        <input
+          type="file"
+          name="images"
+          id="images"
+          multiple
+          accept="image/*"
+          class="form-control-file"
+        />
+        <small class="form-text text-muted"
+          >Chọn nhiều ảnh bằng cách kéo giữ ảnh</small
+        >
+      </div>
+
+      <!-- Preview ảnh mới -->
+      <div id="preview" class="row mt-3"></div>
+
+      <div class="edit-post-button-group">
+        <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+        <a href="{{ url_for('post.my_posts') }}" class="btn btn-secondary"
+          >Hủy</a
+        >
+      </div>
+    </form>
+  </div>
 </div>
 
 <script>
   // Hiển thị preview ảnh mới
-  const input = document.getElementById('images');
-  const preview = document.getElementById('preview');
+  const input = document.getElementById("images");
+  const preview = document.getElementById("preview");
   let files = [];
 
-  input.addEventListener('change', function () {
-    preview.innerHTML = '';
+  input.addEventListener("change", function () {
+    preview.innerHTML = "";
     files = Array.from(this.files);
 
     files.forEach((file, index) => {
       const reader = new FileReader();
       reader.onload = function (e) {
-        const col = document.createElement('div');
-        col.classList.add('col-md-3', 'mb-3');
+        const col = document.createElement("div");
+        col.classList.add("col-md-3", "mb-3");
         col.innerHTML = `
           <div class="card">
             <img src="${e.target.result}" class="card-img-top" style="height: 150px; object-fit: cover;">
@@ -101,26 +153,27 @@
   });
 
   // Xử lý xóa ảnh mới trong preview
-  document.addEventListener('click', function (e) {
-    if (e.target.classList.contains('remove-btn')) {
-      const index = parseInt(e.target.getAttribute('data-index'));
+  document.addEventListener("click", function (e) {
+    if (e.target.classList.contains("remove-btn")) {
+      const index = parseInt(e.target.getAttribute("data-index"));
       files.splice(index, 1);
       const dataTransfer = new DataTransfer();
-      files.forEach(f => dataTransfer.items.add(f));
+      files.forEach((f) => dataTransfer.items.add(f));
       input.files = dataTransfer.files;
-      input.dispatchEvent(new Event('change'));
+      input.dispatchEvent(new Event("change"));
     }
   });
 
   // Xử lý xóa ảnh hiện có
   const deletedImages = new Set();
 
-  document.addEventListener('click', function (e) {
-    if (e.target.classList.contains('remove-existing-btn')) {
-      const url = e.target.getAttribute('data-url');
+  document.addEventListener("click", function (e) {
+    if (e.target.classList.contains("remove-existing-btn")) {
+      const url = e.target.getAttribute("data-url");
       deletedImages.add(url);
-      document.getElementById('deleted_images').value = Array.from(deletedImages).join(',');
-      e.target.closest('.col-md-3').remove();
+      document.getElementById("deleted_images").value =
+        Array.from(deletedImages).join(",");
+      e.target.closest(".col-md-3").remove();
     }
   });
 </script>

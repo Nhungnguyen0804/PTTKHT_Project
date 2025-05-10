@@ -116,3 +116,10 @@ main {
   display: flex;
   flex-wrap: wrap;
 }
+
+.edit-post-button-group {
+  display: flex;
+  justify-content: center;
+  gap: 10px; /* khoảng cách giữa các nút */
+  margin-top: 20px; /* tuỳ chỉnh nếu cần */
+}
