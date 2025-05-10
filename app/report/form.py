@@ -9,6 +9,6 @@ class YearForm(FlaskForm):
     def __init__(self, *args, **kwargs):
         super(YearForm, self).__init__(*args, **kwargs)
         current_year = datetime.now().year
-        # Tạo danh sách các năm từ 2010 đến năm hiện tại
-        self.year.choices = [(year, str(year)) for year in range(2010, current_year + 1)]
+        # Tạo danh sách các năm từ 2020 đến năm hiện tại
+        self.year.choices = [(year, str(year)) for year in range(2020, current_year + 1)]
         self.year.default = current_year  # Mặc định là năm hiện tại

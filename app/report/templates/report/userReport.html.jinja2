@@ -84,7 +84,7 @@
           <h2 style="font-weight:bold;"> Top 5 người {{ selected_post_type }} nhiều đồ nhất</h2>
 
         <div>
-            <a href="{{ url_for('userReport.show_userReport', type='Thanh Lý') }}" >
+            <a href="{{ url_for('report.show_userReport', type='Thanh Lý') }}" >
                 <button 
                 {% if selected_post_type == 'Thanh Lý' %}style="font-weight:bold"
                 {% endif %}
@@ -93,7 +93,7 @@
                   Thanh Lý
                 </button>
             </a>
-            <a href="{{ url_for('userReport.show_userReport', type='Trao Đổi') }}" >
+            <a href="{{ url_for('report.show_userReport', type='Trao Đổi') }}" >
                 <button 
                 {% if selected_post_type == 'Trao Đổi' %}style="font-weight:bold"
                 {% endif %}
@@ -102,7 +102,7 @@
                   Trao Đổi
                 </button>
             </a>
-            <a href="{{ url_for('userReport.show_userReport', type='Donate') }}" >
+            <a href="{{ url_for('report.show_userReport', type='Donate') }}" >
                 <button 
                 {% if selected_post_type == 'Donate' %}style="font-weight:bold"
                 {% endif %}
