@@ -114,6 +114,8 @@ content %}
       </div>
       {% endif %}
 
+      <p><strong>Ngày đăng:</strong> {{ post.start_time | datetime }}</p>
+
       <p class="mt-3">
         <strong>Trạng thái:</strong>
         {% if post.status == 'đã hoàn tất' %}

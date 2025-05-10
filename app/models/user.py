@@ -16,7 +16,6 @@ class User(UserMixin, csdl.Model):
     email = csdl.Column(csdl.String(120), unique=True, nullable=False)
     phone = csdl.Column(csdl.String(20), nullable=True) #co the null
     facebook = csdl.Column(csdl.Text, nullable =True)
-    zalo = csdl.Column(csdl.Text, nullable = True)
     roles = csdl.relationship('Role', secondary='user_role', backref=csdl.backref('users', lazy='dynamic'))
     created_date = csdl.Column(csdl.DateTime, default=datetime.utcnow)  # Thêm dòng này
     def set_avatar(self, avatar):

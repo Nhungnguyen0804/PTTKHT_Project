@@ -6,6 +6,10 @@ from . import post_blueprint
 from app.models.post import Post
 from app import csdl
 import uuid
+import os
+from datetime import datetime
+import pytz
+from app.models.category import Category
 
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
@@ -17,23 +21,21 @@ def allowed_file(filename):
 @post_blueprint.route('/create_post', methods=['GET', 'POST'])
 @login_required
 def create_post():
+    categories = Category.query.all()
     if request.method == 'POST':
         content = request.form.get('content')
         post_type = request.form.get('post_type')
         price = request.form.get('price')
         contact = request.form.get('contact')
         images = request.files.getlist('images')
+        category_id = request.form.get('category')
 
         if not content:
             flash('Nội dung bài viết không được để trống.', 'danger')
             return redirect(url_for('post.create_post'))
 
         if not post_type:
-            flash('Vui lòng chọn loại bài đăng.', 'danger')
-            return redirect(url_for('post.create_post'))
 
-        if post_type == 'thanh_ly' and (not price or not contact):
-            flash('Thanh lý yêu cầu điền giá và thông tin liên hệ.', 'danger')
             return redirect(url_for('post.create_post'))
 
         if post_type in ('trao_doi', 'donate') and not contact:
@@ -54,15 +56,20 @@ def create_post():
             extra_info += f"\nLiên hệ: {contact}"
 
         full_content = f"{content}{extra_info}"
-        
+        print(full_content)
         new_post = Post(
             post_id=str(uuid.uuid4()),
             content=full_content,
-            image_url=None,  # Tạm để None, sẽ cập nhật sau
+            image_url=None,  
             is_approved=True if current_user.roles == 'admin' else False,
             status='Not done',
             user_id=current_user.id,
-            post_type=type_mapping.get(post_type, post_type)
+            post_type=type_mapping.get(post_type, post_type),
+            create_date=datetime.now(pytz.utc),
+            approval_date=None,
+            submit_date =None,
+            category_id = category_id
+
         )
 
         csdl.session.add(new_post)
@@ -77,18 +84,18 @@ def create_post():
             if image_file and allowed_file(image_file.filename):
                 # Lấy đuôi file
                 file_ext = image_file.filename.rsplit('.', 1)[1].lower()
-                
+
                 # Đặt tên file theo post_id
                 if len(images) == 1:
                     filename = f"{post_id}.{file_ext}"
                 else:
                     filename = f"{post_id} ({index+1}).{file_ext}"
-                
+
                 # Đường dẫn lưu file
                 save_path = os.path.join(UPLOAD_FOLDER, filename)
                 os.makedirs(os.path.dirname(save_path), exist_ok=True)
                 image_file.save(save_path)
-                
+
                 # Thêm vào danh sách URL ảnh
                 image_urls.append(f'/static/uploads/{filename}')
 
@@ -102,10 +109,10 @@ def create_post():
             else 'Bài viết đã được gửi và đang chờ duyệt. Vui lòng đợi admin xét duyệt.',
             'success'
         )
-        
+
         return redirect(url_for('post.my_posts'))
 
-    return render_template('post/create_post.html')
+    return render_template('post/create_post.html' ,categories=categories)
 
 
 
@@ -131,6 +138,7 @@ def mark_done():
         return redirect(url_for('post.view_posts'))
 
     post.status = 'Done'
+    post.end_time = datetime.now(pytz.utc)
     csdl.session.commit()
     flash('Bài viết đã được đánh dấu là hoàn tất.', 'success')
     return redirect(url_for('post.my_posts'))
@@ -159,15 +167,15 @@ def delete_post():
     if post.image_url:
         # Lấy đường dẫn đến thư mục uploads
         upload_folder = os.path.join(current_app.root_path, 'static', 'uploads')
-        
+
         # Lấy danh sách các ảnh (tách chuỗi image_url bằng dấu phẩy)
         image_urls = post.image_url.split(',')
-        
+
         for url in image_urls:
             # Lấy tên file từ URL (bỏ phần '/static/uploads/' ở đầu)
             filename = url.replace('/static/uploads/', '')
             file_path = os.path.join(upload_folder, filename)
-            
+
             # Kiểm tra và xóa file nếu tồn tại
             if os.path.exists(file_path):
                 try:
@@ -178,7 +186,7 @@ def delete_post():
     # Xóa bài viết từ database
     csdl.session.delete(post)
     csdl.session.commit()
-    
+
     flash('Bài viết và các ảnh đính kèm đã được xóa.', 'success')
     return redirect(url_for('post.my_posts'))
 
@@ -195,7 +203,7 @@ def edit_post(post_id):
     if request.method == 'POST':
         # Cập nhật nội dung
         post.content = request.form['content']
-        
+
         # Xử lý ảnh bị xóa
         deleted_images = request.form.get('deleted_images', '')
         if deleted_images:
@@ -209,7 +217,7 @@ def edit_post(post_id):
                             os.remove(file_path)
                         except Exception as e:
                             current_app.logger.error(f"Lỗi khi xóa file {file_path}: {str(e)}")
-            
+
             # Cập nhật image_url (loại bỏ các ảnh đã xóa)
             if post.image_url:
                 remaining_images = [url for url in post.image_url.split(',') if url not in deleted_images.split(',')]
@@ -224,18 +232,18 @@ def edit_post(post_id):
                 if image_file and allowed_file(image_file.filename):
                     # Lấy đuôi file
                     file_ext = image_file.filename.rsplit('.', 1)[1].lower()
-                    
+
                     # Đặt tên file theo post_id
                     if len(new_images) == 1:
                         filename = f"{post_id}.{file_ext}"
                     else:
                         filename = f"{post_id} ({index+1}).{file_ext}"
-                    
+
                     # Đường dẫn lưu file
                     save_path = os.path.join(current_app.root_path, 'static', 'uploads', filename)
                     os.makedirs(os.path.dirname(save_path), exist_ok=True)
                     image_file.save(save_path)
-                    
+
                     # Thêm vào danh sách URL ảnh
                     image_urls.append(f'/static/uploads/{filename}')
 
@@ -250,4 +258,3 @@ def edit_post(post_id):
         return redirect(url_for('post.my_posts'))
 
     return render_template('post/edit_post.html', post=post)
-

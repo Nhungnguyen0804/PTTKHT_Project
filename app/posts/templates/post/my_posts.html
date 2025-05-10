@@ -1,10 +1,27 @@
-{% extends 'base.html' %}
-{% block title %}Bài Đăng Của Tôi{% endblock %}
+{% extends 'base.html' %} {% block title %}Bài Đăng Của Tôi{% endblock %}
+<!--  -->
 
-{% block content %}
+{% block extra_css %}
+
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/post.css') }}"
+/>
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/color.css') }}"
+/>
+{% endblock %}
+
+<!--  -->
+{%block content %}
 <nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
   <a class="navbar-brand" href="{{ url_for('home.homepage') }}">
-    <img src="{{ url_for('static', filename='image/home.png') }}" style="width: 30px" alt="home image" />
+    <img
+      src="{{ url_for('static', filename='image/home.png') }}"
+      style="width: 30px"
+      alt="home image"
+    />
   </a>
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
@@ -12,7 +29,9 @@
         <a class="nav-link" href="{{ url_for('home.homepage') }}">Home</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="{{ url_for('post.create_post') }}">Create Post</a>
+        <a class="nav-link" href="{{ url_for('post.create_post') }}"
+          >Create Post</a
+        >
       </li>
       <li class="nav-item active">
         <a class="nav-link" href="{{ url_for('post.my_posts') }}">My Post</a>
@@ -21,78 +40,133 @@
   </div>
 </nav>
 
-<h2 style="text-align: center; font-weight: bold;">Bài đăng của tôi</h2>
+<h2 style="text-align: center; font-weight: bold">Bài đăng của tôi</h2>
+<div class="all-cards">
+{% if posts and posts|length > 0 %} {% for post in posts %}
 
-<div class="container mt-4">
-  {% if posts and posts|length > 0 %}
-    {% for post in posts %}
-      <div class="card mb-4">
-        <div class="card-body">
-          <!-- Hiển thị post_type riêng biệt -->
-          <h5 class="card-title">
-            <span class="badge bg-primary text-white">{{ post.post_type }}</span>
-          </h5>
-          
-          <!-- Hiển thị content -->
-          <p class="card-text" style="white-space: pre-line;">{{ post.content }}</p>
-
-          {% if post.image_url %}
-            <div class="row mt-3">
-              {% for img in post.image_url.split(',') %}
-                <div class="col-md-4 col-sm-6 mb-3">
-                  <img src="{{ img.strip() }}" alt="Ảnh bài viết" class="img-fluid rounded shadow-sm">
-                </div>
-              {% endfor %}
-            </div>
-          {% endif %}
-
-          <p class="mt-3">
-            <strong>Duyệt:</strong>
-            {% if post.is_approved %}
-              <span class="badge bg-success text-white">Đã duyệt</span>
-            {% else %}
-              <span class="badge bg-warning text-dark">Chờ duyệt</span>
-            {% endif %}
-          </p>
-
-          <p>
-            <strong>Trạng thái:</strong>
-            {% if post.status == 'Done' %}
-              <span class="badge bg-success text-white">Đã hoàn tất</span>
-            {% else %}
-              <span class="badge bg-secondary text-white">Chưa hoàn tất</span>
-            {% endif %}
-          </p>  
-
-          {% if post.status != 'Done' and (current_user.has_role('admin') or post.user_id == current_user.id) %}
-            <form method="POST" action="{{ url_for('post.mark_done') }}" class="mt-2">
-              <input type="hidden" name="post_id" value="{{ post.post_id }}">
-              <button type="submit" class="btn btn-success btn-sm">
-                <i class="fas fa-check-circle"></i> Đánh dấu hoàn tất
-              </button>
-            </form>
-          {% endif %}
-
-          {% if current_user.has_role('admin') or post.user_id == current_user.id %}
-            <div class="mt-3">
-              <a href="{{ url_for('post.edit_post', post_id=post.post_id) }}" class="btn btn-warning btn-sm">
-                <i class="fas fa-edit"></i> Sửa
-              </a>
-              <form method="POST" action="{{ url_for('post.delete_post') }}" style="display: inline;">
-                <input type="hidden" name="post_id" value="{{ post.post_id }}">
-                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Bạn có chắc muốn xóa bài viết này?')">
-                  <i class="fas fa-trash-alt"></i> Xóa
-                </button>
-              </form>
-            </div>
-          {% endif %}
-        </div>
+<div class="post-card">
+  <div class="post-header">
+    <div class="user-info" style="background-color: transparent; border: 0px">
+      <img
+        src="{{user.avatar}}"
+        alt="Avatar"
+        width="50px"
+        class="avatar-user-info"
+        style="border: 1px solid black"
+      />
+      <!-- "{{ user.avatar_url }}"  -->
+      <div style="margin-left: 10px">
+        <p style="font-size: 30px; font-weight: bold; color: #1c5d39">
+          {{ user.fullname }}
+        </p>
+        <p>{{ post.create_date | datetime }}</p>
       </div>
-    {% endfor %}
-  {% else %}
-    <div class="alert alert-info text-center">
-      Bạn chưa có bài đăng nào!
     </div>
-  {% endif %}
+
+    <!-- xong user info  -->
+
+    <!-- Hiển thị post_type riêng biệt -->
+    <h5 class="card-title">
+      <span class="badge bg-primary text-white">{{ post.post_type }}</span>
+    </h5>
+  </div>
+
+  <!-- xong header  -->
+  <div class="post-text">
+    <!-- Hiển thị content -->
+    <p class="card-text" style="white-space: pre-line">{{ post.content }}</p>
+  </div>
+
+  <div class="post-image">
+    {% if post.image_url %}
+    <div class="row mt-3">
+      {% for img in post.image_url.split(',') %}
+      <div>
+        <img
+          src="{{ img.strip() }}"
+          alt="Ảnh bài viết"
+          class="img-fluid rounded shadow-sm"
+        />
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+  <div class="post-footer">
+    <div class="post-status">
+      <p class="mt-3">
+        <strong style="color: black">Duyệt:</strong>
+        {% if post.is_approved %}
+        <span class="badge bg-success text-white">Đã duyệt</span>
+        {% else %}
+        <span class="badge bg-warning text-dark">Chờ duyệt</span>
+        {% endif %}
+      </p>
+
+      <p>
+        <strong style="color: black">Trạng thái:</strong>
+        {% if post.status == 'Done' %}
+        <span class="badge bg-success text-white">Đã hoàn tất</span>
+        {% else %}
+        <span class="badge bg-secondary text-white">Chưa hoàn tất</span>
+        {% endif %}
+      </p>
+    </div>
+    <div class="post-button" style="display: flex; gap: 10px; margin-top: 20px">
+      <div class="finish-button">
+        {# Chỉ hiển thị form nếu người dùng có quyền #}
+        {% if current_user.has_role('admin') or post.user_id == current_user.id %}
+        
+        <form method="POST" action="{{ url_for('post.mark_done') }}">
+          <input type="hidden" name="post_id" value="{{ post.post_id }}" />
+          <button
+            type="submit"
+            class="btn btn-sm {% if post.status == 'Done' %}btn-secondary{% else %}btn-success{% endif %}"
+            {% if post.status == 'Done' %}disabled{% endif %}> {# Vô hiệu hóa nếu đã Done #}
+            <i class="fas fa-check-circle"></i>
+            <!--  -->
+            {% if post.status == 'Done'%}
+            <!--  -->
+            Đã hoàn tất {% else %} Đánh dấu hoàn tất {% endif %}
+          </button>
+        </form>
+        {% endif %}
+      </div>
+
+       {% if current_user.has_role('admin') or post.user_id ==
+      current_user.id %}
+      <div class="edit-button" style="flex: 1; gap: 10px">
+        <a
+          href="{{ url_for('post.edit_post', post_id=post.post_id) }}"
+          class="btn btn-warning btn-sm"
+        >
+          <i class="fas fa-edit"></i> Sửa
+        </a>
+      </div>
+      <div class="delete-button" style="flex: 1; gap: 10px">
+        <form
+          method="POST"
+          action="{{ url_for('post.delete_post') }}"
+          style="display: inline"
+        >
+          <input type="hidden" name="post_id" value="{{ post.post_id }}" />
+          <button
+            type="submit"
+            class="btn btn-danger btn-sm"
+            onclick="return confirm('Bạn có chắc muốn xóa bài viết này?')"
+          >
+            <i class="fas fa-trash-alt"></i> Xóa
+          </button>
+        </form>
+      </div>
+      {% endif %}
+    </div>
+  </div>
 </div>
+{% endfor %} {% else %}
+<div class="alert alert-info text-center">Bạn chưa có bài đăng nào!</div>
+{% endif %}
+</div>
+<!-- xong card  -->
+
 {% endblock %}
