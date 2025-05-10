@@ -1,6 +1,8 @@
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
-
+import os
+from werkzeug.utils import secure_filename
+from flask import current_app
 from app.admin.forms import EventAdderForm, DonationCategoryAdderForm
 from app.models.donation import Donation
 from app.models.event import Event
@@ -19,44 +21,57 @@ def adminPage():
 @admin_blueprint.route('/admin/event/<int:event_id>', methods=['GET', 'POST'])
 @login_required
 def manageEvent(event_id=None):
+    print(f"[DEBUG] Current request URL: {request.url}")
+
     event = Event.query.get(event_id) if event_id else None
     form = EventAdderForm(obj=event)
 
-    # Gán giá trị datetime khi đang GET (hiển thị form với dữ liệu cũ)
     if request.method == 'GET' and event:
         form.startTime.data = event.start_time.replace(microsecond=0)
         form.endTime.data = event.end_time.replace(microsecond=0)
 
     if form.validate_on_submit():
+        image_file = form.image.data
+        image_path = None
+
+        if image_file:  # Nếu có ảnh được upload
+            filename = secure_filename(image_file.filename)
+            upload_folder = os.path.join(current_app.root_path, 'static', 'uploads')
+            os.makedirs(upload_folder, exist_ok=True)
+            
+            image_path = os.path.join('uploads', filename)
+            image_path = image_path.replace('\\', '/')  # Chuyển "\" thành "/" để tương thích URL
+
+            image_file.save(os.path.join(upload_folder, filename))
+
         if event:
             form.populate_obj(event)
+            if image_path:
+                event.image = image_path
             csdl.session.commit()
             flash('Đã cập nhật sự kiện.', 'success')
         else:
-            # Kiểm tra logic start < end
             if form.startTime.data >= form.endTime.data:
                 flash("Thời gian bắt đầu phải nhỏ hơn thời gian kết thúc!", "danger")
                 return render_template('admin/addEvent.html', form=form)
 
-            # Tạo đối tượng sự kiện mới
             event = Event(
                 name=form.name.data,
                 start_time=form.startTime.data,
                 end_time=form.endTime.data,
                 event_type=form.eventType.data,
-                status='đang triển khai',  # có thể sửa logic sau
-                fee=form.fee.data
+                status='đang triển khai',
+                image=image_path
             )
-
-            # Gán user hiện tại làm người quản lý
             event.managed_by.append(current_user)
+            print("Done")
             csdl.session.add(event)
             csdl.session.commit()
             flash("Thêm sự kiện thành công!", "success")
 
         return redirect(url_for('admin.adminPage'))
 
-    return render_template('admin/addEvent.html', form=form)
+    return render_template('admin/addEvent.html', form=form, event=event)
 
 @admin_blueprint.route('/admin/<int:event_id>')
 def showEventDetails(event_id):

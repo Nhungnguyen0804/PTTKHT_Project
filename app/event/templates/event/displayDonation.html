@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}Trang chủ{% endblock %}
+{% block title %}Lượt quyên góp của bạn{% endblock %}
 
 {% block add_header %}
 <p>Welcome to the admin page!</p>
@@ -15,25 +15,43 @@
 <!-- navbar content -->
 </nav>
 
-<div>Quyên góp của bạn cho {{ category.dc_name }}</div>
+<h3>Danh sách hạng mục quyên góp trong sự kiện {{event.name}}</h3>
 
-<h4>Danh sách quyên góp:</h4>
-<ul>
-    {% for donation in donations %}
-    <div>
-      <strong>Thời gian:</strong> {{ donation.create_time }}
+{% for category in categories %}
+  <div class="card my-3">
+    <div class="card-body">
+      <h4 class="card-title">{{ category.dc_name }}</h4>
+      <p class="card-text">
+        <strong>Loại:</strong> {{ category.donation_type }} <br>
+        <strong>Mục tiêu:</strong> {{ category.target_quantity }} <br>
+        <strong>Thời gian:</strong> {{ category.start_date.strftime('%d/%m/%Y') }} - {{ category.end_date.strftime('%d/%m/%Y') }}
+      </p>
+
+      <h5>Lượt quyên góp của bạn:</h5>
+      {% set donations = donation_map[category.id] %}
+      {% if donations %}
+        <ul>
+          {% for donation in donations %}
+            <li>
+              <strong>Thời gian:</strong> {{ donation.create_time }} <br>
+              <strong>Trạng thái:</strong> {{ donation.status.name }}
+              <ul>
+                {% for item in donation.items %}
+                  <li>{{ item.item_name }} - Số lượng: {{ item.quantity }}</li>
+                {% endfor %}
+              </ul>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p class="text-muted">Bạn chưa quyên góp cho hạng mục này.</p>
+      {% endif %}
+
+      <!-- Nút Quyên góp -->
+      <a href="{{ url_for('event.manageDonationItem', category_id=category.id) }}" class="btn btn-outline-success mt-2">
+        Quyên góp
+      </a>
     </div>
-    <div>
-      <strong>Trạng thái:</strong> {{ donation.status.name }}
-    </div>
-    <div>
-      <strong>Danh sách vật phẩm:</strong>
-      <ul>
-        {% for item in donation.items %}
-          <li>{{ item.item_name }} - Số lượng: {{ item.quantity }}</li>
-        {% endfor %}
-      </ul>
-    </div>
-  {% endfor %}
-</ul>
+  </div>
+{% endfor %}
 {% endblock %}

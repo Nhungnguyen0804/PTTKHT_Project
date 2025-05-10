@@ -6,5 +6,5 @@ class DonationItem(csdl.Model):
     item_category_id = csdl.Column(csdl.Integer, csdl.ForeignKey('item_category.id'), nullable=False)
     item_name = csdl.Column(csdl.String(100), nullable=False)
     quantity = csdl.Column(csdl.Integer)
-    
+    image = csdl.Column(csdl.String(100), nullable=True)
     item_category = csdl.relationship('ItemCategory', backref='donation_items', lazy=True)

@@ -1,6 +1,7 @@
 from flask_wtf import FlaskForm
-from wtforms import SelectField, StringField, PasswordField, BooleanField, SubmitField, DateTimeField, IntegerField
+from wtforms import FileField, SelectField, StringField, PasswordField, BooleanField, SubmitField, DateTimeField, IntegerField
 from wtforms.validators import DataRequired
+from flask_wtf.file import FileAllowed, FileField
 
 class EventAdderForm(FlaskForm):
     name = StringField('Tên sự kiện', validators=[DataRequired()])
@@ -21,7 +22,9 @@ class EventAdderForm(FlaskForm):
         ('quyen_gop', 'Quyên góp'),
         ('quyen_gop_trao_doi', 'Quyên góp và trao đổi')
     ], validators=[DataRequired()])
-    fee = IntegerField('Phí tham gia', validators=[DataRequired()])
+    image = FileField('Ảnh sự kiện', validators=[
+        FileAllowed(['jpg', 'jpeg', 'png', 'gif', 'webp'], 'Chỉ chấp nhận ảnh!')
+    ])
     submit = SubmitField('Thêm sự kiện')
     
 class DonationCategoryAdderForm(FlaskForm):

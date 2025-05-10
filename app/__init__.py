@@ -14,6 +14,7 @@ from .admin import admin_blueprint
 from .accountManagement import accManagement_blueprint
 from .posts import post_blueprint
 from .userManagement import userManagement_blueprint
+from .event import event_blueprint
 
 
 def create_app():
@@ -36,6 +37,7 @@ def create_app():
     from .models.donation_category import DonationCategory
     from .models.item_category import ItemCategory
     from .models.donation_status import DonationStatus
+    from .models.donation_item import DonationItem
 
     # Tạo các bảng trong csdl (chỉ cần cho lần đầu)
     with app.app_context():
@@ -52,6 +54,7 @@ def create_app():
     app.register_blueprint(post_blueprint)
     app.register_blueprint(accManagement_blueprint)
     app.register_blueprint(userManagement_blueprint)
+    app.register_blueprint(event_blueprint)
 
     # Thiết lập route cho trang đăng nhập
     login_manager.login_view = 'auth.login'

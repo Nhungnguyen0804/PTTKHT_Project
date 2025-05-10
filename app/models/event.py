@@ -10,6 +10,7 @@ class Event(csdl.Model):
     event_type  = csdl.Column(csdl.String(30), nullable=False)
     status = csdl.Column(csdl.String(20), nullable=False)
     fee = csdl.Column(csdl.Integer, nullable=True)
+    image = csdl.Column(csdl.String(50), nullable=True)
     managed_by = csdl.relationship(
         'User',
         secondary='event_manager',
