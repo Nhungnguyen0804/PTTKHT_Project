@@ -41,7 +41,7 @@ def show_userReport():
     # bar chart 
     form = YearForm()
     # Lấy năm được chọn từ form (hoặc mặc định là năm hiện tại)
-    selected_year = form.year.data if form.validate_on_submit() else datetime.now().year
+    selected_year = form.year.data if form.validate_on_submit() else now.year
     
     #lay thang hien tai
     current_month = now.month

@@ -12,3 +12,5 @@ class YearForm(FlaskForm):
         # Tạo danh sách các năm từ 2020 đến năm hiện tại
         self.year.choices = [(year, str(year)) for year in range(2020, current_year + 1)]
         self.year.default = current_year  # Mặc định là năm hiện tại
+        # Gọi lại process để cập nhật default vào field
+        self.process()

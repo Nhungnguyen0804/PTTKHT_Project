@@ -138,6 +138,7 @@
         </div> 
       </div>
     </div>
+    <button onclick="downloadPDF()" class="btn btn-outline-success" style ="display:block; margin: auto;">Xuất file PDF</button>
   </div>
     
 
@@ -335,5 +336,47 @@
       } else {
           console.error("Không tìm thấy phần tử canvas với ID 'userTypeChartID'.");
       }
+
+
+
+      async function downloadPDF() {
+        const element = document.querySelector(".container"); // vùng muốn chụp
+
+        // Dùng html2canvas render toàn bộ phần tử kể cả phần cuộn
+        const canvas = await html2canvas(element, {
+          scale: 2,
+          useCORS: true,
+          scrollY: -window.scrollY // xử lý phần bị che bởi cuộn
+        });
+
+        const imgData = canvas.toDataURL("image/png");
+        const pdf = new jspdf.jsPDF("p", "mm", "a4");
+
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pageHeight = pdf.internal.pageSize.getHeight();
+
+        const imgProps = pdf.getImageProperties(imgData);
+        const imgHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+        let heightLeft = imgHeight;
+        let position = 0;
+
+        // Thêm trang nếu nội dung dài
+        while (heightLeft > 0) {
+          pdf.addImage(imgData, "PNG", 0, position, pdfWidth, imgHeight);
+          heightLeft -= pageHeight;
+          if (heightLeft > 0) {
+            pdf.addPage();
+            position = -heightLeft;
+          }
+        }
+
+        pdf.save("ThongKeNguoiDung.pdf");
+      }
+
     </script>
+
+
+    
+
 {% endblock %}
