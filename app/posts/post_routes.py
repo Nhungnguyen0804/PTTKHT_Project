@@ -55,11 +55,16 @@ def create_post():
         extra_info = ""
         if post_type == 'thanh_ly':
             extra_info += f"\nGiá: {price}"
-        # if contact:
-        #     extra_info += f"\nLiên hệ: {contact}"
 
-        # full_content = f"{content}{extra_info}"
-        full_content = f"{content}"
+        extra_info += f"\nLiên hệ:"
+        if phone:
+            extra_info += f"\nSố điện thoại:{phone}"
+        if email:
+            extra_info += f"\nEmail:{email}"
+        if facebook:
+            extra_info += f"\nFacebook:{facebook}"
+
+        full_content = f"{content}{extra_info}"
         print(full_content)
         new_post = Post(
             post_id=str(uuid.uuid4()),
