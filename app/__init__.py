@@ -12,6 +12,7 @@ from .accountManagement import accManagement_blueprint
 from .posts import post_blueprint
 from .userManagement import userManagement_blueprint
 from .report import report_blueprint
+from .postManagement import postManagement_blueprint
 from datetime import datetime
 import pytz
 
@@ -50,6 +51,7 @@ def create_app():
     app.register_blueprint(accManagement_blueprint)
     app.register_blueprint(userManagement_blueprint)
     app.register_blueprint(report_blueprint)
+    app.register_blueprint(postManagement_blueprint)
 
     # Thiết lập route cho trang đăng nhập
     login_manager.login_view = 'auth.login'

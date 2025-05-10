@@ -1,0 +1,85 @@
+{% extends 'manageMenu.html' %}
+{% block ManagementContent %}
+<div class="manager-post-frame">
+  <!-- Hiển thị thông báo flash -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="flash {{ category }}">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    />
+    <h2 class="mb-0">Danh sách bài viết</h2>
+  </div>
+  <hr
+    style="
+      border: none;
+      height: 2px;
+      background-color: gray;
+      width: 100%;
+      align-self: center;
+    "
+  />
+
+  <div class="table-responsive">
+    <table class="table table-striped table-hover align-middle">
+      <thead class="table-dark">
+        <tr>
+          <th>STT</th>
+          <th>Đã duyệt</th>
+          <th>Trạng thái</th>
+          <th>Loại bài</th>
+          <th>Ngày tạo</th>
+          <th>Ngày duyệt</th>
+          <th>Ngày kết thúc</th>
+          <th>Người đăng</th>
+          <th>Danh mục</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+  {% for p in posts %}
+  <tr>
+    <td>{{ loop.index }}</td>
+    <td>
+      {% if p.is_approved %}
+        <span class="badge bg-success">Đã duyệt</span>
+      {% else %}
+        <span class="badge bg-warning text-dark">Chưa duyệt</span>
+      {% endif %}
+    </td>
+    <td>{{ p.status }}</td>
+    <td>{{ p.post_type }}</td>
+    <td>{{ p.create_date }}</td>
+    <td>
+      {% if p.is_approved and p.approval_date %}
+        {{ p.approval_date.strftime('%d/%m/%Y %H:%M:%S') }}
+      {% else %}
+        ---
+      {% endif %}
+    </td>
+    <td>{{ p.submit_date or '---' }}</td>
+    <td>{{ p.user.username if p.user else p.user_id }}</td>
+    <td>{{ p.category.category_name if p.category else p.category_id }}</td>
+    <td>
+      <form action="{{ url_for('postManagement.delete_post', post_id=p.post_id) }}" method="post" style="display:inline;">
+        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Bạn có chắc muốn xóa bài viết này?');">Delete</button>
+      </form>
+      <form action="{{ url_for('postManagement.approve_post', post_id=p.post_id) }}" method="post" style="display:inline;">
+        <button type="submit" class="btn btn-sm btn-success"
+          {% if p.is_approved %}disabled{% endif %}>Approve</button>
+      </form>
+    </td>
+  </tr>
+  {% endfor %}
+</tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

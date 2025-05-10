@@ -17,6 +17,6 @@ class Post(csdl.Model):
     category_id = csdl.Column(csdl.Integer, csdl.ForeignKey('category.id'), nullable=False)
     # Dùng post.user để truy cập user
     user = csdl.relationship('User', backref='posts')
-
+    category = csdl.relationship('Category', backref='posts')
     def __repr__(self):
         return f"<Post {self.post_id}>"
