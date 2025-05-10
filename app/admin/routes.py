@@ -30,6 +30,10 @@ def manageEvent(event_id=None):
     event = Event.query.get(event_id) if event_id else None
     form = EventAdderForm(obj=event)
 
+    if event and event.status_id == 3:
+        flash("Không thể chuyển sự kiện sang trạng thái 'Huỷ'.", "warning")
+        return redirect(request.referrer or url_for('admin.adminPage'))
+    
     if request.method == 'GET' and event:
         form.startTime.data = event.start_time.replace(microsecond=0)
         form.endTime.data = event.end_time.replace(microsecond=0)
@@ -38,37 +42,42 @@ def manageEvent(event_id=None):
         image_file = form.image.data
         image_path = None
 
-        if image_file:  # Nếu có ảnh được upload
+        if image_file and hasattr(image_file, 'filename') and image_file.filename:
+            # Có file thực sự được upload
             filename = secure_filename(image_file.filename)
             upload_folder = os.path.join(current_app.root_path, 'static', 'uploads')
             os.makedirs(upload_folder, exist_ok=True)
-            
-            image_path = os.path.join('uploads', filename)
-            image_path = image_path.replace('\\', '/')  # Chuyển "\" thành "/" để tương thích URL
-
+            image_path = os.path.join('uploads', filename).replace('\\', '/')
             image_file.save(os.path.join(upload_folder, filename))
+        elif not event:
+            # Nếu tạo mới mà không upload ảnh
+            flash("Vui lòng tải lên ảnh cho sự kiện mới.", "danger")
+            return render_template('admin/addEvent.html', form=form)
 
         if event:
             form.populate_obj(event)
             if image_path:
                 event.image = image_path
+            else:
+                print("[DEBUG: Người dùng đã submit thay đổi sự kiện mà k có ảnh]")
+                flash("Sự kiện phải có ảnh. Vui lòng tải ảnh.", "danger")
+                return redirect(url_for(request.endpoint, **request.view_args))
+
             csdl.session.commit()
             flash('Đã cập nhật sự kiện.', 'success')
         else:
             if form.startTime.data >= form.endTime.data:
                 flash("Thời gian bắt đầu phải nhỏ hơn thời gian kết thúc!", "danger")
                 return render_template('admin/addEvent.html', form=form)
-
             event = Event(
                 name=form.name.data,
                 start_time=form.startTime.data,
                 end_time=form.endTime.data,
                 event_type=form.eventType.data,
-                status='đang triển khai',
+                status_id=1,
                 image=image_path
             )
             event.managed_by.append(current_user)
-            print("Done")
             csdl.session.add(event)
             csdl.session.commit()
             flash("Thêm sự kiện thành công!", "success")
@@ -77,13 +86,32 @@ def manageEvent(event_id=None):
 
     return render_template('admin/addEvent.html', form=form, event=event)
 
+
 @admin_blueprint.route('/admin/<int:event_id>')
 def showEventDetails(event_id):
     event = Event.query.get(event_id)
+
+    if event and event.status_id == 3:
+        flash("Không thể chuyển sự kiện sang trạng thái 'Huỷ'.", "warning")
+        return redirect(request.referrer or url_for('admin.adminPage'))
+
     if event:
-        return render_template('admin/eventDetails.html', event=event)
+        # Lấy tất cả donation_category_id của sự kiện
+        category_ids = [dc.id for dc in event.donation_categories]
+
+        # Truy vấn tất cả Donation thuộc các category đó
+        donations = Donation.query.filter(Donation.donation_category_id.in_(category_ids)).all()
+
+        return render_template(
+            'admin/eventDetails.html',
+            event=event,
+            donations=donations
+        )
     else:
-        return
+        flash("Không tìm thấy sự kiện.", "danger")
+        return redirect(url_for('admin.adminPage'))
+
+
     
 @admin_blueprint.route('/admin/<int:event_id>/dc', methods=['GET', 'POST'])
 @admin_blueprint.route('/admin/<int:event_id>/dc/<int:donation_category_id>', methods=['GET', 'POST'])
@@ -91,6 +119,9 @@ def manageDonationCategory(event_id, donation_category_id=None):
     event = Event.query.get(event_id)
     donation_category = DonationCategory.query.get(donation_category_id) if donation_category_id else None
     form = DonationCategoryAdderForm(obj=donation_category)
+    if event and event.status_id == 3:
+        flash("Không thể chuyển sự kiện sang trạng thái 'Huỷ'.", "warning")
+        return redirect(request.referrer or url_for('admin.adminPage'))
     # Gán giá trị datetime khi đang GET (hiển thị form với dữ liệu cũ)
     if request.method == 'GET' and donation_category:
         form.startDate.data = event.start_date.replace(microsecond=0)
@@ -130,6 +161,7 @@ def manageDonationCategory(event_id, donation_category_id=None):
 @admin_blueprint.route("/admin/<int:category_id>/details", methods=["POST", "GET"])
 def manageDonationCategories(category_id):
     category = DonationCategory.query.get(category_id)
+    
     # list of donations from category here
     donations_of_category = Donation.query.options(
     joinedload(Donation.items),
@@ -175,7 +207,10 @@ def cancel_donation(donation_id):
 @admin_blueprint.route('/<int:item_id>/edit', methods=['GET', 'POST'])
 def createBuyableItem(event_id=None, donation_item_id=None, item_id=None):
     form = BuyableItemForm()
-
+    event = Event.query.get(event_id)
+    if event and event.status_id == 3:
+        flash("Không thể chuyển sự kiện sang trạng thái 'Huỷ'.", "warning")
+        return redirect(request.referrer or url_for('admin.adminPage'))
     if item_id:  # Trường hợp chỉnh sửa
         item = BuyableItem.query.get_or_404(item_id)
         if request.method == 'GET':
@@ -240,4 +275,15 @@ def updateBuyableItemStatus(item_id, new_status):
     item.status = new_status
     csdl.session.commit()
     flash(f"Đã cập nhật trạng thái '{item.item_name}' thành {new_status}.", "success")
+    return redirect(request.referrer or url_for('admin.adminPage'))
+
+@admin_blueprint.route('/<int:event_id>/<int:status_id>')
+def updateEventStatus(event_id, status_id):  
+    event = Event.query.get(event_id)
+    if event and event.status_id == 3:
+        flash("Không thể chuyển sự kiện sang trạng thái 'Huỷ'.", "warning")
+        return redirect(request.referrer or url_for('admin.adminPage'))
+    event = Event.query.get(event_id)
+    event.status_id = status_id
+    csdl.session.commit()
     return redirect(request.referrer or url_for('admin.adminPage'))

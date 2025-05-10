@@ -19,8 +19,8 @@ class EventAdderForm(FlaskForm):
     )
 
     eventType = SelectField('Loại sự kiện', choices=[
-        ('quyen_gop', 'Quyên góp'),
-        ('quyen_gop_trao_doi', 'Quyên góp và trao đổi')
+        ('Quyên góp', 'Quyên góp'),
+        ('Quyên góp và trao đổi', 'Quyên góp và trao đổi')
     ], validators=[DataRequired()])
     image = FileField('Ảnh sự kiện', validators=[
         FileAllowed(['jpg', 'jpeg', 'png', 'gif', 'webp'], 'Chỉ chấp nhận ảnh!')

@@ -41,6 +41,7 @@ def create_app():
     from .models.buyable_item import BuyableItem
     from .models.buyable_item_status import BuyableItemStatus, init_status
     from .models.dc_type import DCType, init_dc_types
+    from .models.event_status import EventStatus, init_estatus
 
     # Tạo các bảng trong csdl (chỉ cần cho lần đầu)
     with app.app_context():
@@ -49,7 +50,7 @@ def create_app():
         init_categories()
         init_status()
         init_dc_types()
-        init_status()
+        init_estatus() 
     
     # Đăng ký các blueprint
     app.register_blueprint(home_blueprint)

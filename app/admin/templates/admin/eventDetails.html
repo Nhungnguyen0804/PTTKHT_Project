@@ -69,6 +69,55 @@ add_header %}
 >
   Thêm hạng mục quyên góp
 </a>
+<h5 class="mt-5">Danh sách các lượt quyên góp</h5>
+{% if donations %}
+  {% for donation in donations %}
+  <div class="card mb-4 shadow-sm border-primary">
+    <div class="card-body">
+      <h5 class="card-title text-primary">{{ donation.donor_name }}</h5>
+      <p class="card-text mb-1">
+        <strong>Ngày quyên góp:</strong> {{ donation.create_time.strftime("%d/%m/%Y %H:%M") }}
+      </p>
+      <p class="card-text mb-2">
+        <strong>Trạng thái:</strong>
+        <span class="badge bg-secondary">{{ donation.status.name }}</span>
+      </p>
+
+      <h6 class="mt-3">Danh sách vật phẩm quyên góp:</h6>
+      {% if donation.items %}
+      <ul class="list-group list-group-flush">
+        {% for item in donation.items %}
+        <li class="list-group-item">
+          <strong>{{ item.item_name }}</strong> — SL: {{ item.quantity }}<br />
+          <small class="text-muted">
+            Loại: {{ item.item_category.category_name }}
+          </small>
+        </li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <p class="text-muted">Không có vật phẩm nào được quyên góp.</p>
+      {% endif %}
+
+      <div class="mt-4 d-flex gap-2">
+        <form method="POST" action="{{ url_for('admin.confirm_donation', donation_id=donation.id) }}">
+          <button type="submit" class="btn btn-success" {% if donation.status_id != 1 %}disabled{% endif %}>
+            Xác nhận quyên góp
+          </button>
+        </form>
+        <form method="POST" action="{{ url_for('admin.cancel_donation', donation_id=donation.id) }}">
+          <button type="submit" class="btn btn-danger" {% if donation.status_id != 1 %}disabled{% endif %}>
+            Huỷ quyên góp
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+{% else %}
+  <div class="alert alert-warning">Hiện chưa có lượt quyên góp nào.</div>
+{% endif %}
+
 <h5 class="mt-5">Sản phẩm có thể mua</h5>
 <div class="mb-3">
   {% if event.buyable_items|length > 0 %}

@@ -74,7 +74,9 @@
         </div>
       </li>
       <li class="nav-item">
-         <a class="nav-link" href="{{url_for('admin.manageEvent')}}">Thêm sự kiện</a>
+        <a class="nav-link" href="{{url_for('admin.manageEvent')}}"
+          >Thêm sự kiện</a
+        >
       </li>
     </ul>
     <form class="form-inline my-2 my-lg-0">
@@ -119,20 +121,35 @@
                 event.end_time.strftime('%d/%m/%Y %H:%M') }}
               </p>
               <p class="card-text mb-1">
-                <strong>Trạng thái:</strong> {{ event.status }}
+                <strong>Trạng thái:</strong> {{ event.status.name }}
               </p>
-              <div class="d-flex justify-content-between mt-3" style="width: 80%;">
+                            <p class="card-text mb-1">
+                <strong>Loại sự kiện:</strong> {{ event.event_type }}
+              </p>
+              <div
+                class="d-flex justify-content-between mt-3"
+                style="width: 80%"
+              >
                 <a
                   href="{{ url_for('admin.manageEvent', event_id=event.id) }}"
-                  class="btn btn-outline-primary btn-sm"
+                  class="btn btn-outline-primary btn-sm {% if event.status_id == 3 %}disabled{% endif %}"
                   >Thay đổi</a
                 >
                 <a
                   href="{{ url_for('admin.showEventDetails', event_id=event.id) }}"
-                  class="btn btn-outline-warning btn-sm"
+                  class="btn btn-outline-warning btn-sm {% if event.status_id == 3 %}disabled{% endif %}"
                   >Chi tiết</a
                 >
-                <a href="#" class="btn btn-outline-danger btn-sm">Xoá</a>
+                <a
+                  href="{{ url_for('admin.updateEventStatus', event_id=event.id, status_id=2) }}"
+                  class="btn btn-outline-warning btn-sm {% if event.status_id == 3 %}disabled{% endif %}"
+                  >Tạm dừng</a
+                >
+                <a
+                  href="{{ url_for('admin.updateEventStatus', event_id=event.id, status_id=3) }}"
+                  class="btn btn-outline-danger btn-sm {% if event.status_id == 3 %}disabled{% endif %}"
+                  >Huỷ</a
+                >
               </div>
             </div>
           </div>
