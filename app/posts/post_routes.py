@@ -1,5 +1,5 @@
 import os
-from flask import render_template, request, redirect, url_for, flash, current_app
+from flask import render_template, request, redirect, url_for, flash, current_app,jsonify
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
 from . import post_blueprint 
@@ -26,7 +26,10 @@ def create_post():
         content = request.form.get('content')
         post_type = request.form.get('post_type')
         price = request.form.get('price')
-        contact = request.form.get('contact')
+        # contact = request.form.get('contact')
+        phone = request.form.get('phone')
+        email = request.form.get('email')
+        facebook = request.form.get('facebook')
         images = request.files.getlist('images')
         category_id = request.form.get('category')
 
@@ -38,7 +41,7 @@ def create_post():
 
             return redirect(url_for('post.create_post'))
 
-        if post_type in ('trao_doi', 'donate') and not contact:
+        if post_type in ('trao_doi', 'donate') and not phone and not email and not facebook:
             flash('Vui lòng nhập thông tin liên hệ.', 'danger')
             return redirect(url_for('post.create_post'))
 
@@ -52,10 +55,11 @@ def create_post():
         extra_info = ""
         if post_type == 'thanh_ly':
             extra_info += f"\nGiá: {price}"
-        if contact:
-            extra_info += f"\nLiên hệ: {contact}"
+        # if contact:
+        #     extra_info += f"\nLiên hệ: {contact}"
 
-        full_content = f"{content}{extra_info}"
+        # full_content = f"{content}{extra_info}"
+        full_content = f"{content}"
         print(full_content)
         new_post = Post(
             post_id=str(uuid.uuid4()),
@@ -258,3 +262,41 @@ def edit_post(post_id):
         return redirect(url_for('post.my_posts'))
 
     return render_template('post/edit_post.html', post=post)
+
+
+@post_blueprint.route('/remember-phone', methods=['POST'])
+@login_required
+def remember_phone():
+    data = request.get_json()
+    phone = data.get('phone')
+
+    if not phone:
+        return jsonify({'status': 'error', 'message': 'Phone is missing'}), 400
+
+    current_user.phone = phone
+    csdl.session.commit()
+    return jsonify({'status': 'success', 'message': 'Phone updated'})
+@post_blueprint.route('/remember-email', methods=['POST'])
+@login_required
+def remember_email():
+    data = request.get_json()
+    email = data.get('email')
+
+    if not email:
+        return jsonify({'status': 'error', 'message': 'email is missing'}), 400
+
+    current_user.email = email
+    csdl.session.commit()
+    return jsonify({'status': 'success', 'message': 'email updated'})
+@post_blueprint.route('/remember-facebook', methods=['POST'])
+@login_required
+def remember_facebook():
+    data = request.get_json()
+    facebook = data.get('facebook')
+
+    if not facebook:
+        return jsonify({'status': 'error', 'message': 'facebook is missing'}), 400
+
+    current_user.facebook = facebook
+    csdl.session.commit()
+    return jsonify({'status': 'success', 'message': 'facebook updated'})

@@ -41,6 +41,11 @@
 </nav>
 
 <h2 style="text-align: center; font-weight: bold">Bài đăng của tôi</h2>
+<!-- Hiển thị thông báo flash -->
+        {% with messages = get_flashed_messages(with_categories=true) %} {% if
+        messages %} {% for category, message in messages %}
+        <div class="flash {{ category }}">{{ message }}</div>
+        {% endfor %} {% endif %} {% endwith %}
 <div class="all-cards">
 {% if posts and posts|length > 0 %} {% for post in posts %}
 
