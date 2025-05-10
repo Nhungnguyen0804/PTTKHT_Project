@@ -69,6 +69,62 @@ add_header %}
 >
   Thêm hạng mục quyên góp
 </a>
+<h5 class="mt-5">Sản phẩm có thể mua</h5>
+<div class="mb-3">
+  {% if event.buyable_items|length > 0 %}
+  <ul class="list-group">
+    {% for item in event.buyable_items %}
+    <li class="list-group-item">
+      <div class="d-flex flex-column align-items-start">
+        <!-- Tên & thuộc tính -->
+        <div class="mb-2">
+          <h6>{{ item.item_name }}</h6>
+          <p class="mb-1 text-muted">
+            Giá: {{ item.price }} VNĐ | Trạng thái: {{ item.status_obj.name }}
+          </p>
+        </div>
+
+        <!-- Ảnh -->
+        {% if item.image %}
+        <div class="mb-2">
+          <img
+            src="{{ url_for('static', filename=item.image) }}"
+            alt="{{ item.item_name }}"
+            class="img-thumbnail"
+            style="max-width: 150px"
+          />
+        </div>
+        {% endif %}
+
+        <!-- Nút -->
+        <div class="mt-2">
+          <a
+            href="{{ url_for('admin.createBuyableItem', item_id=item.id) }}"
+            class="btn btn-sm btn-outline-primary me-2 {% if item.status != 1 %}disabled{% endif %}"
+            >Chỉnh sửa</a
+          >
+
+          <a
+            href="{{ url_for('admin.updateBuyableItemStatus', item_id=item.id, new_status=2) }}"
+            class="btn btn-sm btn-success me-2 {% if item.status != 1 %}disabled{% endif %}"
+            >Xác nhận</a
+          >
+
+          <a
+            href="{{ url_for('admin.updateBuyableItemStatus', item_id=item.id, new_status=3) }}"
+            class="btn btn-sm btn-danger {% if item.status != 1 %}disabled{% endif %}"
+            >Huỷ</a
+          >
+        </div>
+      </div>
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p class="text-muted">Chưa có sản phẩm nào.</p>
+  {% endif %}
+</div>
+
 {% else %}
 <p class="text-muted">Không tìm thấy sự kiện nào.</p>
 {% endif %} {% endblock %}

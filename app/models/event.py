@@ -16,6 +16,8 @@ class Event(csdl.Model):
         secondary='event_manager',
         backref=csdl.backref('managed_events', lazy='dynamic')  # ← sửa ở đây
     )
+    buyable_items = csdl.relationship('BuyableItem', backref='event', lazy=True)
+
 
 event_manager = csdl.Table('event_manager',
     csdl.Column('user_id', csdl.Integer, csdl.ForeignKey('user.id'), primary_key=True),

@@ -1,16 +1,11 @@
-{% extends 'base.html' %}
-{% block title %}Trang chủ{% endblock %}
-
-{% block add_header %}
+{% extends 'base.html' %} {% block title %}Trang chủ{% endblock %} {% block
+add_header %}
 <p>Welcome to the home page!</p>
 {% if current_user.is_authenticated %}
 <p>Bạn đã đăng nhập!</p>
 {% else %}
 <p>Bạn chưa đăng nhập</p>
-{% endif %}
-{% endblock %}
-
-{% block content %}
+{% endif %} {% endblock %} {% block content %}
 <!-- navbar -->
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
   <!-- navbar code như cũ -->
@@ -36,29 +31,41 @@
         <div class="col-md-8">
           <div class="card-body">
             <h4 class="card-title">{{ event.name }}</h4>
-            <h6 class="card-subtitle mb-2 text-muted">Loại: {{ event.event_type }}</h6>
-            <p class="card-text mb-1"><strong>Trạng thái:</strong> {{ event.status }}</p>
+            <h6 class="card-subtitle mb-2 text-muted">
+              Loại: {{ event.event_type }}
+            </h6>
+            <p class="card-text mb-1">
+              <strong>Trạng thái:</strong> {{ event.status }}
+            </p>
             <div class="d-flex justify-content-between mb-3">
-              <div><strong>Bắt đầu:</strong> {{ event.start_time.strftime('%d/%m/%Y %H:%M') }}</div>
-              <div><strong>Kết thúc:</strong> {{ event.end_time.strftime('%d/%m/%Y %H:%M') }}</div>
+              <div>
+                <strong>Bắt đầu:</strong> {{ event.start_time.strftime('%d/%m/%Y
+                %H:%M') }}
+              </div>
+              <div>
+                <strong>Kết thúc:</strong> {{ event.end_time.strftime('%d/%m/%Y
+                %H:%M') }}
+              </div>
             </div>
 
             <!-- Nút tham gia -->
-           {% if event.start_time <= now %}
-  <a class="btn btn-outline-primary mt-2" href="{{ url_for('event.displayAllDonations', event_id=event.id) }}">
-    <i class="bi bi-person-plus"></i> Tham gia
-  </a>
-{% else %}
-  <button class="btn btn-outline-secondary mt-2" disabled>
-    <i class="bi bi-clock"></i> Chưa bắt đầu
-  </button>
-{% endif %}
+            {% if event.start_time <= now %}
+            <a
+              class="btn btn-outline-primary mt-2"
+              href="{{ url_for('event.displayAllDonations', event_id=event.id) }}"
+            >
+              <i class="bi bi-person-plus"></i> Tham gia
+            </a>
+            {% else %}
+            <button class="btn btn-outline-secondary mt-2" disabled>
+              <i class="bi bi-clock"></i> Chưa bắt đầu
+            </button>
+            {% endif %}
           </div>
         </div>
       </div>
     </div>
   </div>
-{% endfor %}
-
+  {% endfor %}
 </div>
 {% endblock %}

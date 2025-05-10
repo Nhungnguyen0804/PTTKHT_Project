@@ -53,6 +53,7 @@ def manageDonation(category_id):
                 quantity=item_data['quantity'],
                 item_category_id=item_data['item_category_id'],
                 donation_id=new_donation.id,
+                image = item_data['image_url']
             )
             csdl.session.add(donation_item)
 

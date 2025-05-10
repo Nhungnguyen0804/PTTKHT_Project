@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block title %}Tạo vật phẩm bán{% endblock %}
+
+{% block content %}
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <!-- navbar -->
+</nav>
+
+<div class="container mt-4">
+  <h3 class="mb-4">Tạo vật phẩm có thể bán từ lượt quyên góp</h3>
+  <form method="post" enctype="multipart/form-data">
+    {{ form.hidden_tag() }}
+
+    <div class="form-group">
+      {{ form.item_name.label(class="form-label") }}
+      {{ form.item_name(class="form-control") }}
+    </div>
+
+    <div class="form-group">
+      {{ form.price.label(class="form-label") }}
+      {{ form.price(class="form-control", placeholder="VD: 50000") }}
+    </div>
+
+    <div class="form-group">
+      {{ form.image.label(class="form-label") }}
+      {{ form.image(class="form-control") }}
+      {% if donation_item.image %}
+        <img src="{{ url_for('static', filename=donation_item.image) }}" class="img-thumbnail mt-2" width="200">
+      {% endif %}
+    </div>
+
+    <div class="form-group mt-3 text-center">
+      {{ form.submit(class="btn btn-success px-4") }}
+    </div>
+  </form>
+</div>
+{% endblock %}

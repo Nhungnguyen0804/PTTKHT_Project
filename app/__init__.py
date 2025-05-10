@@ -14,7 +14,8 @@ from .admin import admin_blueprint
 from .accountManagement import accManagement_blueprint
 from .posts import post_blueprint
 from .userManagement import userManagement_blueprint
-
+from .event import event_blueprint
+from .userReport import userReport_blueprint
 
 def create_app():
     app = Flask(__name__)
@@ -37,12 +38,17 @@ def create_app():
     from .models.item_category import ItemCategory
     from .models.donation_status import DonationStatus
     from .models.donation_item import DonationItem
+    from .models.buyable_item import BuyableItem
+    from .models.buyable_item_status import BuyableItemStatus, init_status
+    from .models.dc_type import DCType, init_dc_types
 
     # Tạo các bảng trong csdl (chỉ cần cho lần đầu)
     with app.app_context():
         csdl.create_all()
         init_roles()# Khởi tạo gt bang role
         init_categories()
+        init_status()
+        init_dc_types()
         init_status()
     
     # Đăng ký các blueprint
@@ -53,6 +59,8 @@ def create_app():
     app.register_blueprint(post_blueprint)
     app.register_blueprint(accManagement_blueprint)
     app.register_blueprint(userManagement_blueprint)
+    app.register_blueprint(userReport_blueprint)
+    app.register_blueprint(event_blueprint)
 
     # Thiết lập route cho trang đăng nhập
     login_manager.login_view = 'auth.login'
