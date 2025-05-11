@@ -14,17 +14,10 @@ from app.models.item_category import Category
 from app.models.user import User
 event_blueprint = Blueprint('event', __name__,template_folder='templates')
 
-<<<<<<< HEAD
-# Route để hiển thị danh sách sự kiện
-@event_blueprint.route('/event')
-def event():
-    events = Event.query.all()
-=======
 @event_blueprint.route('/event/', defaults={'user_id': None})
 @event_blueprint.route('/event/<int:user_id>')
 def event(user_id):
     from sqlalchemy.orm import joinedload
->>>>>>> 5c523faf2b9edf66339c1965db36aca88d7605ca
 
     if user_id is None:
         # Trường hợp không có user_id → hiển thị tất cả sự kiện
@@ -56,11 +49,6 @@ def event(user_id):
 
     return render_template('event/event.html', events=events, now=datetime.utcnow())
 
-<<<<<<< HEAD
-# Route để hiển thị danh sách các hạng mục quyên góp của một sự kiện
-=======
-
->>>>>>> 5c523faf2b9edf66339c1965db36aca88d7605ca
 @event_blueprint.route('/<int:category_id>/details', methods=["GET", "POST"])
 def manageDonation(category_id):
     category = DonationCategory.query.get_or_404(category_id)
