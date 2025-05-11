@@ -37,10 +37,9 @@ def generate_user(index):
     email = f"user{index}@example.com"
     phone = f"0123{str(index).zfill(5)}"
     facebook = None
-    zalo = None
     created_date = random_date()
 
-    return (username, password, avatar, fullname, date_of_birth, gender, address, email, phone, facebook, zalo, created_date)
+    return (username, password, avatar, fullname, date_of_birth, gender, address, email, phone, facebook, created_date)
 
 def generate_gv(index):
     username = f"gv{index}"
@@ -53,10 +52,9 @@ def generate_gv(index):
     email = f"gv{index}@example.com"
     phone = f"0123{str(index).zfill(5)}"
     facebook = None
-    zalo = None
     created_date = random_date()
 
-    return (username, password, avatar, fullname, date_of_birth, gender, address, email, phone, facebook, zalo, created_date)
+    return (username, password, avatar, fullname, date_of_birth, gender, address, email, phone, facebook, created_date)
 
 # Kết nối cơ sở dữ liệu
 conn = sqlite3.connect(db_path)
@@ -64,14 +62,17 @@ cursor = conn.cursor()
 
 # Nhập số lượng user muốn thêm
 n = int(input("Nhập số lượng user muốn thêm: "))
-
+input = int(input("hs là 1 gv là 2: "))
 # Thêm n user
 for i in range(n):
-    user = generate_user(i + 1)
-    # user = generate_gv(i+1)
+    
+    if input ==1:  
+        user = generate_user(i + 1)
+    else:
+        user = generate_gv(i+1)
     cursor.execute('''
-    INSERT INTO user (username, password, avatar, fullname, date_of_birth, gender, address, email, phone, facebook, zalo, created_date)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO user (username, password, avatar, fullname, date_of_birth, gender, address, email, phone, facebook, created_date)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ''', user)
     user_id = cursor.lastrowid  # Lấy id vừa insert tự động
 

@@ -176,7 +176,7 @@ canvas {
 }
 
 .mycard {
-  width: 200px;
+  flex: 1;
   padding: 20px;
   border: 2px solid #333;
   border-radius: 20px;
@@ -201,7 +201,8 @@ canvas {
 .card-bar {
   display: flex;
   gap: 20px;
-  justify-content: center; /* all div nam center */
+  justify-content: space-between;
+  /* all div nam center */
 }
 
 table {
