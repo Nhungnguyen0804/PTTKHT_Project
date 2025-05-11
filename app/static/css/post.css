@@ -196,3 +196,20 @@ main {
   border-color: #004d40;
   box-shadow: 0 0 5px #26a69a;
 }
+
+/* Canvas */
+#categoryChart {
+  width: 600px !important; /* Chiều rộng cố định */
+  height: 400px !important; /* Chiều cao cố định */
+  display: block; /* Đảm bảo canvas hiển thị */
+}
+
+/* Container cố định kích thước */
+.chart-container {
+  width: 600px !important; /* Chiều rộng cố định */
+  height: 400px !important; /* Chiều cao cố định */
+  max-width: 600px !important; /* Ngăn vượt quá */
+  max-height: 400px !important; /* Ngăn dãn cao */
+  margin: 0 auto; /* Căn giữa */
+  overflow: hidden; /* Ngăn nội dung tràn ra */
+}

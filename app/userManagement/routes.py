@@ -103,6 +103,7 @@ def search_user():
         else:
             flash('Vui lòng nhập tên người dùng để tìm kiếm!', 'warning')
     users = User.query.all()
+
     return render_template('userManagement/manage_user.html', user=user, users=users, action='Search')
 
 @userManagement_blueprint.route('/admin/users/roles/<int:user_id>', methods=['GET', 'POST'])

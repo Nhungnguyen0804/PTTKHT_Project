@@ -334,6 +334,7 @@ def viewPost():
     form = FilterForm()
     users = User.query.all()
 
+
     # Luôn chỉ lấy các bài đã duyệt
     query = Post.query.filter(Post.is_approved == True and Post.status == 'Not done')
 
@@ -341,6 +342,7 @@ def viewPost():
     query = query.order_by(Post.create_date.desc())
 
     if form.validate_on_submit():
+
         post_type = form.post_type.data
         sort_order = form.sort_order.data
 
@@ -354,12 +356,13 @@ def viewPost():
 
     posts = query.all()
 
+
     # Gắn thông tin liên hệ đã tách vào mỗi post
     for post in posts:
         post.contact_info = parse_contact(post.content)
 
     return render_template('post/view_post.html', posts=posts, users=users, form=form)
-    
+
 
 
 @post_blueprint.route('/interest/<string:post_id>', methods=['POST'])

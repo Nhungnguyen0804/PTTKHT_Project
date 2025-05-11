@@ -1,0 +1,733 @@
+{% extends 'reportMenu.html' %} {% block ManagementContent %}
+ <div class="container">
+      <h1 class="h1-container">BÁO CÁO THỐNG KÊ BÀI ĐĂNG</h1>
+    <div class ="card-bar">
+      <div class ="mycard" style ="background-color: #ccd9b7"; >
+        <div class ="mycard-title">
+          <p>
+            Tổng số bài đăng
+          </p>
+        </div>
+        <div class ="mycard-number">
+          <p>
+            {{ total_post | default('N/A') }}
+          </p>
+        </div>
+      </div>
+      <div class ="mycard" style ="background-color: rgb(232, 198, 175)";>
+        <div class ="mycard-title">
+          <p>
+            Số bài đăng mới trong ngày
+          </p>
+        </div>
+        <div class ="mycard-number">
+          <p>
+            {{ new_post_today_count |default('N/A') }}
+          </p>
+        </div>
+      </div>
+      <div class ="mycard" style ="background-color: #ccd9b7";>
+        <div class ="mycard-title">
+          <p>
+            Số bài đăng mới trong tháng
+          </p>
+        </div>
+        <div class ="mycard-number">
+          <p>
+            {{ new_post_month_count | default('N/A') }}
+          </p>
+        </div>
+      </div>
+      <div class ="mycard" style ="background-color:rgb(232, 198, 175)";>
+        <div class ="mycard-title">
+          <p>
+            Số bài đăng mới trong năm
+          </p>
+        </div>
+        <div class ="mycard-number">
+          <p>
+           {{ new_post_year_count |  default('N/A') }}
+          </p>
+        </div>
+      </div>
+    </div>
+<!-- ............................-->
+ <!-- ............................-->
+      {% if form %}
+      <form method="POST">
+        {{ form.hidden_tag() }}
+        <div class ="select-year">
+          <label style= "display:block;"
+            for="year"
+            >{{ form.year.label.text}}</label>
+          {{ form.year(class="form-control") }} 
+          <button type="submit">Xem</button>
+        </div>
+        
+      </form>
+      {% else %}
+      <p><em>(Form chọn năm không khả dụng)</em></p>
+      {% endif %}
+
+<!-- ............................-->
+    <div class="chart-general">
+      <div class="chart-content">
+        <div class="chart-container" style="flex:2;">
+          <h2 style="font-weight:bold;">Số lượng bài đăng mới theo tháng</h2>
+          <canvas id="newByMonthChartID" width="600" height="400"></canvas>
+        </div>
+        <div class="chart-container" style="flex:1;">
+          <div class ="mycard" style ="background-color: #ccd9b7"; >
+            <div class ="mycard-title">
+              <p>
+                Tổng số lượt quan tâm của tất cả bài đăng theo năm
+              </p>
+            </div>
+            <div class ="mycard-number">
+              <p>
+                {{ total_care | default('0') }}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="display:row">
+      <h2 style="font-weight:bold; display:row;margin-top:20px;" >Trạng thái bài đăng</h2>
+        <div class="chart-container" style="display:flex; margin-top:20px;">
+          
+          <div class="" style="flex:1;">
+              <canvas id="postTypeChartID1" width="200" height="200"></canvas>
+            </div>
+
+            <div class="" style="flex:1;">
+              <canvas id="postTypeChartID2" width="200" height="200"></canvas>
+            </div>
+
+            <div class="" style="flex:1;">
+              <canvas id="postTypeChartID" width="200" height="200"></canvas>
+            </div>
+      </div>
+        
+          
+          
+          
+      </div>
+        <div class="chart-container" style="margin-top:20px;">
+          <h2 style="font-weight:bold;">Số lượng bài đăng theo danh mục</h2>
+          <canvas id="categoryChart" width="1200" height="600"></canvas>
+        </div>
+
+        <div class="chart-container" style ="margin-top:20px;">
+          <h2 style="font-weight:bold;"> Top 5 người {{ selected_post_type }} nhiều đồ nhất</h2>
+
+            <div>
+              <a href="{{ url_for('report.show_postReport', type='Thanh Lý') }}" >
+                  <button 
+                  {% if selected_post_type == 'Thanh Lý' %}style="font-weight:bold"
+                  {% endif %}
+                  class="btn btn-primary"
+                  >
+                    Thanh Lý
+                  </button>
+              </a>
+              <a href="{{ url_for('report.show_postReport', type='Trao Đổi') }}" >
+                  <button 
+                  {% if selected_post_type == 'Trao Đổi' %}style="font-weight:bold"
+                  {% endif %}
+                  class="btn btn-success"
+                  >
+                    Trao Đổi
+                  </button>
+              </a>
+              <a href="{{ url_for('report.show_postReport', type='Donate') }}" >
+                  <button 
+                  {% if selected_post_type == 'Donate' %}style="font-weight:bold"
+                  {% endif %}
+                  class="btn btn-warning"
+                  >
+                    Donate
+                  </button>
+              </a>
+            </div>
+
+        <table border="1" cellpadding="5" class="table table-striped table-hover align-middle">
+        <thead class="table-dark">
+          <tr>
+              <th>STT</th>
+              <th>Mã HS/SV</th>
+              <th>Họ tên</th>
+              <th>Số bài đã đăng</th>
+          </tr>
+          </thead>
+      <tbody>
+          {% for username, fullname, count in top_users %}
+          <tr>
+              <td>{{ loop.index }}</td> <!-- STT bắt đầu từ 1 -->
+              <td>{{ username }}</td>
+              <td>{{ fullname }}</td>
+              <td>{{ count }} bài đăng</td>
+          </tr>
+      </tbody>
+      {% endfor %}
+    </table>
+
+<!-- --> 
+    </div> 
+
+
+          <div class="chart-container" style ="margin-top:20px;">
+          <h2 style="font-weight:bold;"> Top 5 bài đăng {{ selected_post_type }} nhiều lượt quan tâm nhất</h2>
+
+            <div>
+              <a href="{{ url_for('report.show_postReport', type='Thanh Lý') }}" >
+                  <button 
+                  {% if selected_post_type == 'Thanh Lý' %}style="font-weight:bold"
+                  {% endif %}
+                  class="btn btn-primary"
+                  >
+                    Thanh Lý
+                  </button>
+              </a>
+              <a href="{{ url_for('report.show_postReport', type='Trao Đổi') }}" >
+                  <button 
+                  {% if selected_post_type == 'Trao Đổi' %}style="font-weight:bold"
+                  {% endif %}
+                  class="btn btn-success"
+                  >
+                    Trao Đổi
+                  </button>
+              </a>
+              <a href="{{ url_for('report.show_postReport', type='Donate') }}" >
+                  <button 
+                  {% if selected_post_type == 'Donate' %}style="font-weight:bold"
+                  {% endif %}
+                  class="btn btn-warning"
+                  >
+                    Donate
+                  </button>
+              </a>
+            </div>
+
+        <table border="1" cellpadding="4" class="table table-striped table-hover align-middle">
+        <thead class="table-dark">
+          <tr>
+            <th>STT</th>
+            <th>ID bài đăng</th>
+            <th>Loại</th>
+            <th>Người đăng</th>
+            <th>Lượt quan tâm</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in top_posts %}
+          <tr>
+            <td>{{ loop.index }}</td>
+            <td>{{ row[0] }}</td>
+            <td>{{ row[1] }}</td>
+            <td>{{ row[2] }}</td>
+            <td>{{ row[3] }} ⭐</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+    
+    </table>
+
+
+    </div> 
+    
+      </div>
+    </div>
+    <button onclick="downloadPDF()" class="btn btn-outline-success" style ="display:block; margin: auto;">Xuất file PDF</button>
+</div>
+
+
+
+{% endblock %}
+
+{% block extra_js %}
+<!--  -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+
+
+<script>
+
+//downloadPDF--------------------
+      async function downloadPDF() {
+        const element = document.querySelector(".container"); // vùng muốn chụp
+        // Chờ biểu đồ vẽ xong
+          await new Promise(resolve => setTimeout(resolve, 800));
+        
+        // Đảm bảo chiều cao đủ để chụp
+          element.style.minHeight = element.scrollHeight + "px";
+        
+        
+        // Dùng html2canvas render toàn bộ phần tử kể cả phần cuộn
+        const canvas = await html2canvas(element, {
+          scale: 2,
+          useCORS: true,
+          scrollY: 0 // tránh cắt nội dung
+        });
+
+        const imgData = canvas.toDataURL("image/png");
+        const pdf = new jspdf.jsPDF("p", "mm", "a4");
+
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pageHeight = pdf.internal.pageSize.getHeight();
+
+        const imgProps = pdf.getImageProperties(imgData);
+        const imgHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+        let heightLeft = imgHeight;
+        let position = 0;
+
+         while (position < imgHeight) {
+    // Tính chiều cao còn lại của hình ảnh
+    const remainingHeight = imgHeight - position;
+
+    // Nếu phần còn lại lớn hơn chiều cao trang, thêm trang mới
+    if (remainingHeight > pageHeight) {
+      pdf.addImage(imgData, "PNG", 0, -position, pdfWidth, imgHeight);
+      position += pageHeight;
+      if (position < imgHeight) pdf.addPage();
+    } else {
+      // Nếu phần còn lại vừa với trang hiện tại, vẽ và thoát vòng lặp
+      pdf.addImage(imgData, "PNG", 0, -position, pdfWidth, imgHeight);
+      break;
+    }
+  }
+
+        pdf.save("ThongKeBaiDang.pdf");
+      }
+
+//downloadPDF--------------------
+
+
+      // Dữ liệu mẫu 
+      //  dòng này sẽ bị ghi đè bởi dữ liệu từ server
+      var defaultCounts = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+
+      // Lấy dữ liệu post_counts từ Flask. Nếu không có, sử dụng mảng 12 số 0.
+      var DataFromServer = {{ post_counts | tojson | safe }};
+      var CountsData;
+
+      if (
+          DataFromServer &&
+          Array.isArray(DataFromServer) &&
+          DataFromServer.length === 12
+      ) {
+          // Nếu có dữ liệu từ server và là mảng đủ 12 phần tử (12 tháng)
+          CountsData = DataFromServer;
+      } else {
+          // Nếu không hợp lệ, dùng dữ liệu mặc định
+          CountsData = defaultCounts;
+      }
+
+
+      
+      // Kiểm tra xem phần tử canvas có tồn tại không
+      var canvasElement = document.getElementById("newByMonthChartID");
+
+      if (canvasElement) {
+        var ctx = canvasElement.getContext("2d");
+        var newByMonthChartID = new Chart(ctx, {
+          type: "bar", // Loại biểu đồ (cột)
+          data: {
+            labels: [
+              "Tháng 1",
+              "Tháng 2",
+              "Tháng 3",
+              "Tháng 4",
+              "Tháng 5",
+              "Tháng 6",
+              "Tháng 7",
+              "Tháng 8",
+              "Tháng 9",
+              "Tháng 10",
+              "Tháng 11",
+              "Tháng 12",
+            ], // Các tháng
+            datasets: [
+              {
+                label: "Số bài đăng mới", // Tên biểu đồ
+                data: CountsData, // Truyền dữ liệu từ Flask sang JavaScript (đã có xử lý fallback)
+                backgroundColor: "#7fa390", // Màu nền cho cột (tăng độ đậm)
+                borderColor: "#7fa390", // Màu viền cho cột
+                borderWidth: 1, // Độ dày viền cột
+                hoverBackgroundColor: "#b0e1e1", // Màu khi hover
+                hoverBorderColor: "#b0e1e1",
+              },
+            ],
+          },
+          options: {
+            indexAxis: "y", // để biểu đồ bar ngang
+            responsive: false, // Cho phép biểu đồ tự điều chỉnh kích thước
+            maintainAspectRatio: false, // Cho phép thay đổi tỷ lệ khung hình (hữu ích khi đặt chiều cao cố định)
+            plugins: { legend: { position: "top" } },
+            scales: {
+              x: {
+                beginAtZero: true, // Đảm bảo trục y bắt đầu từ 0
+                ticks: {
+
+                  // Đảm bảo các giá trị trên trục y là số nguyên nếu phù hợp
+                  callback: function (value) {
+                    if (Number.isInteger(value)) {
+                      return value;
+                    }
+                  },
+                  stepSize: 1, 
+                },
+              },
+              y: {
+                grid: {
+                  display: false, // Ẩn lưới dọc cho trục x nếu muốn
+                },
+              },
+            },
+            plugins: {
+              legend: {
+                position: "top", // Vị trí của chú giải
+              },
+              tooltip: {
+                enabled: true, // Bật tooltip
+                backgroundColor: "rgba(0,0,0,0.7)",
+                titleFont: {
+                  size: 14,
+                },
+                bodyFont: {
+                  size: 12,
+                },
+                callbacks: {
+                  label: function (context) {
+                  const label = context.dataset.label || "";
+                  const value = context.parsed.x; // Trục x là số lượng người dùng
+                  return `${label}: ${value} bài đăng`;
+                  },
+                },
+              },
+            },
+          },
+        });
+      } else {
+        console.error("Không tìm thấy phần tử canvas với ID 'newByMonthChartID'.");
+      }
+   
+
+// pie ----------------------
+// Dữ liệu mặc định khi không có dữ liệu từ server
+      var defaultPieLabels = ["Không có dữ liệu", "Không có dữ liệu"];
+      var defaultPieCounts = [0, 0];
+
+      // Lấy dữ liệu từ server (nếu có)
+      var pieLabelsFromServer = {{ data.label_type | tojson | safe if data and data.label_type else 'null' }};
+      var pieCountsFromServer = {{ data.count_type | tojson | safe if data and data.count_type else 'null' }};
+
+      // Kiểm tra và sử dụng nhãn biểu đồ (labels)
+      var pieChartLabels;
+      if (pieLabelsFromServer && Array.isArray(pieLabelsFromServer) && pieLabelsFromServer.length > 0) {
+          pieChartLabels = pieLabelsFromServer;
+      } else {
+          pieChartLabels = defaultPieLabels;
+      }
+
+      // Kiểm tra và sử dụng số liệu biểu đồ (counts)
+      var pieChartCounts;
+      if (
+          pieCountsFromServer &&
+          Array.isArray(pieCountsFromServer) &&
+          pieCountsFromServer.length === pieChartLabels.length // Đảm bảo số lượng khớp với labels
+      ) {
+          pieChartCounts = pieCountsFromServer;
+      } else {
+          // Nếu đang dùng nhãn mặc định, dùng luôn số liệu mặc định
+          if (pieChartLabels === defaultPieLabels) {
+              pieChartCounts = defaultPieCounts;
+          } else {
+              // Nếu nhãn hợp lệ nhưng số liệu không khớp, tạo mảng số 0 tương ứng
+              pieChartCounts = pieChartLabels.map(() => 0);
+          }
+      }
+
+      // Tạo biểu đồ nếu phần tử canvas tồn tại
+      var pieCanvasElement = document.getElementById('postTypeChartID1');
+      if (pieCanvasElement) {
+          const ctxPie = pieCanvasElement.getContext('2d');
+          const postTypeChartID1 = new Chart(ctxPie, {
+              type: 'pie',
+              data: {
+                  labels: pieChartLabels,
+                  datasets: [{
+                      label: 'Bài đăng',
+                      data: pieChartCounts,
+                      backgroundColor: ['#e74a3b', '#1cc88a'], // Thêm màu nếu cần
+                      borderWidth: 1
+                  }]
+              },
+              options: {
+                  responsive: true,
+                  plugins: {
+                      legend: {
+                          position: 'bottom'
+                      },
+                      tooltip: {
+                          callbacks: {
+                              label: function(context) {
+                                  let total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                  if (total === 0) return `${context.label}: 0 (0%)`; // Tránh chia cho 0
+                                  let percent = ((context.raw / total) * 100).toFixed(1);
+                                  return `${context.label}: ${context.raw} (${percent}%)`;
+                              }
+                          }
+                      }
+                  }
+              }
+          });
+      } else {
+          console.error("Không tìm thấy phần tử canvas pie");
+      }
+
+
+
+// Dữ liệu mặc định khi không có dữ liệu từ server
+      var defaultPieLabels = ["Không có dữ liệu", "Không có dữ liệu"];
+      var defaultPieCounts = [0, 0];
+
+      // Lấy dữ liệu từ server (nếu có)
+      var pieLabelsFromServer = {{ data1.label_type | tojson | safe if data and data.label_type else 'null' }};
+      var pieCountsFromServer = {{ data1.count_type | tojson | safe if data and data.count_type else 'null' }};
+
+      // Kiểm tra và sử dụng nhãn biểu đồ (labels)
+      var pieChartLabels;
+      if (pieLabelsFromServer && Array.isArray(pieLabelsFromServer) && pieLabelsFromServer.length > 0) {
+          pieChartLabels = pieLabelsFromServer;
+      } else {
+          pieChartLabels = defaultPieLabels;
+      }
+
+      // Kiểm tra và sử dụng số liệu biểu đồ (counts)
+      var pieChartCounts;
+      if (
+          pieCountsFromServer &&
+          Array.isArray(pieCountsFromServer) &&
+          pieCountsFromServer.length === pieChartLabels.length // Đảm bảo số lượng khớp với labels
+      ) {
+          pieChartCounts = pieCountsFromServer;
+      } else {
+          // Nếu đang dùng nhãn mặc định, dùng luôn số liệu mặc định
+          if (pieChartLabels === defaultPieLabels) {
+              pieChartCounts = defaultPieCounts;
+          } else {
+              // Nếu nhãn hợp lệ nhưng số liệu không khớp, tạo mảng số 0 tương ứng
+              pieChartCounts = pieChartLabels.map(() => 0);
+          }
+      }
+
+      // Tạo biểu đồ nếu phần tử canvas tồn tại
+      var pieCanvasElement = document.getElementById('postTypeChartID2');
+      if (pieCanvasElement) {
+          const ctxPie = pieCanvasElement.getContext('2d');
+          const postTypeChartID2 = new Chart(ctxPie, {
+              type: 'pie',
+              data: {
+                  labels: pieChartLabels,
+                  datasets: [{
+                      label: 'Bài đăng',
+                      data: pieChartCounts,
+                      backgroundColor: ['#e74a3b', '#1cc88a'], // Thêm màu nếu cần
+                      borderWidth: 1
+                  }]
+              },
+              options: {
+                  responsive: true,
+                  plugins: {
+                      legend: {
+                          position: 'bottom'
+                      },
+                      tooltip: {
+                          callbacks: {
+                              label: function(context) {
+                                  let total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                  if (total === 0) return `${context.label}: 0 (0%)`; // Tránh chia cho 0
+                                  let percent = ((context.raw / total) * 100).toFixed(1);
+                                  return `${context.label}: ${context.raw} (${percent}%)`;
+                              }
+                          }
+                      }
+                  }
+              }
+          });
+      } else {
+          console.error("Không tìm thấy phần tử canvas 'pie'.");
+      }
+
+// Dữ liệu mặc định khi không có dữ liệu từ server
+      var defaultPieLabels = ["Không có dữ liệu", "Không có dữ liệu"];
+      var defaultPieCounts = [0, 0];
+
+      // Lấy dữ liệu từ server (nếu có)
+      var pieLabelsFromServer = {{ dataType.label_type | tojson | safe if data and data.label_type else 'null' }};
+      var pieCountsFromServer = {{ dataType.count_type | tojson | safe if data and data.count_type else 'null' }};
+
+      // Kiểm tra và sử dụng nhãn biểu đồ (labels)
+      var pieChartLabels;
+      if (pieLabelsFromServer && Array.isArray(pieLabelsFromServer) && pieLabelsFromServer.length > 0) {
+          pieChartLabels = pieLabelsFromServer;
+      } else {
+          pieChartLabels = defaultPieLabels;
+      }
+
+      // Kiểm tra và sử dụng số liệu biểu đồ (counts)
+      var pieChartCounts;
+      if (
+          pieCountsFromServer &&
+          Array.isArray(pieCountsFromServer) &&
+          pieCountsFromServer.length === pieChartLabels.length // Đảm bảo số lượng khớp với labels
+      ) {
+          pieChartCounts = pieCountsFromServer;
+      } else {
+          // Nếu đang dùng nhãn mặc định, dùng luôn số liệu mặc định
+          if (pieChartLabels === defaultPieLabels) {
+              pieChartCounts = defaultPieCounts;
+          } else {
+              // Nếu nhãn hợp lệ nhưng số liệu không khớp, tạo mảng số 0 tương ứng
+              pieChartCounts = pieChartLabels.map(() => 0);
+          }
+      }
+
+      // Tạo biểu đồ nếu phần tử canvas tồn tại
+      var pieCanvasElement = document.getElementById('postTypeChartID');
+      if (pieCanvasElement) {
+          const ctxPie = pieCanvasElement.getContext('2d');
+          const postTypeChartID = new Chart(ctxPie, {
+              type: 'pie',
+              data: {
+                  labels: pieChartLabels,
+                  datasets: [{
+                      label: 'Bài đăng',
+                      data: pieChartCounts,
+                      backgroundColor: ['#f6c23e', '#1cc88a', '#36b9cc'], // Thêm màu nếu cần
+                      borderWidth: 1
+                  }]
+              },
+              options: {
+                  responsive: true,
+                  plugins: {
+                      legend: {
+                          position: 'bottom'
+                      },
+                      tooltip: {
+                          callbacks: {
+                              label: function(context) {
+                                  let total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                  if (total === 0) return `${context.label}: 0 (0%)`; // Tránh chia cho 0
+                                  let percent = ((context.raw / total) * 100).toFixed(1);
+                                  return `${context.label}: ${context.raw} (${percent}%)`;
+                              }
+                          }
+                      }
+                  }
+              }
+          });
+      } else {
+          console.error("Không tìm thấy phần tử canvas 'pie'.");
+      }
+
+
+
+
+
+
+  // Dữ liệu từ Flask
+  var LabelsFromServer = {{ category_labels | tojson | safe }};
+  var DataFromServer = {{ category_counts | tojson | safe }};
+
+  var Labels = Array.isArray(LabelsFromServer) ? LabelsFromServer : [];
+  var CountsData = Array.isArray(DataFromServer) ? DataFromServer : [];
+
+  // Kiểm tra canvas
+  var canvasElement = document.getElementById("categoryChart");
+
+  if (canvasElement) {
+    var ctx = canvasElement.getContext("2d");
+    var categoryChart = new Chart(ctx, {
+      type: "bar", // Cột đứng
+      data: {
+        labels: Labels, // Tên danh mục
+        datasets: [
+          {
+            label: "Số bài đăng theo danh mục",
+            data: CountsData,
+            backgroundColor: "#7fa390",
+            borderColor: "#7fa390",
+            borderWidth: 1,
+            hoverBackgroundColor: "#b0e1e1",
+            hoverBorderColor: "#b0e1e1",
+            
+          },
+        ],
+      },
+      options: {
+      
+        responsive: false,
+        maintainAspectRatio: false,
+
+        interaction: { 
+          mode: 'nearest', // Chọn cột gần nhất với con trỏ chuột
+          axis: 'x',
+          intersect: false 
+          
+          },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              stepSize: 1, // Bước nhảy số nguyên
+              callback: function (value) {
+                if (Number.isInteger(value)) return value;
+              },
+            },
+          },
+          x: {
+            grid: {
+              display: false,
+            },
+            title: {
+              display: true,
+              text: "Danh mục",
+            },
+          },
+        },
+        plugins: {
+          legend: {
+            position: "top",
+          },
+          tooltip: {
+            enabled: true,
+            backgroundColor: "rgba(0,0,0,0.7)",
+            titleFont: {
+              size: 14,
+            },
+            bodyFont: {
+              size: 12,
+            },
+            callbacks: {
+              label: function (context) {
+                const label = context.dataset.label || "";
+                const value = context.parsed.y; // Với cột đứng, giá trị nằm ở `parsed.y`
+                return `${label}: ${value} bài đăng`;
+              },
+            },
+          },
+        },
+      },
+    });
+  } else {
+    console.error("Không tìm thấy phần tử canvas với ID 'categoryChart'.");
+  }
+</script>
+
+
+    
+
+{% endblock %}

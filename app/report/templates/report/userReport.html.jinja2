@@ -1,6 +1,8 @@
 {% extends 'reportMenu.html' %} {% block ManagementContent %}
  <div class="container">
-      <h1 class="h1-container">Thống kê Người dùng</h1>
+
+      <h1 class="h1-container">BÁO CÁO THỐNG KÊ NGƯỜI DÙNG</h1>
+
     <div class ="card-bar">
       <div class ="mycard" style ="background-color: #ccd9b7"; >
         <div class ="mycard-title">
@@ -151,7 +153,8 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
       // Dữ liệu mẫu cho user_counts trong trường hợp Flask không truyền qua hoặc để test độc lập
-      // Trong môi trường Flask thực tế, dòng này sẽ bị ghi đè bởi dữ liệu từ server
+      //  dòng này sẽ bị ghi đè bởi dữ liệu từ server
+
       var defaultUserCounts = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
       // Lấy dữ liệu user_counts từ Flask. Nếu không có, sử dụng mảng 12 số 0.
@@ -199,11 +202,13 @@
               {
                 label: "Số người dùng đăng ký", // Tên biểu đồ
                 data: userCountsData, // Truyền dữ liệu từ Flask sang JavaScript (đã có xử lý fallback)
-                backgroundColor: "rgba(54, 162, 235, 0.6)", // Màu nền cho cột (tăng độ đậm)
-                borderColor: "rgba(54, 162, 235, 1)", // Màu viền cho cột
+
+                backgroundColor: "#7fa390", // Màu nền cho cột (tăng độ đậm)
+                borderColor: "#7fa390", // Màu viền cho cột
                 borderWidth: 1, // Độ dày viền cột
-                hoverBackgroundColor: "rgba(54, 162, 235, 0.8)", // Màu khi hover
-                hoverBorderColor: "rgba(54, 162, 235, 1)",
+                hoverBackgroundColor: "#b0e1e1", // Màu khi hover
+                hoverBorderColor: "#b0e1e1",
+
               },
             ],
           },
@@ -223,7 +228,9 @@
                       return value;
                     }
                   },
-                  stepSize: 1, // Hoặc một giá trị phù hợp với dữ liệu của bạn
+
+                  stepSize: 1, // Hoặc một giá trị phù hợp
+
                 },
               },
               y: {
