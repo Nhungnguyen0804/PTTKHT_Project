@@ -13,6 +13,7 @@ from app.models.event import Event
 from app.models.item_category import Category
 event_blueprint = Blueprint('event', __name__,template_folder='templates')
 
+# Route để hiển thị danh sách sự kiện
 @event_blueprint.route('/event')
 def event():
     events = Event.query.all()
@@ -27,6 +28,7 @@ def event():
 
     return render_template('event/event.html', events=events, now=datetime.utcnow())
 
+# Route để hiển thị danh sách các hạng mục quyên góp của một sự kiện
 @event_blueprint.route('/<int:category_id>/details', methods=["GET", "POST"])
 def manageDonation(category_id):
     category = DonationCategory.query.get_or_404(category_id)
@@ -66,7 +68,7 @@ def manageDonation(category_id):
     donation_items = session.get('donation_items', [])
     return render_template("event/addDonation.html", category=category, donation_items=donation_items)
 
-
+# Route để thêm hoặc chỉnh sửa một vật phẩm quyên góp
 @event_blueprint.route('/<int:category_id>/additem', methods=['GET', 'POST'])
 @event_blueprint.route('/<int:category_id>/<int:item_id>', methods=['GET', 'POST'])
 @event_blueprint.route('/<int:category_id>/items/<int:item_number>', methods=['GET', 'POST'])
