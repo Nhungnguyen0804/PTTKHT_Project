@@ -102,7 +102,8 @@ thead {
   padding: 20px;
 } */
 
-.manager-user-frame {
+.manager-user-frame,
+.manager-post-frame {
   background-color: #fff;
   padding: 20px;
   border: 2px solid black;
