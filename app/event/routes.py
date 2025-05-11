@@ -10,7 +10,7 @@ from app.models.donation import Donation
 from app.models.donation_category import DonationCategory
 from app.models.donation_item import DonationItem
 from app.models.event import Event
-from app.models.item_category import ItemCategory
+from app.models.item_category import Category
 event_blueprint = Blueprint('event', __name__,template_folder='templates')
 
 @event_blueprint.route('/event')
@@ -51,7 +51,7 @@ def manageDonation(category_id):
             donation_item = DonationItem(
                 item_name=item_data['item_name'],
                 quantity=item_data['quantity'],
-                item_category_id=item_data['item_category_id'],
+                category_id=item_data['category_id'],
                 donation_id=new_donation.id,
                 image = item_data['image_url']
             )
@@ -78,7 +78,7 @@ def manageDonationItem(category_id, item_number=None):
     form = MoneyDonationForm(data=donation_data) if category.donation_type == "money" else ItemDonationForm(data=donation_data)
 
     if category.donation_type != "money":
-        categories = ItemCategory.query.all()
+        categories = Category.query.all()
         form.itemCategoryId.choices = [(c.id, c.category_name) for c in categories]
 
     if form.validate_on_submit():
@@ -94,13 +94,13 @@ def manageDonationItem(category_id, item_number=None):
             new_item = {
                 'item_name': f"Quyên góp tiền cho hạng mục {category.dc_name}",
                 'quantity': form.quantity.data,
-                'item_category_id': 1,
+                'category_id': 24,
             }
         else:
             new_item = {
                 'item_name': form.itemName.data,
                 'quantity': form.quantity.data,
-                'item_category_id': form.itemCategoryId.data,
+                'category_id': form.itemCategoryId.data,
                 'image_url': image_url
             }
 

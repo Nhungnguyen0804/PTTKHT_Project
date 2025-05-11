@@ -1,3 +1,4 @@
+from datetime import datetime
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
 import os
@@ -12,7 +13,6 @@ from app.models.donation_category import DonationCategory
 from app.flask_extensions import csdl
 from sqlalchemy.orm import joinedload
 
-from app.models.item_category import ItemCategory
 admin_blueprint = Blueprint('admin', __name__,template_folder='templates')
 
 
@@ -84,7 +84,7 @@ def manageEvent(event_id=None):
 
         return redirect(url_for('admin.adminPage'))
 
-    return render_template('admin/addEvent.html', form=form, event=event)
+    return render_template('admin/addEvent.html', form=form, event=event,now=datetime.utcnow())
 
 
 @admin_blueprint.route('/admin/<int:event_id>')
@@ -105,7 +105,8 @@ def showEventDetails(event_id):
         return render_template(
             'admin/eventDetails.html',
             event=event,
-            donations=donations
+            donations=donations,
+            now=datetime.utcnow()
         )
     else:
         flash("Không tìm thấy sự kiện.", "danger")
@@ -146,7 +147,8 @@ def manageDonationCategory(event_id, donation_category_id=None):
                 start_date = form.startDate.data,
                 end_date = form.endDate.data,
                 dc_type_id = form.dcType.data,
-                event_id = event_id
+                event_id = event_id,
+                status_id = 1
             )
             
             csdl.session.add(donation_category)
@@ -254,7 +256,7 @@ def createBuyableItem(event_id=None, donation_item_id=None, item_id=None):
                 item_name=form.item_name.data,
                 price=form.price.data,
                 image=image_path or donation_item.image,
-                item_category_id=donation_item.item_category_id,
+                item_category_id=donation_item.category_id,
                 status=1  # mặc định active
             )
             csdl.session.add(new_item)
@@ -286,4 +288,36 @@ def updateEventStatus(event_id, status_id):
     event = Event.query.get(event_id)
     event.status_id = status_id
     csdl.session.commit()
+    return redirect(request.referrer or url_for('admin.adminPage'))
+
+@admin_blueprint.route('/donation-category/<int:category_id>/pause')
+def pause_donation_category(category_id):
+    dc = DonationCategory.query.get_or_404(category_id)
+    if dc.status_id == 3:
+        flash('Không thể tạm dừng hạng mục đã huỷ.', 'danger')
+    else:
+        dc.status_id = 2  # ID trạng thái "tạm hoãn"
+        csdl.session.commit()
+        flash('Hạng mục đã được tạm dừng.', 'success')
+    return redirect(url_for('admin.showEventDetails', event_id=dc.event_id))
+
+
+@admin_blueprint.route('/donation-category/<int:category_id>/cancel')
+def cancel_donation_category(category_id):
+    dc = DonationCategory.query.get_or_404(category_id)
+    if dc.status_id == 3:
+        flash('Hạng mục này đã bị huỷ trước đó.', 'warning')
+    else:
+        dc.status_id = 3  # ID trạng thái "huỷ"
+        csdl.session.commit()
+        flash('Hạng mục đã được huỷ.', 'success')
+    return redirect(url_for('admin.showEventDetails', event_id=dc.event_id))
+
+
+@admin_blueprint.route('/donation-category/<int:category_id>/resume')
+def resume_donation_category(category_id):
+    category = DonationCategory.query.get_or_404(category_id)
+    category.status_id = 1  # trạng thái "Đang hoạt động"
+    csdl.session.commit()
+    flash("Hạng mục quyên góp đã được tiếp tục.", "success")
     return redirect(request.referrer or url_for('admin.adminPage'))

@@ -9,6 +9,8 @@ class DonationCategory(csdl.Model):
     start_date = csdl.Column(csdl.DateTime, nullable=False)
     end_date = csdl.Column(csdl.DateTime, nullable=False)
     event_id = csdl.Column(csdl.Integer, csdl.ForeignKey('event.id'), nullable=False)
+    status_id = csdl.Column(csdl.Integer, csdl.ForeignKey('event_status.id'), nullable=False)
     event = csdl.relationship('Event', backref=csdl.backref('donation_categories', lazy='dynamic'))
-
+    status = csdl.relationship('EventStatus', backref=csdl.backref('donation_categories', lazy='dynamic'))
+    
 

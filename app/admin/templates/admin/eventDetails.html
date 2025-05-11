@@ -40,21 +40,58 @@ add_header %}
 
 <h5 class="mt-4">Các hạng mục quyên góp</h5>
 <div class="mb-3">
-  <!-- Hiển thị danh sách hạng mục nếu có -->
   {% if event.donation_categories.count() > 0 %}
   <ul class="list-group">
-    {% for dc in event.donation_categories %}
+    {% for dc in event.donation_categories %} {% set is_active = dc.start_date
+    <= now <= dc.end_date and dc.status.id not in [2, 3] %} {% set bg_color =
+    '#d4edda' if is_active else '#f8d7da' %}
+
     <li
       class="list-group-item d-flex justify-content-between align-items-center"
+      style="background-color: {{ bg_color }}; color: #000;"
     >
-      {{ dc.dc_name }} ({{ dc.donation_type }})
-      <span class="badge bg-secondary">
-        {{ dc.start_date.strftime('%d/%m/%Y') }} - {{
-        dc.end_date.strftime('%d/%m/%Y') }}
-      </span>
-      <a href="{{url_for('admin.manageDonationCategories', category_id=dc.id)}}"
-        ><button>Xem các lượt quyên góp</button></a
-      >
+      <div>
+        <strong style="color: #000">{{ dc.dc_name }}</strong> ({{
+        dc.donation_type }})<br />
+        <span
+          class="badge"
+          style="background-color: {{ bg_color }}; color: #000;"
+        >
+          {{ dc.start_date.strftime('%d/%m/%Y') }} - {{
+          dc.end_date.strftime('%d/%m/%Y') }} </span
+        ><br />
+
+        <!-- Trạng thái -->
+        <span class="badge bg-info text-dark mt-1">
+          {% if dc.status.id == 2 %} Đã tạm hoãn {% elif dc.status.id == 3 %} Đã
+          huỷ {% elif dc.start_date > now %} Chưa bắt đầu {% elif dc.end_date <
+          now %} Đã kết thúc {% else %} Đang hoạt động {% endif %}
+        </span>
+      </div>
+
+      <div>
+        <!-- Nút bật/tắt tạm hoãn -->
+        {% if dc.status.id == 2 %}
+        <a
+          href="{{ url_for('admin.resume_donation_category', category_id=dc.id) }}"
+        >
+          <button class="btn btn-success btn-sm">Tiếp tục</button>
+        </a>
+        {% else %}
+        <a
+          href="{{ url_for('admin.pause_donation_category', category_id=dc.id) }}"
+        >
+          <button class="btn btn-warning btn-sm">Tạm dừng</button>
+        </a>
+        {% endif %}
+
+        <!-- Nút huỷ -->
+        <a
+          href="{{ url_for('admin.cancel_donation_category', category_id=dc.id) }}"
+        >
+          <button class="btn btn-danger btn-sm">Huỷ</button>
+        </a>
+      </div>
     </li>
     {% endfor %}
   </ul>
@@ -70,52 +107,77 @@ add_header %}
   Thêm hạng mục quyên góp
 </a>
 <h5 class="mt-5">Danh sách các lượt quyên góp</h5>
-{% if donations %}
-  {% for donation in donations %}
-  <div class="card mb-4 shadow-sm border-primary">
-    <div class="card-body">
-      <h5 class="card-title text-primary">{{ donation.donor_name }}</h5>
-      <p class="card-text mb-1">
-        <strong>Ngày quyên góp:</strong> {{ donation.create_time.strftime("%d/%m/%Y %H:%M") }}
-      </p>
-      <p class="card-text mb-2">
-        <strong>Trạng thái:</strong>
-        <span class="badge bg-secondary">{{ donation.status.name }}</span>
-      </p>
+{% if donations %} {% for donation in donations %}
+<div class="card mb-4 shadow-sm border-primary">
+  <div class="card-body">
+    <h5 class="card-title text-primary">{{ donation.donor_name }}</h5>
+    <p class="card-text mb-1">
+      <strong>Ngày quyên góp:</strong> {{
+      donation.create_time.strftime("%d/%m/%Y %H:%M") }}
+    </p>
+    <p class="card-text mb-2">
+      <strong>Trạng thái:</strong>
+      <span class="badge bg-secondary">{{ donation.status.name }}</span>
+    </p>
 
-      <h6 class="mt-3">Danh sách vật phẩm quyên góp:</h6>
-      {% if donation.items %}
-      <ul class="list-group list-group-flush">
-        {% for item in donation.items %}
-        <li class="list-group-item">
-          <strong>{{ item.item_name }}</strong> — SL: {{ item.quantity }}<br />
-          <small class="text-muted">
-            Loại: {{ item.item_category.category_name }}
-          </small>
-        </li>
-        {% endfor %}
-      </ul>
-      {% else %}
-      <p class="text-muted">Không có vật phẩm nào được quyên góp.</p>
-      {% endif %}
+    <h6 class="mt-3">Danh sách vật phẩm quyên góp:</h6>
+    {% if donation.items %}
+    <ul class="list-group list-group-flush">
+      {% for item in donation.items %}
+      <li class="list-group-item">
+        <strong>{{ item.item_name }}</strong> — SL: {{ item.quantity }}<br />
+        <small class="text-muted">
+          Loại: {{ item.item_category.category_name }}
+        </small>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="text-muted">Không có vật phẩm nào được quyên góp.</p>
+    {% endif %}
 
-      <div class="mt-4 d-flex gap-2">
-        <form method="POST" action="{{ url_for('admin.confirm_donation', donation_id=donation.id) }}">
-          <button type="submit" class="btn btn-success" {% if donation.status_id != 1 %}disabled{% endif %}>
-            Xác nhận quyên góp
-          </button>
-        </form>
-        <form method="POST" action="{{ url_for('admin.cancel_donation', donation_id=donation.id) }}">
-          <button type="submit" class="btn btn-danger" {% if donation.status_id != 1 %}disabled{% endif %}>
-            Huỷ quyên góp
-          </button>
-        </form>
-      </div>
+    <div class="mt-4 d-flex gap-2">
+      <form
+        method="POST"
+        action="{{ url_for('admin.confirm_donation', donation_id=donation.id) }}"
+      >
+        <button
+          type="submit"
+          class="btn btn-success"
+          {%
+          if
+          donation.status_id
+          !="1"
+          %}disabled{%
+          endif
+          %}
+        >
+          Xác nhận quyên góp
+        </button>
+      </form>
+      <form
+        method="POST"
+        action="{{ url_for('admin.cancel_donation', donation_id=donation.id) }}"
+      >
+        <button
+          type="submit"
+          class="btn btn-danger"
+          {%
+          if
+          donation.status_id
+          !="1"
+          %}disabled{%
+          endif
+          %}
+        >
+          Huỷ quyên góp
+        </button>
+      </form>
     </div>
   </div>
-  {% endfor %}
-{% else %}
-  <div class="alert alert-warning">Hiện chưa có lượt quyên góp nào.</div>
+</div>
+{% endfor %} {% else %}
+<div class="alert alert-warning">Hiện chưa có lượt quyên góp nào.</div>
 {% endif %}
 
 <h5 class="mt-5">Sản phẩm có thể mua</h5>
