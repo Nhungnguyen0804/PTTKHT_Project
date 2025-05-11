@@ -4,13 +4,14 @@ from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
 from . import post_blueprint 
 from app.models.post import Post
+from app.models.user import User
 from app import csdl
 import uuid
 import os
 from datetime import datetime
 import pytz
 from app.models.category import Category
-
+from .form import FilterForm
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 
@@ -55,11 +56,16 @@ def create_post():
         extra_info = ""
         if post_type == 'thanh_ly':
             extra_info += f"\nGiá: {price}"
-        # if contact:
-        #     extra_info += f"\nLiên hệ: {contact}"
 
-        # full_content = f"{content}{extra_info}"
-        full_content = f"{content}"
+        extra_info += f"\nLiên hệ:"
+        if phone:
+            extra_info += f"\nSố điện thoại:{phone}"
+        if email:
+            extra_info += f"\nEmail:{email}"
+        if facebook:
+            extra_info += f"\nFacebook:{facebook}"
+
+        full_content = f"{content}{extra_info}"
         print(full_content)
         new_post = Post(
             post_id=str(uuid.uuid4()),
@@ -300,3 +306,75 @@ def remember_facebook():
     current_user.facebook = facebook
     csdl.session.commit()
     return jsonify({'status': 'success', 'message': 'facebook updated'})
+
+
+def parse_contact(content):
+    # Tách các dòng liên hệ sau "Liên hệ:"
+    contact_data = []
+    if 'Liên hệ:' not in content:
+        return contact_data
+
+    lines = content.split('Liên hệ:')[1].strip().split('\n')
+    for line in lines:
+        if ':' not in line:
+            continue
+        label, value = line.split(':', 1)
+        value = value.strip()
+        # Bỏ qua nếu giá trị rỗng hoặc là 'None'
+        if value and value.lower() != 'none':
+            contact_data.append({
+                'label': label.strip().capitalize(),  # Viết hoa nhãn
+                'value': value
+            })
+    return contact_data
+
+
+@post_blueprint.route('/view_post', methods=['GET', 'POST'])
+def viewPost():
+    form = FilterForm()
+    users = User.query.all()
+
+    # Luôn chỉ lấy các bài đã duyệt
+    query = Post.query.filter(Post.is_approved == True and Post.status == 'Not done')
+
+    # Sắp xếp mặc định theo ngày tạo mới nhất
+    query = query.order_by(Post.create_date.desc())
+
+    if form.validate_on_submit():
+        post_type = form.post_type.data
+        sort_order = form.sort_order.data
+
+        if post_type != 'all':
+            query = query.filter(Post.post_type == post_type)
+
+        if sort_order == 'desc':
+            query = query.order_by(Post.create_date.desc())
+        else:
+            query = query.order_by(Post.create_date.asc())
+
+    posts = query.all()
+
+    # Gắn thông tin liên hệ đã tách vào mỗi post
+    for post in posts:
+        post.contact_info = parse_contact(post.content)
+
+    return render_template('post/view_post.html', posts=posts, users=users, form=form)
+    
+
+
+@post_blueprint.route('/interest/<string:post_id>', methods=['POST'])
+@login_required 
+def add_interest(post_id):
+    post = Post.query.get_or_404(post_id)
+    # Lấy danh sách user_id đã quan tâm
+    user_ids = post.interested_user_id.split(',') if post.interested_user_id else []
+
+    if str(current_user.id) in user_ids:
+        flash("Bạn đã quan tâm bài viết này rồi.", "warning")
+    else:
+        user_ids.append(str(current_user.id))
+        post.interested_user_id = ','.join(user_ids)
+        post.interest_count += 1
+        csdl.session.commit()
+        flash("Đã quan tâm bài viết.", "success")
+    return redirect(url_for('post.viewPost'))

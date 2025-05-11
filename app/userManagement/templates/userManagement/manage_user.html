@@ -120,8 +120,14 @@
               href="{{ url_for('userManagement.delete_user', user_id=user.id) }}"
               class="btn btn-sm btn-danger"
               onclick="return confirm('Bạn có chắc muốn xóa người dùng này?');"
-              >Delete</a
-            >
+              >Delete
+            </a>
+            {% if current_user.username == 'root' %}
+            <a
+            href="{{ url_for('userManagement.grant_roles', user_id=u.id) }}"
+            class="btn btn-sm btn-warning ms-1"
+            >Grant Role</a>
+            {% endif %}
             {% endif %}
           </td>
         </tr>
@@ -189,6 +195,12 @@
               onclick="return confirm('Bạn có chắc muốn xóa người dùng này?');"
               >Delete</a
             >
+            {% if current_user.username == 'root' %}
+            <a
+            href="{{ url_for('userManagement.grant_roles', user_id=u.id) }}"
+            class="btn btn-sm btn-warning ms-1"
+            >Grant Role</a>
+            {% endif %}
             {% endif %}
           </td>
         </tr>

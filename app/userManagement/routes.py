@@ -104,3 +104,20 @@ def search_user():
             flash('Vui lòng nhập tên người dùng để tìm kiếm!', 'warning')
     users = User.query.all()
     return render_template('userManagement/manage_user.html', user=user, users=users, action='Search')
+
+@userManagement_blueprint.route('/admin/users/roles/<int:user_id>', methods=['GET', 'POST'])
+def grant_roles(user_id):
+    user = User.query.get_or_404(user_id)
+    if user.username == "root":
+        flash('Không thể gán quyền cho tài khoản root!', 'danger')
+        return redirect(url_for('userManagement.manage_user'))
+    if request.method == 'POST':
+        role_ids = request.form.getlist('roles')
+        roles = Role.query.filter(Role.id.in_(role_ids)).all()
+        user.roles = roles
+        db.session.commit()
+        flash('Roles updated successfully!')
+        return redirect(url_for('userManagement.manage_user'))
+    # Nếu là GET, trả về trang gán quyền
+    all_roles = Role.query.all()
+    return render_template('userManagement/grant_roles.html', user=user, all_roles=all_roles)
