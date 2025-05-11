@@ -209,7 +209,60 @@
       </tbody>
     </table>
   </div>
-  {% endif %} {% if action == "Edit" and user %}
+  {% endif %}
+
+  <!--  -->
+
+  {% if users and users|length > 0 %}
+  <div
+    class="pagination-info"
+    style="text-align: right; margin-top: 20px; font-weight: bold"
+  >
+    {{ start }}–{{ end }} trong số {{ pagination.total }}
+  </div>
+
+  <div class="pagination-controls" style="text-align: right; margin-top: 10px">
+    {% if pagination.has_prev %}
+    <a
+      href="{{ url_for('userManagement.manage_user', page=pagination.prev_num) }}"
+      style="margin-right: 20px; font-size: 24px; text-decoration: none"
+      >←</a
+    >
+    {% else %}
+    <span
+      style="
+        margin-right: 20px;
+        font-size: 24px;
+        font-weight: bold;
+        color: black;
+        background-color: var(--mau5);
+        padding: 3px;
+      "
+      >←</span
+    >
+    {% endif %} {% if pagination.has_next %}
+    <a
+      href="{{ url_for('userManagement.manage_user', page=pagination.next_num) }}"
+      style="font-size: 24px; text-decoration: none"
+      >→</a
+    >
+    {% else %}
+    <span
+      style="
+        font-size: 24px;
+        font-weight: bold;
+        color: black;
+        background-color: var(--mau5);
+        padding: 3px;
+      "
+      >→</span
+    >
+    {% endif %}
+  </div>
+  {% endif %}
+
+  <!--  -->
+  {% if action == "Edit" and user %}
   <div class="mt-5">
     <h3>Chỉnh sửa người dùng</h3>
     <form method="POST">

@@ -69,7 +69,7 @@ def edit_profile():
         user.set_email(form.email.data)
         user.set_phone(form.phone.data)
         user.set_facebook(form.fb.data)
-        user.set_zalo(form.zalo.data)
+    
         
         csdl.session.commit()
         flash('Hồ sơ đã được cập nhật!', 'success')
@@ -83,7 +83,7 @@ def edit_profile():
         form.email.data = user.get_email()
         form.phone.data = user.get_phone()
         form.fb.data= user.get_facebook()
-        form.zalo.data = user.get_zalo()
+     
 
     return render_template('accountManagement/editProfile.html', form=form, user=user , user_type = user_type)
 

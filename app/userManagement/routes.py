@@ -12,8 +12,19 @@ userManagement_blueprint = Blueprint('userManagement', __name__, template_folder
 @userManagement_blueprint.route('/admin/users')
 def manage_user():
     if current_user.has_role('admin'):
-        users = User.query.all()
-        return render_template('userManagement/manage_user.html', users=users)
+    
+        query = User.query
+        # Phân trang
+        page = request.args.get('page', 1, type=int)
+        per_page = 10
+        pagination = query.paginate(page=page, per_page=per_page, error_out=False)
+        users = pagination.items
+     
+
+        start = (page - 1) * per_page + 1
+        end = min(start + per_page - 1, pagination.total)
+
+        return render_template('userManagement/manage_user.html', users=users , pagination=pagination, end = end , start = start)
     else:
         flash('Username không phải là admin!', 'danger')
         return redirect(url_for('auth.adminLogin'))
@@ -21,6 +32,7 @@ def manage_user():
 
 @userManagement_blueprint.route('/edit/<int:user_id>', methods=['GET', 'POST'])
 def edit_user(user_id):
+    
     user = User.query.get_or_404(user_id)
     if user.username == current_user.username:
         flash('Cannot edit your own account!', 'danger')
