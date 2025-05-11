@@ -25,18 +25,42 @@
   </a>
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
-      <li class="nav-item">
+      <li class="nav-item ">
         <a class="nav-link" href="{{ url_for('home.homepage') }}">Home</a>
       </li>
-      <li class="nav-item">
-        <a class="nav-link" href="{{ url_for('post.viewPost') }}">Post</a>
+
+      <li class="nav-item dropdown">
+        <a
+          class="nav-link dropdown-toggle"
+          href="#"
+          id="navbarDropdown"
+          role="button"
+          data-toggle="dropdown"
+          aria-haspopup="true"
+          aria-expanded="false"
+        >
+          Danh mục
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          {% for category in categorys %}
+          <a
+            class="dropdown-item"
+            href="{{ url_for('post.viewPost', category_id=category.id) }}"
+          >
+            {{ category.category_name }}
+          </a>
+          {% if not loop.last %}
+          <div class="dropdown-divider"></div>
+          {% endif %} {% endfor %}
+        </div>
       </li>
+
       <li class="nav-item">
         <a class="nav-link" href="{{ url_for('post.create_post') }}"
           >Create Post</a
         >
       </li>
-      <li class="nav-item active">
+      <li class="nav-item">
         <a class="nav-link" href="{{ url_for('post.my_posts') }}">My Post</a>
       </li>
     </ul>

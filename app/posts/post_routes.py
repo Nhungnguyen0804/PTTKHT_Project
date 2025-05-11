@@ -329,41 +329,53 @@ def parse_contact(content):
     return contact_data
 
 
-@post_blueprint.route('/view_post', methods=['GET', 'POST'])
-def viewPost():
+@post_blueprint.route('/view_post/<int:category_id>', methods=['GET', 'POST'])
+def viewPost(category_id):
     form = FilterForm()
     users = User.query.all()
 
+    # Kiểm tra danh mục tồn tại không
+    category = Category.query.get(category_id)
+    if not category:
+        flash("Không tìm thấy danh mục này.", "warning")
+        return redirect(url_for('main.index'))
 
-    # Luôn chỉ lấy các bài đã duyệt
-    query = Post.query.filter(Post.is_approved == True and Post.status == 'Not done')
+    # Lọc bài viết đã duyệt và thuộc danh mục cụ thể
+    query = Post.query.filter(
+        Post.is_approved == True,
+        Post.status == 'Not done',
+        Post.category_id == category_id
+    )
 
-    # Sắp xếp mặc định theo ngày tạo mới nhất
-    query = query.order_by(Post.create_date.desc())
-
+    # Nếu form được submit và hợp lệ
     if form.validate_on_submit():
-
         post_type = form.post_type.data
         sort_order = form.sort_order.data
 
         if post_type != 'all':
             query = query.filter(Post.post_type == post_type)
 
-        if sort_order == 'desc':
-            query = query.order_by(Post.create_date.desc())
-        else:
+        if sort_order == 'asc':
             query = query.order_by(Post.create_date.asc())
+        else:
+            query = query.order_by(Post.create_date.desc())
+    else:
+        # Mặc định sắp xếp mới nhất
+        query = query.order_by(Post.create_date.desc())
 
     posts = query.all()
 
-
-    # Gắn thông tin liên hệ đã tách vào mỗi post
+    # Gắn thông tin liên hệ nếu cần
     for post in posts:
         post.contact_info = parse_contact(post.content)
 
-    return render_template('post/view_post.html', posts=posts, users=users, form=form)
-
-
+    return render_template(
+        'post/view_post.html',
+        posts=posts,
+        users=users,
+        form=form,
+        category=category
+    )
 
 @post_blueprint.route('/interest/<string:post_id>', methods=['POST'])
 @login_required 
@@ -380,4 +392,31 @@ def add_interest(post_id):
         post.interest_count += 1
         csdl.session.commit()
         flash("Đã quan tâm bài viết.", "success")
-    return redirect(url_for('post.viewPost'))
+    
+    # Nếu có ?from_detail=1 thì quay lại trang chi tiết bài đăng
+    if request.args.get('from_detail') == '1':
+        return redirect(url_for('post.view_post_detail', post_id=post.post_id, category_id=post.category_id))
+    return redirect(url_for('post.viewPost', category_id=post.category_id))
+
+@post_blueprint.route('/category/<int:category_id>/post/<string:post_id>' , methods=['GET', 'POST'])
+@login_required 
+def view_post_detail(category_id, post_id):
+    post = Post.query.get_or_404(post_id)
+    category = Category.query.get_or_404(category_id)
+
+    # Đảm bảo bài viết đúng danh mục
+    if post.category_id != category.id:
+        flash("Bài viết không thuộc danh mục này.", "danger")
+        return redirect(url_for('main.index'))
+
+    # Gắn thêm thông tin liên hệ nếu cần
+    post.contact_info = parse_contact(post.content)
+
+    return render_template('post/post_detail.html',
+        post=post,
+        category=category)
+
+@post_blueprint.context_processor
+def inject_categories():
+    from app.models.category import Category
+    return dict(categorys=Category.query.all())

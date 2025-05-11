@@ -43,6 +43,7 @@ def create_app():
         csdl.create_all()
         init_roles()# Khởi tạo gt bang role
         init_categories()
+        
     
     # Đăng ký các blueprint
     app.register_blueprint(home_blueprint)

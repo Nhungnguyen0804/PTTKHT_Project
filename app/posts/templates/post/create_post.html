@@ -1,4 +1,4 @@
-{% extends 'base.html' %} {% block title %}Tạo Bài Đăng{% endblock %}
+{% extends 'base.html' %} {% block title %}Bài Đăng{% endblock %}
 <!--  -->
 
 {% block extra_css %}
@@ -14,7 +14,7 @@
 {% endblock %}
 
 <!--  -->
-{% block content %}
+{%block content %}
 
 <nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
   <a class="navbar-brand" href="{{ url_for('home.homepage') }}">
@@ -29,10 +29,34 @@
       <li class="nav-item">
         <a class="nav-link" href="{{ url_for('home.homepage') }}">Home</a>
       </li>
-      <li class="nav-item">
-        <a class="nav-link" href="{{ url_for('post.viewPost') }}">Post</a>
+
+      <li class="nav-item dropdown">
+        <a
+          class="nav-link dropdown-toggle"
+          href="#"
+          id="navbarDropdown"
+          role="button"
+          data-toggle="dropdown"
+          aria-haspopup="true"
+          aria-expanded="false"
+        >
+          Danh mục
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          {% for category in categorys %}
+          <a
+            class="dropdown-item"
+            href="{{ url_for('post.viewPost', category_id=category.id) }}"
+          >
+            {{ category.category_name }}
+          </a>
+          {% if not loop.last %}
+          <div class="dropdown-divider"></div>
+          {% endif %} {% endfor %}
+        </div>
       </li>
-      <li class="nav-item active">
+
+      <li class="nav-item">
         <a class="nav-link" href="{{ url_for('post.create_post') }}"
           >Create Post</a
         >
@@ -44,606 +68,212 @@
   </div>
 </nav>
 
-<div
-  id="page-wrapper"
-  data-success="{{ '1' if success_message else '0' }}"
-  class="khung-ngoai"
->
-  <!-- LEFT COLUMN -->
-
-  <div class="col-md-6">
-    <div class="form-section">
-      <h2 style="font-weight: bold">Bài đăng mới</h2>
-      
-      <hr
-        style="
-          border: none;
-          height: 2px;
-          background-color: gray;
-          margin: 20px 0;
-        "
-      />
-      <div class="mess" style="text-align: center">
-        <!-- Hiển thị thông báo flash -->
-        {% with messages = get_flashed_messages(with_categories=true) %} {% if
-        messages %} {% for category, message in messages %}
-        <div class="flash {{ category }}">{{ message }}</div>
-        {% endfor %} {% endif %} {% endwith %}
-      </div>
-      <div class="user-info">
-        <img
-          src="{{user.avatar}}"
-          alt="Avatar"
-          width="50px"
-          class="avatar-user-info"
-          style="border: 1px solid black"
-        />
-        <!-- "{{ user.avatar_url }}"  -->
-        <div style="font-size: 30px; font-weight: bold; color: #1c5d39">
-          {{ user.fullname }}
-        </div>
-      </div>
-      <form method="POST" enctype="multipart/form-data">
-        <div class="form-group mt-3">
-          <label for="category">Chọn danh mục</label>
-          <select
-            name="category"
-            id="category"
-            class="form-control"
-            required
-            style="border: 2px solid black; background-color: var(--mau14)"
-          >
-            <option value="">-- Chọn danh mục --</option>
-            {% for c in categories %}
-            <option value="{{ c.id }}">{{ c.category_name }}</option>
-            {% endfor %}
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label for="post_type">Chọn loại bài đăng</label>
-          <select
-            name="post_type"
-            id="post_type"
-            class="form-control"
-            required
-            style="border: 2px solid black; background-color: var(--mau14)"
-          >
-            <option value="">-- Chọn loại --</option>
-            <option value="thanh_ly">Thanh lý</option>
-            <option value="trao_doi">Trao đổi</option>
-            <option value="donate">Donate</option>
-          </select>
-        </div>
-
-        <div class="form-group mt-3">
-          <label for="content">Nội dung bài viết</label>
-          <textarea
-            name="content"
-            id="content"
-            class="form-control"
-            rows="4"
-            placeholder="Nhập nội dung..."
-            required
-            style="border: 2px solid black; background-color: var(--mau14)"
-          ></textarea>
-        </div>
-
-        <div class="form-group mt-3">
-          <label for="images">Chọn ảnh</label>
-          <input
-            type="file"
-            name="images"
-            id="images"
-            multiple
-            accept="image/*"
-            class="form-control"
-            style="border: 2px solid black; background-color: var(--mau14)"
-          />
-        </div>
-        <!-- Trường chỉ hiển thị khi chọn Thanh lý -->
-        <div id="price_group" class="form-group mt-3" style="display: none">
-          <label for="price">Giá</label>
-          <input
-            type="number"
-            name="price"
-            id="price"
-            class="form-control"
-            placeholder="Nhập giá..."
-            style="border: 2px solid black; background-color: var(--mau14)"
-          />
-        </div>
-        <!-- Trường contact -->
-        <div id="contact_group" class="form-group mt-3" style="display: none">
-          <div style="display: flex">
-            <p for="contact" style="font-weight: bold">Thông tin liên hệ</p>
-            <p id="statusMessage" style="margin-left: 20px"></p>
-          </div>
-          <div class="container-input" style="display: flex; gap: 10px">
-            <div class="input-label" style="flex: 2">
-              
-                <label for="phone">Số điện thoại</label>
-                
-              
-
-              <input
-                type="text"
-                name="phone"
-                id="phone"
-                class="form-control"
-                value="{{user.phone}}"
-                required
-                style="border: 2px solid black; background-color: var(--mau14)"
-              />
-            </div>
-            <div class="input-submit" style="margin-top: 13px; flex: 1">
-              <a
-                href="{{url_for('post.remember_phone')}}"
-                id="phoneID"
-                value="{{ user.phone }}"
-                class="btn btn-primary mt-4 w-100"
-                style="background-color: var(--mau4); font-weight: bold"
-                >Remember Phone</a
-              >
-            </div>
-          </div>
-
-          <div class="container-input" style="display: flex; gap: 10px">
-            <div class="input-label" style="flex: 2">
-              <div style="display: flex">
-                <label for="email">Email</label>
-                <p id="statusMessage" style="margin-left: 20px"></p>
-              </div>
-
-              <input
-                type="email"
-                name="email"
-                id="email"
-                class="form-control"
-                value="{{user.email}}"
-                required
-                style="border: 2px solid black; background-color: var(--mau14)"
-              />
-            </div>
-            <div class="input-submit" style="margin-top: 13px; flex: 1">
-              <a
-                href="{{url_for('post.remember_email')}}"
-                id="emailID"
-                value="{{ user.email }}"
-                class="btn btn-primary mt-4 w-100"
-                style="background-color: var(--mau4); font-weight: bold"
-                >Remember Email</a
-              >
-            </div>
-          </div>
-          <div class="container-input" style="display: flex; gap: 10px">
-            <div class="input-label" style="flex: 2">
-              <div style="display: flex">
-                <label for="facebook">Facebook</label>
-                <p id="statusMessage" style="margin-left: 20px"></p>
-              </div>
-
-              <input
-                type="facebook"
-                name="facebook"
-                id="facebook"
-                class="form-control"
-                value="{{user.facebook}}"
-                required
-                style="border: 2px solid black; background-color: var(--mau14)"
-              />
-            </div>
-            <div class="input-submit" style="margin-top: 13px; flex: 1">
-              <a
-                href="{{url_for('post.remember_facebook')}}"
-                id="facebookID"
-                value="{{ user.facebook }}"
-                class="btn btn-primary mt-4 w-100"
-                style="background-color: var(--mau4); font-weight: bold"
-                >Remember Facebook</a
-              >
-            </div>
-          </div>
-          
-          
-          </div>
-        
-        <div id="preview" class="row mt-3"></div>
-
-        <button
-          type="submit"
-          class="btn btn-primary mt-4 w-100"
-          style="background-color: var(--mau4); font-weight: bold"
-        >
-          Đăng bài
-        </button>
-        
-      </form>
-      
-    </div>
-    </div>
-  
-
-  <!-- RIGHT COLUMN -->
-  <div class="col-md-6">
-    <div class="preview-section">
-      <h2 style="font-weight: bold">Preview</h2>
-      <p class="text-muted">
-        Xem trước bài đăng của bạn trước khi đăng chính thức.
-      </p>
-      <hr
-        style="
-          border: none;
-          height: 2px;
-          background-color: gray;
-          margin: 20px 0;
-        "
-      />
-      <div id="postPreview" class="border p-3 rounded bg-light">
-        <div class="d-flex align-items-center mb-2">
-          <img
-            src="{{user.avatar}}"
-            class="rounded-circle me-2"
-            style="width: 40px; margin-right: 10px"
-          />
-          <strong>{{user.fullname}}</strong>
-        </div>
-        <!-- <p id="previewContent" class="preview-caption"></p> -->
-        <div
-          id="previewContainer"
-          class="preview-container"
-          style="font-weight: bold"
-        >
-          <p>
-            Danh mục:
-            <span id="category-name-preview" style="font-weight: normal"
-              >Chưa chọn</span
-            >
-          </p>
-          <!--preview danh mục-->
-          <p>
-            Loại bài đăng:
-            <span id="post-type-preview" style="font-weight: normal"></span>
-          </p>
-          <p>
-            Nội dung: <br />
-            <span id="content-preview" style="font-weight: normal"></span>
-          </p>
-          <p><span id="price-preview" style="font-weight: normal"></span></p>
-          <p>
-            Thông tin liên hệ:<br>
-            <span id="phone-preview" style="font-weight: normal"></span> <br>
-            <span id="email-preview" style="font-weight: normal"></span> <br>
-            <span id="facebook-preview" style="font-weight: normal"></span> 
-          </p>
-        </div>
-
-        <div
-          id="previewImageContainer"
-          class="mb-2"
-          style="margin-top: 20px"
-        ></div>
-      </div>
-    </div>
-  </div>
+<h2 style="text-align: center; font-weight: bold">Bài đăng</h2>
+<div class="mess" style="text-align: center">
+  <!-- Hiển thị thông báo flash -->
+  {% with messages = get_flashed_messages(with_categories=true) %} {% if
+  messages %} {% for category, message in messages %}
+  <div class="flash {{ category }}">{{ message }}</div>
+  {% endfor %} {% endif %} {% endwith %}
 </div>
-</div>
-{% if success_message %}
-<div
-  class="modal fade"
-  id="successModal"
-  tabindex="-1"
-  aria-labelledby="successModalLabel"
-  aria-hidden="true"
->
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      {% if user_role == 'admin' %}
-      <div class="modal-header bg-success text-white">
-        <h5 class="modal-title">🎉 Đăng bài thành công</h5>
-      </div>
-      {% else %}
-      <div class="modal-header bg-warning text-dark">
-        <h5 class="modal-title">⏳ Gửi bài thành công</h5>
-      </div>
-      {% endif %}
-      <div class="modal-body">{{ success_message }}</div>
-      <div class="modal-footer">
-        <a href="{{ url_for('post.view_posts') }}" class="btn btn-primary"
-          >OK</a
-        >
-      </div>
-    </div>
-  </div>
-</div>
+{% if posts | length == 0 %}
+<div class="alert alert-info text-center">Danh mục này chưa có bài đăng!</div>
 {% endif %}
 
+<div class="view-post-general">
+  <!-- Setting Thanh bên -->
+  <aside class="sidebar">
+    <div class="user-info" style="background-color: white">
+      <img
+        src="{{ url_for('static', filename='image/logo.png') }}"
+        alt="Avatar"
+        width="50px"
+        class="avatar-user-info"
+      />
+      <!-- "{{ user.avatar_url }}"  -->
+      <div>{{ user.fullname }}<br />{{ user.username }}</div>
+    </div>
+    <nav class="profile-menu">
+      <form method="POST">
+        {{ form.hidden_tag() }} <br />
+        {{ form.sort_order.label }} {{ form.sort_order(class="custom-select") }}
+        <br />
+        {{ form.post_type.label }} {{ form.post_type(class="custom-select") }}
+        <br />
+        <input
+          type="submit"
+          value="Lọc bài đăng"
+          class="btn btn-primary mt-4 w-100"
+          style="background-color: var(--mau4); font-weight: bold"
+        />
+      </form>
+    </nav>
+  </aside>
+  <!--  -->
+
+  <div class="all-cards">
+    {% if posts and posts|length > 0 %} {% for post in posts %}
+    <div class="post-card" style="width: 550px">
+      <div class="post-header">
+        <div
+          class="user-info"
+          style="background-color: transparent; border: 0px"
+        >
+          <img
+            src="{{post.user.avatar}}"
+            alt="Avatar"
+            width="50px"
+            class="avatar-user-info"
+            style="border: 1px solid black"
+          />
+          <!-- "{{ user.avatar_url }}"  -->
+          <div style="margin-left: 10px">
+            <p style="font-size: 30px; font-weight: bold; color: #1c5d39">
+              {{ post.user.fullname }}
+            </p>
+            <p>{{ post.create_date | datetime }}</p>
+          </div>
+        </div>
+
+        <!-- xong user info  -->
+
+        <!-- Hiển thị post_type riêng biệt -->
+        <h5 class="card-title">
+          {% if post.post_type == 'Thanh Lý' %}
+          <span class="badge bg-primary text-white">{{ post.post_type }}</span>
+          {% elif post.post_type == 'Trao Đổi' %}
+          <span class="badge bg-success text-white">{{ post.post_type }}</span>
+          {% elif post.post_type == 'Donate' %}
+          <span class="badge bg-warning text-dark">{{ post.post_type }}</span>
+          {% else %}
+          <span class="badge bg-secondary text-white"
+            >{{ post.post_type }}</span
+          >
+          {% endif %}
+        </h5>
+      </div>
+
+      <!-- xong header  -->
+      <div class="post-text">
+        <!-- Hiển thị content -->
+        <p class="card-text" style="white-space: pre-line">
+          {{ post.content.split('Liên hệ:')[0] }}
+        </p>
+        <div id="contact-{{ post.id }}" style="display: none">
+          <ul style="list-style: none; padding: 0; margin: 0">
+            {% for item in post.contact_info %}
+            <li style="margin-bottom: 5px">
+              <strong>{{ item.label }}:</strong>
+              {% if 'email' in item.label.lower() %}
+              <a href="mailto:{{ item.value }}">{{ item.value }}</a>
+              {% elif 'facebook' in item.label.lower() %}
+              <a href="{{ item.value }}" target="_blank">{{ item.value }}</a>
+              {% else %} {{ item.value }} {% endif %}
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+
+      <div class="post-image">
+        {% if post.image_url %}
+        <div class="row mt-3">
+          {% for img in post.image_url.split(',') %}
+          <div>
+            <img
+              src="{{ img.strip() }}"
+              alt="Ảnh bài viết"
+              class="img-fluid rounded shadow-sm"
+            />
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+      <div class="post-footer">
+        <div
+          class="post-button"
+          style="display: row; gap: 10px; margin-top: 20px; width: 100%"
+        >
+          {% if post.user_id %}
+          <div>
+            <form
+              method="post"
+              action="{{ url_for('post.add_interest', post_id=post.post_id) }}"
+              style="display: flex; gap: 10px"
+              ;
+            >
+              <button
+                type="submit"
+                class="btn btn-primary w-100"
+                style="
+                  background-color: var(--mau4);
+                  font-weight: bold;
+                  flex: 2;
+                "
+              >
+                Quan tâm
+              </button>
+              <span style="flex: 1"
+                >{{ post.interest_count }} người quan tâm</span
+              >
+            </form>
+          </div>
+          <button
+            data-post-id="{{ post.id }}"
+            class="btn btn-primary mt-4 w-100 contact-btn"
+            style="background-color: var(--mau4); font-weight: bold"
+            data-user-authenticated="{{ 'True' if current_user.is_authenticated else 'False' }}"
+          >
+            Thông tin liên hệ
+          </button>
+          <!-- <div id="contact-{{ post.id }}" style="display: none">
+          <pre>{{ post.content.split('Liên hệ:')[1] }}</pre>
+        </div> -->
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    {% endfor %} {% else %} {% endif %}
+  </div>
+  <!-- xong card  -->
+</div>
+
 <script>
-  const input = document.getElementById("images");
-  const preview = document.getElementById("preview");
-  const previewImageContainer = document.getElementById(
-    "previewImageContainer"
-  );
-  const previewContent = document.getElementById("previewContent");
-  const contentInput = document.getElementById("content");
-  let files = [];
+  function viewContact(postId) {
+    var userAuthenticated =
+      document
+        .querySelector(".contact-btn")
+        .getAttribute("data-user-authenticated") === "True";
 
-  input.addEventListener("change", function () {
-    preview.innerHTML = "";
-    files = Array.from(this.files);
-    previewImageContainer.innerHTML = "";
+    if (!userAuthenticated) {
+      alert("Vui lòng đăng nhập để xem thông tin liên hệ!");
+      window.location.href = "{{ url_for('auth.login') }}"; // Chuyển hướng đến trang đăng nhập
+    } else {
+      document.getElementById("contact-" + postId).style.display = "block";
+    }
+  }
 
-    files.forEach((file, index) => {
-      const reader = new FileReader();
-      reader.onload = function (e) {
-        const img = document.createElement("img");
-        img.src = e.target.result;
-        previewImageContainer.appendChild(img);
-
-        const col = document.createElement("div");
-        col.classList.add("col-md-3", "mb-3");
-        col.innerHTML = `
-          <div class="card">
-            <img src="${e.target.result}" class="card-img-top" style="height: 150px; object-fit: cover;">
-            <div class="card-body p-2 text-center">
-              <button type="button" class="btn btn-sm btn-danger btn-block remove-btn" data-index="${index}">Xóa</button>
-            </div>
-          </div>`;
-        preview.appendChild(col);
-      };
-      reader.readAsDataURL(file);
+  document.querySelectorAll(".contact-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const isAuthenticated =
+        btn.getAttribute("data-user-authenticated") === "True";
+      const postId = btn.dataset.postId;
+      if (isAuthenticated) {
+        const contactEl = document.getElementById("contact-" + postId);
+        if (contactEl.style.display === "none") {
+          contactEl.style.display = "block";
+        } else {
+          contactEl.style.display = "none";
+          // Nếu contactEl không tìm thấy, sẽ không có gì xảy ra
+          console.error("Lỗi: Không tìm thấy phần tử #contact-" + postId);
+        }
+      } else {
+        console.log(
+          "Người dùng chưa đăng nhập hoặc data-user-authenticated không phải là 'True'"
+        );
+      }
     });
   });
-
-  document.addEventListener("click", function (e) {
-    if (e.target.classList.contains("remove-btn")) {
-      const index = parseInt(e.target.getAttribute("data-index"));
-      files.splice(index, 1);
-      const dataTransfer = new DataTransfer();
-      files.forEach((f) => dataTransfer.items.add(f));
-      input.files = dataTransfer.files;
-      input.dispatchEvent(new Event("change"));
-    }
-  });
-
-  contentInput.addEventListener("input", function () {
-    previewContent.textContent = contentInput.value;
-  });
-
-  const postTypeSelect = document.getElementById("post_type");
-  const priceGroup = document.getElementById("price_group");
-  const contactGroup = document.getElementById("contact_group");
-
-  postTypeSelect.addEventListener("change", function () {
-    const type = this.value;
-    priceGroup.style.display = "none";
-    contactGroup.style.display = "none";
-
-    if (type === "thanh_ly") {
-      priceGroup.style.display = "block";
-      contactGroup.style.display = "block";
-    } else if (type === "trao_doi" || type === "donate") {
-      contactGroup.style.display = "block";
-    }
-  });
-
-  const wrapper = document.getElementById("page-wrapper");
-  if (wrapper.dataset.success === "1") {
-    const modal = new bootstrap.Modal(document.getElementById("successModal"));
-    modal.show();
-  }
-
-  // preview category
-  function updateCategoryName() {
-    const select = document.getElementById("category");
-    const selectedOption = select.options[select.selectedIndex];
-    let categoryName = "Chưa chọn"; // Giá trị mặc định
-
-    // Kiểm tra xem selectedOption có tồn tại và có giá trị (value) không rỗng không
-    // Option "-- Chọn danh mục --" có value=""
-    if (selectedOption && selectedOption.value) {
-      categoryName = selectedOption.textContent;
-    } else {
-      // Nếu giá trị rỗng (nghĩa là đang chọn "-- Chọn danh mục --")
-      // thì vẫn giữ là chưa chọn
-      categoryName = "Chưa chọn";
-    }
-    document.getElementById("category-name-preview").textContent = categoryName;
-  }
-
-  document.addEventListener("DOMContentLoaded", function () {
-    updateCategoryName(); // gọi lần đầu để thiết lập trạng thái ban đầu
-    document
-      .getElementById("category")
-      .addEventListener("change", updateCategoryName);
-  });
-  //preview content
-  function updateContent() {
-    const content = document.getElementById("content").value;
-    const formatted = content.replace(/\n/g, "<br>");
-    document.getElementById("content-preview").innerHTML = formatted;
-  }
-
-  document.addEventListener("DOMContentLoaded", function () {
-    document.getElementById("content").addEventListener("input", updateContent);
-  });
-
-  // preview post type
-  function updatePostType() {
-    const select = document.getElementById("post_type");
-    const selectedOption = select.options[select.selectedIndex];
-
-    const postTypePreview = document.getElementById("post-type-preview");
-    const priceId = document.getElementById("price");
-    const pricePreview = document.getElementById("price-preview");
-    // Lấy thẻ cha của price-preview để ẩn/hiện cả dòng "Giá:"
-    const pricePreviewContainer = document.getElementById("previewContainer");
-    const post_type_Text = selectedOption.textContent.trim();
-
-    postTypePreview.textContent = post_type_Text;
-
-    // Kiểm tra nếu loại bài đăng là "thanh_ly"
-    if (post_type_Text === "Thanh lý") {
-      const priceValue = priceId.value;
-      pricePreview.textContent = "Giá: " + priceValue + " VNĐ";
-      // pricePreviewContainer.style.display = ""; // Hiển thị dòng chứa giá
-    } else {
-      pricePreview.textContent = ""; // Xóa nội dung giá
-      // pricePreviewContainer.style.display = "none"; // Ẩn dòng chứa giá
-    }
-  }
-  document.addEventListener("DOMContentLoaded", function () {
-    const postTypeSelect = document.getElementById("post_type");
-    const priceInput = document.getElementById("price");
-    if (postTypeSelect) {
-      postTypeSelect.addEventListener("change", updatePostType);
-    } else {
-      console.error("Không tìm thấy phần tử select 'post_type'.");
-    }
-
-    if (priceInput) {
-      // Sử dụng sự kiện 'input' để cập nhật ngay khi người dùng gõ giá
-      priceInput.addEventListener("input", updatePostType);
-    } else {
-      console.error("Không tìm thấy phần tử input 'price'.");
-    }
-
-    // Gọi hàm lần đầu để thiết lập trạng thái ban đầu dựa trên lựa chọn mặc định
-    updatePostType();
-  });
-
-  //preview content
-  function updateContact() {
-    const phone = document.getElementById("phone").value;
-    const email = document.getElementById("email").value;
-    const facebook = document.getElementById("facebook").value;
-    document.getElementById("phone-preview").textContent = phone;
-    document.getElementById("email-preview").textContent = email;
-    document.getElementById("facebook-preview").textContent = facebook;
-  }
-
-  document.addEventListener("DOMContentLoaded", function () {
-    document.getElementById("phone").addEventListener("input", updateContact);
-    document.getElementById("email").addEventListener("input", updateContact);
-    document
-      .getElementById("facebook")
-      .addEventListener("input", updateContact);
-
-    updateContact();
-  });
-
-  document.getElementById("phoneID").addEventListener("click", function (e) {
-    e.preventDefault();
-    var phone = document.getElementById("phone").value;
-
-    fetch("/remember-phone", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ phone: phone }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        var statusEl = document.getElementById("statusMessage");
-        if (data.status === "success") {
-          statusEl.textContent = "Đã lưu thành công!";
-          statusEl.style.color = "green";
-        } else {
-          statusEl.textContent = "Lỗi: " + data.message;
-          statusEl.style.color = "red";
-        }
-        // Xóa message sau 5 giây
-        setTimeout(() => {
-        statusEl.textContent = "";
-      }, 5000);
-      })
-      .catch((error) => {
-        document.getElementById("statusMessage").textContent = "Lỗi khi lưu!";
-        document.getElementById("statusMessage").style.color = "red";
-        // Xóa message sau 5 giây
-        setTimeout(() => {
-        statusEl.textContent = "";
-      }, 5000);
-      });
-  });
-
-
-
-  document.getElementById("emailID").addEventListener("click", function (e) {
-    e.preventDefault();
-    var email = document.getElementById("email").value;
-
-    fetch("/remember-email", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email: email }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        var statusEl = document.getElementById("statusMessage");
-        if (data.status === "success") {
-          statusEl.textContent = "Đã lưu thành công!";
-          statusEl.style.color = "orange";
-        } else {
-          statusEl.textContent = "Lỗi: " + data.message;
-          statusEl.style.color = "red";
-        }
-        // Xóa message sau 5 giây
-        setTimeout(() => {
-        statusEl.textContent = "";
-      }, 5000);
-      })
-      .catch((error) => {
-        document.getElementById("statusMessage").textContent = "Lỗi khi lưu!";
-        document.getElementById("statusMessage").style.color = "red";
-        // Xóa message sau 5 giây
-        setTimeout(() => {
-        statusEl.textContent = "";
-      }, 5000);
-      });
-  });
-
-  
-  document.getElementById("facebookID").addEventListener("click", function (e) {
-    e.preventDefault();
-    var facebook = document.getElementById("facebook").value;
-
-    fetch("/remember-facebook", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ facebook: facebook }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        var statusEl = document.getElementById("statusMessage");
-        if (data.status === "success") {
-          statusEl.textContent = "Đã lưu thành công!";
-          statusEl.style.color = "blue";
-        } else {
-          statusEl.textContent = "Lỗi: " + data.message;
-          statusEl.style.color = "red";
-        }
-        // Xóa message sau 5 giây
-        setTimeout(() => {
-        statusEl.textContent = "";
-      }, 5000);
-      })
-
-      
-      .catch((error) => {
-        document.getElementById("statusMessage").textContent = "Lỗi khi lưu!";
-        document.getElementById("statusMessage").style.color = "red";
-        // Xóa message sau 5 giây
-        setTimeout(() => {
-        statusEl.textContent = "";
-      }, 8000);
-      });
-  });
 </script>
-
 {% endblock %}

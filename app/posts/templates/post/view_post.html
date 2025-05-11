@@ -29,9 +29,33 @@
       <li class="nav-item">
         <a class="nav-link" href="{{ url_for('home.homepage') }}">Home</a>
       </li>
-      <li class="nav-item active">
-        <a class="nav-link" href="{{ url_for('post.viewPost') }}">Post</a>
+
+      <li class="nav-item dropdown">
+        <a
+          class="nav-link dropdown-toggle"
+          href="#"
+          id="navbarDropdown"
+          role="button"
+          data-toggle="dropdown"
+          aria-haspopup="true"
+          aria-expanded="false"
+        >
+          Danh mục
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          {% for category in categorys %}
+          <a
+            class="dropdown-item"
+            href="{{ url_for('post.viewPost', category_id=category.id) }}"
+          >
+            {{ category.category_name }}
+          </a>
+          {% if not loop.last %}
+          <div class="dropdown-divider"></div>
+          {% endif %} {% endfor %}
+        </div>
       </li>
+
       <li class="nav-item">
         <a class="nav-link" href="{{ url_for('post.create_post') }}"
           >Create Post</a
@@ -52,6 +76,10 @@
   <div class="flash {{ category }}">{{ message }}</div>
   {% endfor %} {% endif %} {% endwith %}
 </div>
+{% if posts | length == 0 %}
+<div class="alert alert-info text-center">Danh mục này chưa có bài đăng!</div>
+{% endif %}
+
 <div class="view-post-general">
   <!-- Setting Thanh bên -->
   <aside class="sidebar">
@@ -85,7 +113,7 @@
 
   <div class="all-cards">
     {% if posts and posts|length > 0 %} {% for post in posts %}
-    <div class="post-card" style="width: 550px">
+    <div class="post-card" style="width: 580px">
       <div class="post-header">
         <div
           class="user-info"
@@ -206,9 +234,7 @@
         </div>
       </div>
     </div>
-    {% endfor %} {% else %}
-    <div class="alert alert-info text-center">Bạn chưa có bài đăng nào!</div>
-    {% endif %}
+    {% endfor %} {% else %} {% endif %}
   </div>
   <!-- xong card  -->
 </div>
