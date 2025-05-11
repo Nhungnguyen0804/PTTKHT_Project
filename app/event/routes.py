@@ -69,7 +69,7 @@ def manageDonation(category_id):
 
 @event_blueprint.route('/<int:category_id>/additem', methods=['GET', 'POST'])
 @event_blueprint.route('/<int:category_id>/<int:item_id>', methods=['GET', 'POST'])
-@event_blueprint.route('/<int:category_id>/<int:item_number>', methods=['GET', 'POST'])
+@event_blueprint.route('/<int:category_id>/items/<int:item_number>', methods=['GET', 'POST'])
 def manageDonationItem(category_id, item_number=None):
     category = DonationCategory.query.get_or_404(category_id)
     donation_items = session.get('donation_items', [])
@@ -80,7 +80,10 @@ def manageDonationItem(category_id, item_number=None):
     if category.donation_type != "money":
         categories = Category.query.all()
         form.itemCategoryId.choices = [(c.id, c.category_name) for c in categories]
-
+    if donation_data:
+        form.itemName.data = donation_data['item_name']
+        form.quantity.data = donation_data['quantity']
+        form.itemCategoryId.data = donation_data['category_id']
     if form.validate_on_submit():
         image_url = None
         if category.donation_type != "money" and form.image.data:

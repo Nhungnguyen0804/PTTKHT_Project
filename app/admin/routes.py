@@ -33,42 +33,52 @@ def manageEvent(event_id=None):
     if event and event.status_id == 3:
         flash("Không thể chuyển sự kiện sang trạng thái 'Huỷ'.", "warning")
         return redirect(request.referrer or url_for('admin.adminPage'))
-    
+
+    now = datetime.utcnow()
+
     if request.method == 'GET' and event:
         form.startTime.data = event.start_time.replace(microsecond=0)
         form.endTime.data = event.end_time.replace(microsecond=0)
 
     if form.validate_on_submit():
         image_file = form.image.data
-        image_path = None
+        image_path = event.image if event else None
 
+        # Nếu người dùng upload ảnh mới
         if image_file and hasattr(image_file, 'filename') and image_file.filename:
-            # Có file thực sự được upload
             filename = secure_filename(image_file.filename)
             upload_folder = os.path.join(current_app.root_path, 'static', 'uploads')
             os.makedirs(upload_folder, exist_ok=True)
             image_path = os.path.join('uploads', filename).replace('\\', '/')
             image_file.save(os.path.join(upload_folder, filename))
         elif not event:
-            # Nếu tạo mới mà không upload ảnh
             flash("Vui lòng tải lên ảnh cho sự kiện mới.", "danger")
-            return render_template('admin/addEvent.html', form=form)
+            return render_template('admin/addEvent.html', form=form, event=event, now=now)
 
+        # Nếu đang sửa
         if event:
-            form.populate_obj(event)
-            if image_path:
-                event.image = image_path
-            else:
-                print("[DEBUG: Người dùng đã submit thay đổi sự kiện mà k có ảnh]")
-                flash("Sự kiện phải có ảnh. Vui lòng tải ảnh.", "danger")
-                return redirect(url_for(request.endpoint, **request.view_args))
+            # Kiểm tra nếu startTime cũ < hiện tại và form.startTime mới > hiện tại => không hợp lệ
+            if event.start_time < now and form.startTime.data > now:
+                flash("Không thể thay đổi thời gian bắt đầu từ quá khứ sang tương lai.", "danger")
+                return render_template('admin/addEvent.html', form=form, event=event, now=now)
+
+            if form.startTime.data >= form.endTime.data:
+                flash("Thời gian bắt đầu phải nhỏ hơn thời gian kết thúc!", "danger")
+                return render_template('admin/addEvent.html', form=form, event=event, now=now)
+
+            event.name = form.name.data
+            event.start_time = form.startTime.data
+            event.end_time = form.endTime.data
+            event.event_type = form.eventType.data
+            event.image = image_path
 
             csdl.session.commit()
             flash('Đã cập nhật sự kiện.', 'success')
         else:
             if form.startTime.data >= form.endTime.data:
                 flash("Thời gian bắt đầu phải nhỏ hơn thời gian kết thúc!", "danger")
-                return render_template('admin/addEvent.html', form=form)
+                return render_template('admin/addEvent.html', form=form, now=now)
+
             event = Event(
                 name=form.name.data,
                 start_time=form.startTime.data,
@@ -84,7 +94,8 @@ def manageEvent(event_id=None):
 
         return redirect(url_for('admin.adminPage'))
 
-    return render_template('admin/addEvent.html', form=form, event=event,now=datetime.utcnow())
+    return render_template('admin/addEvent.html', form=form, event=event, now=now)
+
 
 
 @admin_blueprint.route('/admin/<int:event_id>')
