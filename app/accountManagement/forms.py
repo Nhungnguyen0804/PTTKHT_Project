@@ -21,5 +21,4 @@ class editProfileForm(FlaskForm):
     email = EmailField('Email')
     phone = StringField('Số diện thoại')
     fb = StringField('Facebook')
-    zalo = StringField('Zalo')
     submit = SubmitField('Save')
