@@ -15,6 +15,9 @@ class Post(csdl.Model):
     # Liên kết với User
     user_id = csdl.Column(csdl.Integer, csdl.ForeignKey('user.id'), nullable=False)
     category_id = csdl.Column(csdl.Integer, csdl.ForeignKey('category.id'), nullable=False)
+    
+    interest_count = csdl.Column(csdl.Integer, default=0)
+    interested_user_id = csdl.Column(csdl.Text, default='')
     # Dùng post.user để truy cập user
     user = csdl.relationship('User', backref='posts')
 

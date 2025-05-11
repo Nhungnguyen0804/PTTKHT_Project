@@ -1,0 +1,253 @@
+{% extends 'base.html' %} {% block title %}Bài Đăng{% endblock %}
+<!--  -->
+
+{% block extra_css %}
+
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/post.css') }}"
+/>
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/color.css') }}"
+/>
+{% endblock %}
+
+<!--  -->
+{%block content %}
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
+  <a class="navbar-brand" href="{{ url_for('home.homepage') }}">
+    <img
+      src="{{ url_for('static', filename='image/home.png') }}"
+      style="width: 30px"
+      alt="home image"
+    />
+  </a>
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('home.homepage') }}">Home</a>
+      </li>
+      <li class="nav-item active">
+        <a class="nav-link" href="{{ url_for('post.viewPost') }}">Post</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('post.create_post') }}"
+          >Create Post</a
+        >
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('post.my_posts') }}">My Post</a>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+<h2 style="text-align: center; font-weight: bold">Bài đăng</h2>
+<div class="mess" style="text-align: center">
+  <!-- Hiển thị thông báo flash -->
+  {% with messages = get_flashed_messages(with_categories=true) %} {% if
+  messages %} {% for category, message in messages %}
+  <div class="flash {{ category }}">{{ message }}</div>
+  {% endfor %} {% endif %} {% endwith %}
+</div>
+<div class="view-post-general">
+  <!-- Setting Thanh bên -->
+  <aside class="sidebar">
+    <div class="user-info" style="background-color: white">
+      <img
+        src="{{ url_for('static', filename='image/logo.png') }}"
+        alt="Avatar"
+        width="50px"
+        class="avatar-user-info"
+      />
+      <!-- "{{ user.avatar_url }}"  -->
+      <div>{{ user.fullname }}<br />{{ user.username }}</div>
+    </div>
+    <nav class="profile-menu">
+      <form method="POST">
+        {{ form.hidden_tag() }} <br />
+        {{ form.sort_order.label }} {{ form.sort_order(class="custom-select") }}
+        <br />
+        {{ form.post_type.label }} {{ form.post_type(class="custom-select") }}
+        <br />
+        <input
+          type="submit"
+          value="Lọc bài đăng"
+          class="btn btn-primary mt-4 w-100"
+          style="background-color: var(--mau4); font-weight: bold"
+        />
+      </form>
+    </nav>
+  </aside>
+  <!--  -->
+
+  <div class="all-cards">
+    {% if posts and posts|length > 0 %} {% for post in posts %}
+    <div class="post-card" style="width: 550px">
+      <div class="post-header">
+        <div
+          class="user-info"
+          style="background-color: transparent; border: 0px"
+        >
+          <img
+            src="{{post.user.avatar}}"
+            alt="Avatar"
+            width="50px"
+            class="avatar-user-info"
+            style="border: 1px solid black"
+          />
+          <!-- "{{ user.avatar_url }}"  -->
+          <div style="margin-left: 10px">
+            <p style="font-size: 30px; font-weight: bold; color: #1c5d39">
+              {{ post.user.fullname }}
+            </p>
+            <p>{{ post.create_date | datetime }}</p>
+          </div>
+        </div>
+
+        <!-- xong user info  -->
+
+        <!-- Hiển thị post_type riêng biệt -->
+        <h5 class="card-title">
+          {% if post.post_type == 'Thanh Lý' %}
+          <span class="badge bg-primary text-white">{{ post.post_type }}</span>
+          {% elif post.post_type == 'Trao Đổi' %}
+          <span class="badge bg-success text-white">{{ post.post_type }}</span>
+          {% elif post.post_type == 'Donate' %}
+          <span class="badge bg-warning text-dark">{{ post.post_type }}</span>
+          {% else %}
+          <span class="badge bg-secondary text-white"
+            >{{ post.post_type }}</span
+          >
+          {% endif %}
+        </h5>
+      </div>
+
+      <!-- xong header  -->
+      <div class="post-text">
+        <!-- Hiển thị content -->
+        <p class="card-text" style="white-space: pre-line">
+          {{ post.content.split('Liên hệ:')[0] }}
+        </p>
+        <div id="contact-{{ post.id }}" style="display: none">
+          <ul style="list-style: none; padding: 0; margin: 0">
+            {% for item in post.contact_info %}
+            <li style="margin-bottom: 5px">
+              <strong>{{ item.label }}:</strong>
+              {% if 'email' in item.label.lower() %}
+              <a href="mailto:{{ item.value }}">{{ item.value }}</a>
+              {% elif 'facebook' in item.label.lower() %}
+              <a href="{{ item.value }}" target="_blank">{{ item.value }}</a>
+              {% else %} {{ item.value }} {% endif %}
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+
+      <div class="post-image">
+        {% if post.image_url %}
+        <div class="row mt-3">
+          {% for img in post.image_url.split(',') %}
+          <div>
+            <img
+              src="{{ img.strip() }}"
+              alt="Ảnh bài viết"
+              class="img-fluid rounded shadow-sm"
+            />
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+      <div class="post-footer">
+        <div
+          class="post-button"
+          style="display: row; gap: 10px; margin-top: 20px; width: 100%"
+        >
+          {% if post.user_id %}
+          <div>
+            <form
+              method="post"
+              action="{{ url_for('post.add_interest', post_id=post.post_id) }}"
+              style="display: flex; gap: 10px"
+              ;
+            >
+              <button
+                type="submit"
+                class="btn btn-primary w-100"
+                style="
+                  background-color: var(--mau4);
+                  font-weight: bold;
+                  flex: 2;
+                "
+              >
+                Quan tâm
+              </button>
+              <span style="flex: 1"
+                >{{ post.interest_count }} người quan tâm</span
+              >
+            </form>
+          </div>
+          <button
+            data-post-id="{{ post.id }}"
+            class="btn btn-primary mt-4 w-100 contact-btn"
+            style="background-color: var(--mau4); font-weight: bold"
+            data-user-authenticated="{{ 'True' if current_user.is_authenticated else 'False' }}"
+          >
+            Thông tin liên hệ
+          </button>
+          <!-- <div id="contact-{{ post.id }}" style="display: none">
+          <pre>{{ post.content.split('Liên hệ:')[1] }}</pre>
+        </div> -->
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    {% endfor %} {% else %}
+    <div class="alert alert-info text-center">Bạn chưa có bài đăng nào!</div>
+    {% endif %}
+  </div>
+  <!-- xong card  -->
+</div>
+
+<script>
+  function viewContact(postId) {
+    var userAuthenticated =
+      document
+        .querySelector(".contact-btn")
+        .getAttribute("data-user-authenticated") === "True";
+
+    if (!userAuthenticated) {
+      alert("Vui lòng đăng nhập để xem thông tin liên hệ!");
+      window.location.href = "{{ url_for('auth.login') }}"; // Chuyển hướng đến trang đăng nhập
+    } else {
+      document.getElementById("contact-" + postId).style.display = "block";
+    }
+  }
+
+  document.querySelectorAll(".contact-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const isAuthenticated =
+        btn.getAttribute("data-user-authenticated") === "True";
+      const postId = btn.dataset.postId;
+      if (isAuthenticated) {
+        const contactEl = document.getElementById("contact-" + postId);
+        if (contactEl.style.display === "none") {
+          contactEl.style.display = "block";
+        } else {
+          contactEl.style.display = "none";
+          // Nếu contactEl không tìm thấy, sẽ không có gì xảy ra
+          console.error("Lỗi: Không tìm thấy phần tử #contact-" + postId);
+        }
+      } else {
+        console.log(
+          "Người dùng chưa đăng nhập hoặc data-user-authenticated không phải là 'True'"
+        );
+      }
+    });
+  });
+</script>
+{% endblock %}

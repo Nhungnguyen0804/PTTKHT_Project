@@ -29,6 +29,9 @@
       <li class="nav-item">
         <a class="nav-link" href="{{ url_for('home.homepage') }}">Home</a>
       </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('post.viewPost') }}">Post</a>
+      </li>
       <li class="nav-item active">
         <a class="nav-link" href="{{ url_for('post.create_post') }}"
           >Create Post</a
@@ -60,11 +63,13 @@
           margin: 20px 0;
         "
       />
-      <!-- Hiển thị thông báo flash -->
+      <div class="mess" style="text-align: center">
+        <!-- Hiển thị thông báo flash -->
         {% with messages = get_flashed_messages(with_categories=true) %} {% if
         messages %} {% for category, message in messages %}
         <div class="flash {{ category }}">{{ message }}</div>
         {% endfor %} {% endif %} {% endwith %}
+      </div>
       <div class="user-info">
         <img
           src="{{user.avatar}}"
