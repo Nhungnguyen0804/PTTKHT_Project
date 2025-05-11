@@ -86,7 +86,13 @@ def show_eventReport():
         .limit(5)
         .all()
     )
-
+    print(f"User: {user}")
+    print(f"Total Events: {total_events}")
+    print(f"Current DateTime: {now}") 
+    print(f"New Events Today: {new_event_today_count}")
+    print(f"New Events This Month: {new_event_month_count}") 
+    print(f"New Events This Year: {new_event_year_count}") 
+    
     return render_template('eventReport/eventReport.html.jinja2', 
                            user=user,
                            total_events=total_events, 
