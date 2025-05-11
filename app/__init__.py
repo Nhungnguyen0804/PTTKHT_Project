@@ -15,6 +15,7 @@ from .posts import post_blueprint
 from .userManagement import userManagement_blueprint
 from .event import event_blueprint
 from .userReport import userReport_blueprint
+from .eventReport import eventReport_blueprint
 
 def create_app():
     app = Flask(__name__)
@@ -60,6 +61,7 @@ def create_app():
     app.register_blueprint(userManagement_blueprint)
     app.register_blueprint(userReport_blueprint)
     app.register_blueprint(event_blueprint)
+    app.register_blueprint(eventReport_blueprint)
     # Thiết lập route cho trang đăng nhập
     login_manager.login_view = 'auth.login'
 

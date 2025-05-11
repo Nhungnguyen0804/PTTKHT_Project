@@ -11,21 +11,44 @@ from app.models.donation_category import DonationCategory
 from app.models.donation_item import DonationItem
 from app.models.event import Event
 from app.models.item_category import Category
+from app.models.user import User
 event_blueprint = Blueprint('event', __name__,template_folder='templates')
 
-@event_blueprint.route('/event')
-def event():
-    events = Event.query.all()
+@event_blueprint.route('/event/', defaults={'user_id': None})
+@event_blueprint.route('/event/<int:user_id>')
+def event(user_id):
+    from sqlalchemy.orm import joinedload
 
-    # Gắn trường donationCategories cho mỗi event
+    if user_id is None:
+        # Trường hợp không có user_id → hiển thị tất cả sự kiện
+        events = Event.query.options(joinedload(Event.donation_categories)).all()
+    else:
+        # Trường hợp có user_id → lọc các event mà user đã quyên góp
+        user = User.query.get_or_404(user_id)
+
+        donations = Donation.query.filter(
+            (Donation.donor_email == user.email) |
+            (Donation.donor_name == user.username)
+        ).all()
+
+        category_ids = [donation.donation_category_id for donation in donations if donation.donation_category_id]
+
+        # Truy vấn các event_id tương ứng
+        event_ids = {
+            dc.event_id for dc in DonationCategory.query.filter(DonationCategory.id.in_(category_ids)).all()
+        }
+
+        events = Event.query.options(joinedload(Event.donation_categories)) \
+            .filter(Event.id.in_(event_ids)).all()
+
+    # Gắn thêm thông tin hạng mục
     for e in events:
-        # Lấy danh sách tên hạng mục quyên góp
         category_names = [cat.dc_name for cat in e.donation_categories]
-        # Gộp thành chuỗi ngăn cách bằng dấu phẩy
         e.donationCategories = ", ".join(category_names)
-        e.donationCategoryCount = e.donation_categories.count()
+        e.donationCategoryCount = len(e.donation_categories)
 
     return render_template('event/event.html', events=events, now=datetime.utcnow())
+
 
 @event_blueprint.route('/<int:category_id>/details', methods=["GET", "POST"])
 def manageDonation(category_id):

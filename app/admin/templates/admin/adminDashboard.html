@@ -68,7 +68,7 @@
           <div class="dropdown-divider"></div>
           <a class="dropdown-item" href="#">Báo cáo & Thống kê Bài đăng</a>
           <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="#"
+          <a class="dropdown-item" href="{{ url_for('eventReport.show_eventReport') }}"
             >Báo cáo & Thống kê Hoạt động/Sự kiện</a
           >
         </div>
@@ -123,7 +123,7 @@
               <p class="card-text mb-1">
                 <strong>Trạng thái:</strong> {{ event.status.name }}
               </p>
-                            <p class="card-text mb-1">
+              <p class="card-text mb-1">
                 <strong>Loại sự kiện:</strong> {{ event.event_type }}
               </p>
               <div
@@ -140,11 +140,21 @@
                   class="btn btn-outline-warning btn-sm {% if event.status_id == 3 %}disabled{% endif %}"
                   >Chi tiết</a
                 >
-                <a
-                  href="{{ url_for('admin.updateEventStatus', event_id=event.id, status_id=2) }}"
-                  class="btn btn-outline-warning btn-sm {% if event.status_id == 3 %}disabled{% endif %}"
-                  >Tạm dừng</a
-                >
+                {% if event.status_id == 2 %}
+                  <a
+                    href="{{ url_for('admin.updateEventStatus', event_id=event.id, status_id=1) }}"
+                    class="btn btn-outline-success btn-sm"
+                  >
+                    Tiếp tục
+                  </a>
+                {% else %}
+                  <a
+                    href="{{ url_for('admin.updateEventStatus', event_id=event.id, status_id=2) }}"
+                    class="btn btn-outline-warning btn-sm {% if event.status_id == 3 %}disabled{% endif %}"
+                  >
+                    Tạm dừng
+                  </a>
+                {% endif %}
                 <a
                   href="{{ url_for('admin.updateEventStatus', event_id=event.id, status_id=3) }}"
                   class="btn btn-outline-danger btn-sm {% if event.status_id == 3 %}disabled{% endif %}"

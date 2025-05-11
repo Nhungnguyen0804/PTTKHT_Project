@@ -1,0 +1,209 @@
+{% extends 'reportMenu.html' %} {% block ManagementContent %}
+<div class="container">
+  <h1 class="h1-container">Thống kê Người dùng và Sự kiện</h1>
+
+  <!-- Phần thống kê người dùng -->
+  <div class="card-bar">
+    <div class="mycard" style="background-color: #ccd9b7;">
+      <div class="mycard-title">
+        <p>Tổng số người dùng</p>
+      </div>
+      <div class="mycard-number">
+        <p>{{ total_users | default('N/A') }}</p>
+      </div>
+    </div>
+    <div class="mycard" style="background-color: rgb(232, 198, 175);">
+      <div class="mycard-title">
+        <p>Số người dùng mới trong ngày</p>
+      </div>
+      <div class="mycard-number">
+        <p>{{ new_user_today_count | default('N/A') }}</p>
+      </div>
+    </div>
+    <div class="mycard" style="background-color: #ccd9b7;">
+      <div class="mycard-title">
+        <p>Số người dùng mới trong tháng</p>
+      </div>
+      <div class="mycard-number">
+        <p>{{ new_user_month_count | default('N/A') }}</p>
+      </div>
+    </div>
+    <div class="mycard" style="background-color: rgb(232, 198, 175);">
+      <div class="mycard-title">
+        <p>Số người dùng mới trong năm</p>
+      </div>
+      <div class="mycard-number">
+        <p>{{ new_user_year_count | default('N/A') }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Form chọn năm -->
+  {% if form %}
+    <form method="POST">
+      {{ form.hidden_tag() }}
+      <div class="select-year">
+        <label style="display:block;" for="year">{{ form.year.label.text }}</label>
+        {{ form.year(class="form-control") }} 
+        <button type="submit">Xem</button>
+      </div>
+    </form>
+  {% else %}
+    <p><em>(Form chọn năm không khả dụng)</em></p>
+  {% endif %}
+
+  <!-- Biểu đồ số lượng người dùng đăng ký theo tháng -->
+  <div class="chart-general">
+    <div class="chart-content">
+      <div class="chart-container" style="flex:2;">
+        <h2 style="font-weight:bold;">Số lượng người dùng đăng ký theo tháng</h2>
+        <canvas id="newUserByMonthChartID" width="600" height="400"></canvas>
+      </div>
+      <div class="chart-container" style="flex:1;">
+        <h2 style="font-weight:bold;">Tỷ lệ loại tài khoản</h2>
+        <canvas id="userTypeChartID" width="200" height="200"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phần top người đăng bài (Thanh lý, Trao đổi, Donate) -->
+  <div class="chart-container" style="margin-top:20px;">
+    <h2 style="font-weight:bold;">Top 5 người {{ selected_post_type }} nhiều đồ nhất</h2>
+
+    <div>
+      <a href="{{ url_for('userReport.show_userReport', type='Thanh Lý') }}">
+        <button {% if selected_post_type == 'Thanh Lý' %}style="font-weight:bold"{% endif %} class="btn btn-primary">
+          Thanh Lý
+        </button>
+      </a>
+      <a href="{{ url_for('userReport.show_userReport', type='Trao Đổi') }}">
+        <button {% if selected_post_type == 'Trao Đổi' %}style="font-weight:bold"{% endif %} class="btn btn-success">
+          Trao Đổi
+        </button>
+      </a>
+      <a href="{{ url_for('userReport.show_userReport', type='Donate') }}">
+        <button {% if selected_post_type == 'Donate' %}style="font-weight:bold"{% endif %} class="btn btn-warning">
+          Donate
+        </button>
+      </a>
+    </div>
+
+    <table border="1" cellpadding="5" class="table table-striped table-hover align-middle">
+      <thead class="table-dark">
+        <tr>
+          <th>STT</th>
+          <th>Mã HS/SV</th>
+          <th>Họ tên</th>
+          <th>Số bài đã đăng</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for username, fullname, count in top_users %}
+          <tr>
+            <td>{{ loop.index }}</td>
+            <td>{{ username }}</td>
+            <td>{{ fullname }}</td>
+            <td>{{ count }} bài đăng</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Phần sự kiện -->
+  <div class="event-section" style="margin-top:40px;">
+    <h2 style="font-weight:bold;">Danh sách Sự kiện</h2>
+    <table class="table table-striped table-hover align-middle">
+      <thead class="table-dark">
+        <tr>
+          <th>STT</th>
+          <th>Tên Sự kiện</th>
+          <th>Thời gian bắt đầu</th>
+          <th>Thời gian kết thúc</th>
+          <th>Loại sự kiện</th>
+          <th>Người quản lý</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for event in events %}
+          <tr>
+            <td>{{ loop.index }}</td>
+            <td>{{ event.name }}</td>
+            <td>{{ event.start_time.strftime('%d-%m-%Y %H:%M') }}</td>
+            <td>{{ event.end_time.strftime('%d-%m-%Y %H:%M') }}</td>
+            <td>{{ event.event_type }}</td>
+            <td>
+              {% for manager in event.managed_by %}
+                {{ manager.fullname }}{% if not loop.last %}, {% endif %}
+              {% endfor %}
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  // Nhận dữ liệu event_counts từ Flask
+  let eventCounts = {{ event_counts | tojson | safe if event_counts is defined else '[0,0,0,0,0,0,0,0,0,0,0,0]' }};
+  if (!Array.isArray(eventCounts) || eventCounts.length !== 12) {
+    eventCounts = Array(12).fill(0);
+  }
+
+  const eventMonthLabels = [
+    "Tháng 1", "Tháng 2", "Tháng 3", "Tháng 4", "Tháng 5", "Tháng 6",
+    "Tháng 7", "Tháng 8", "Tháng 9", "Tháng 10", "Tháng 11", "Tháng 12"
+  ];
+
+  const canvas = document.getElementById("eventByMonthChartID");
+  if (canvas) {
+    new Chart(canvas.getContext("2d"), {
+      type: "bar",
+      data: {
+        labels: eventMonthLabels,
+        datasets: [{
+          label: "Số sự kiện đăng ký",
+          data: eventCounts,
+          backgroundColor: "rgba(75,192,192,0.6)",
+          borderColor: "rgba(75,192,192,1)",
+          borderWidth: 1,
+          hoverBackgroundColor: "rgba(75,192,192,0.8)",
+          hoverBorderColor: "rgba(75,192,192,1)"
+        }]
+      },
+      options: {
+        indexAxis: "y",
+        responsive: false,
+        maintainAspectRatio: false,
+        scales: {
+          x: {
+            beginAtZero: true,
+            ticks: {
+              stepSize: 1,
+              callback: v => Number.isInteger(v) ? v : undefined
+            }
+          },
+          y: {
+            grid: { display: false }
+          }
+        },
+        plugins: {
+          legend: { position: "top" },
+          tooltip: {
+            callbacks: {
+              label: ctx => {
+                return `${ctx.dataset.label}: ${ctx.parsed.x} sự kiện`;
+              }
+            }
+          }
+        }
+      }
+    });
+  } else {
+    console.error("Không tìm thấy phần tử canvas với ID 'eventByMonthChartID'.");
+  }
+</script>
+{% endblock %}
