@@ -1,4 +1,4 @@
-{% extends 'base.html' %} {% block title %}Bài Đăng Của Tôi{% endblock %}
+{% extends 'base.html' %} {% block title %}Bài Đăng{% endblock %}
 <!--  -->
 
 {% block extra_css %}
@@ -12,7 +12,6 @@
   href="{{ url_for('static', filename='css/color.css') }}"
 />
 {% endblock %}
-
 
 <!--  -->
 {%block content %}
@@ -30,192 +29,223 @@
       <li class="nav-item">
         <a class="nav-link" href="{{ url_for('home.homepage') }}">Home</a>
       </li>
+      <li class="nav-item active">
+        <a class="nav-link" href="{{ url_for('post.viewPost') }}">Post</a>
+      </li>
       <li class="nav-item">
         <a class="nav-link" href="{{ url_for('post.create_post') }}"
           >Create Post</a
         >
       </li>
-      <li class="nav-item active">
+      <li class="nav-item">
         <a class="nav-link" href="{{ url_for('post.my_posts') }}">My Post</a>
       </li>
     </ul>
   </div>
 </nav>
 
-<h2 style="text-align: center; font-weight: bold">Bài đăng của tôi</h2>
-<!-- Hiển thị thông báo flash -->
+<h2 style="text-align: center; font-weight: bold">Bài đăng</h2>
+<div class="mess" style="text-align: center">
+  <!-- Hiển thị thông báo flash -->
   {% with messages = get_flashed_messages(with_categories=true) %} {% if
   messages %} {% for category, message in messages %}
   <div class="flash {{ category }}">{{ message }}</div>
   {% endfor %} {% endif %} {% endwith %}
-<div class="all-cards">
-{% if posts and posts|length > 0 %} {% for post in posts %}
-
-<div class="post-card">
-  <div class="post-header">
-    <div class="user-info" style="background-color: transparent; border: 0px">
+</div>
+<div class="view-post-general">
+  <!-- Setting Thanh bên -->
+  <aside class="sidebar">
+    <div class="user-info" style="background-color: white">
       <img
-        src="{{user.avatar}}" 
+        src="{{ url_for('static', filename='image/logo.png') }}"
         alt="Avatar"
         width="50px"
         class="avatar-user-info"
-        style="border: 1px solid black"
       />
       <!-- "{{ user.avatar_url }}"  -->
-      <div style="margin-left: 10px">
-        <p style="font-size: 30px; font-weight: bold; color: #1c5d39">
-          {{ user.fullname }}
-        </p>
-        <p>{{ post.create_date | datetime }}</p>
-      </div>
+      <div>{{ user.fullname }}<br />{{ user.username }}</div>
     </div>
-
-    <!-- xong user info  -->
-
-    <!-- Hiển thị post_type riêng biệt -->
-    <h5 class="card-title">
-      <span class="badge bg-primary text-white">{{ post.post_type }}</span>
-    </h5>
-  </div>
-
-  <!-- xong header  -->
-  <div class="post-text">
-    <!-- Hiển thị content -->
-    <p class="card-text" style="white-space: pre-line">{{ post.content }}</p>
-  </div>
-
-  <div class="post-image">
-    {% if post.image_url %}
-    <div class="row mt-3">
-      {% for img in post.image_url.split(',') %}
-      <div>
-        <img
-          src="{{ img.strip() }}"
-          alt="Ảnh bài viết"
-          class="img-fluid rounded shadow-sm"
+    <nav class="profile-menu">
+      <form method="POST">
+        {{ form.hidden_tag() }} <br />
+        {{ form.sort_order.label }} {{ form.sort_order(class="custom-select") }}
+        <br />
+        {{ form.post_type.label }} {{ form.post_type(class="custom-select") }}
+        <br />
+        <input
+          type="submit"
+          value="Lọc bài đăng"
+          class="btn btn-primary mt-4 w-100"
+          style="background-color: var(--mau4); font-weight: bold"
         />
+      </form>
+    </nav>
+  </aside>
+  <!--  -->
+
+  <div class="all-cards">
+    {% if posts and posts|length > 0 %} {% for post in posts %}
+    <div class="post-card" style="width: 550px">
+      <div class="post-header">
+        <div
+          class="user-info"
+          style="background-color: transparent; border: 0px"
+        >
+          <img
+            src="{{post.user.avatar}}"
+            alt="Avatar"
+            width="50px"
+            class="avatar-user-info"
+            style="border: 1px solid black"
+          />
+          <!-- "{{ user.avatar_url }}"  -->
+          <div style="margin-left: 10px">
+            <p style="font-size: 30px; font-weight: bold; color: #1c5d39">
+              {{ post.user.fullname }}
+            </p>
+            <p>{{ post.create_date | datetime }}</p>
+          </div>
+        </div>
+
+        <!-- xong user info  -->
+
+        <!-- Hiển thị post_type riêng biệt -->
+        <h5 class="card-title">
+          {% if post.post_type == 'Thanh Lý' %}
+          <span class="badge bg-primary text-white">{{ post.post_type }}</span>
+          {% elif post.post_type == 'Trao Đổi' %}
+          <span class="badge bg-success text-white">{{ post.post_type }}</span>
+          {% elif post.post_type == 'Donate' %}
+          <span class="badge bg-warning text-dark">{{ post.post_type }}</span>
+          {% else %}
+          <span class="badge bg-secondary text-white"
+            >{{ post.post_type }}</span
+          >
+          {% endif %}
+        </h5>
       </div>
-      {% endfor %}
+
+      <!-- xong header  -->
+      <div class="post-text">
+        <!-- Hiển thị content -->
+        <p class="card-text" style="white-space: pre-line">
+          {{ post.content.split('Liên hệ:')[0] }}
+        </p>
+        <div id="contact-{{ post.id }}" style="display: none">
+          <ul style="list-style: none; padding: 0; margin: 0">
+            {% for item in post.contact_info %}
+            <li style="margin-bottom: 5px">
+              <strong>{{ item.label }}:</strong>
+              {% if 'email' in item.label.lower() %}
+              <a href="mailto:{{ item.value }}">{{ item.value }}</a>
+              {% elif 'facebook' in item.label.lower() %}
+              <a href="{{ item.value }}" target="_blank">{{ item.value }}</a>
+              {% else %} {{ item.value }} {% endif %}
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+
+      <div class="post-image">
+        {% if post.image_url %}
+        <div class="row mt-3">
+          {% for img in post.image_url.split(',') %}
+          <div>
+            <img
+              src="{{ img.strip() }}"
+              alt="Ảnh bài viết"
+              class="img-fluid rounded shadow-sm"
+            />
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+      <div class="post-footer">
+        <div
+          class="post-button"
+          style="display: row; gap: 10px; margin-top: 20px; width: 100%"
+        >
+          {% if post.user_id %}
+          <div>
+            <form
+              method="post"
+              action="{{ url_for('post.add_interest', post_id=post.post_id) }}"
+              style="display: flex; gap: 10px"
+              ;
+            >
+              <button
+                type="submit"
+                class="btn btn-primary w-100"
+                style="
+                  background-color: var(--mau4);
+                  font-weight: bold;
+                  flex: 2;
+                "
+              >
+                Quan tâm
+              </button>
+              <span style="flex: 1"
+                >{{ post.interest_count }} người quan tâm</span
+              >
+            </form>
+          </div>
+          <button
+            data-post-id="{{ post.id }}"
+            class="btn btn-primary mt-4 w-100 contact-btn"
+            style="background-color: var(--mau4); font-weight: bold"
+            data-user-authenticated="{{ 'True' if current_user.is_authenticated else 'False' }}"
+          >
+            Thông tin liên hệ
+          </button>
+          <!-- <div id="contact-{{ post.id }}" style="display: none">
+          <pre>{{ post.content.split('Liên hệ:')[1] }}</pre>
+        </div> -->
+          {% endif %}
+        </div>
+      </div>
     </div>
+    {% endfor %} {% else %}
+    <div class="alert alert-info text-center">Bạn chưa có bài đăng nào!</div>
     {% endif %}
   </div>
-  <div class="post-footer">
-    <div class="post-status">
-      <p class="mt-3">
-        <strong style="color: black">Duyệt:</strong>
-        {% if post.is_approved %}
-        <span class="badge bg-success text-white">Đã duyệt</span>
-        {% else %}
-        <span class="badge bg-warning text-dark">Chờ duyệt</span>
-        {% endif %}
-      </p>
-
-      <p>
-        <strong style="color: black">Trạng thái:</strong>
-        {% if post.status == 'Done' %}
-        <span class="badge bg-success text-white">Đã hoàn tất</span>
-        {% else %}
-        <span class="badge bg-secondary text-white">Chưa hoàn tất</span>
-        {% endif %}
-      </p>
-    </div>
-    <div class="post-button" style="display: flex; gap: 10px; margin-top: 20px">
-      <div class="finish-button">
-        <!-- {# Chỉ hiển thị form nếu người dùng có quyền #}
-        {% if current_user.has_role('admin') or post.user_id == current_user.id %} -->
-        
-        <form method="POST" action="{{ url_for('post.mark_done') }}">
-          <input type="hidden" name="post_id" value="{{ post.post_id }}" />
-          <button
-            type="submit"
-            class="btn btn-sm {% if post.status == 'Done' %}btn-secondary{% else %}btn-success{% endif %}"
-            {% if post.status == 'Done' %}disabled{% endif %}> {# Vô hiệu hóa nếu đã Done #}
-            <i class="fas fa-check-circle"></i>
-            <!--  -->
-            {% if post.status == 'Done'%}
-            <!--  -->
-            Đã hoàn tất {% else %} Đánh dấu hoàn tất {% endif %}
-          </button>
-        </form>
-        {% endif %}
-      </div>
-
-       {% if current_user.has_role('admin') or post.user_id ==
-      current_user.id %}
-      <div class="edit-button" style="flex: 1; gap: 10px">
-        <a
-          href="{{ url_for('post.edit_post', post_id=post.post_id) }}"
-          class="btn btn-warning btn-sm"
-        >
-          <i class="fas fa-edit"></i> Sửa
-        </a>
-      </div>
-      <div class="delete-button" style="flex: 1; gap: 10px">
-        <form
-          method="POST"
-          action="{{ url_for('post.delete_post') }}"
-          style="display: inline"
-        >
-          <input type="hidden" name="post_id" value="{{ post.post_id }}" />
-          <button
-            type="submit"
-            class="btn btn-danger btn-sm"
-            onclick="return confirm('Bạn có chắc muốn xóa bài viết này?')"
-          >
-            <i class="fas fa-trash-alt"></i> Xóa
-          </button>
-        </form>
-      </div>
-      {% endif %}
-    </div>
-  </div>
+  <!-- xong card  -->
 </div>
-{% endfor %} {% else %}
-<div class="alert alert-info text-center">Bạn chưa có bài đăng nào!</div>
-{% endif %}
-</div>
-<!-- xong card  -->
-    {% for post in posts %}
-    <div class="post">
-      <p>{{ post.content.split('Liên hệ:')[0] }}</p>
-      {% if post.image_link %}
-      <img src="{{ post.image_link }}" alt="Post Image" width="200" />
-      {% endif %} {% if post.user_id %}
-      <button class="contact-btn" data-post-id="{{ post.id }}">
-        Thông tin liên hệ
-      </button>
-      <div id="contact-{{ post.id }}" style="display: none">
-        <pre>{{ post.content.split('Liên hệ:')[1] }}</pre>
-      </div>
-      {% endif %}
-
-      <form
-        method="post"
-        action="{{ url_for('post.add_interest', post_id=post.post_id) }}"
-      >
-        <button type="submit">Quan tâm</button>
-        <span>{{ post.interested_users.count() }} người quan tâm</span>
-      </form>
-    </div>
-    <hr />
-    {% endfor %}
-  </body>
-</html>
 
 <script>
-  function toggleContact(postId) {
-    const el = document.getElementById("contact-" + postId);
-    el.style.display = el.style.display === "none" ? "block" : "none";
+  function viewContact(postId) {
+    var userAuthenticated =
+      document
+        .querySelector(".contact-btn")
+        .getAttribute("data-user-authenticated") === "True";
+
+    if (!userAuthenticated) {
+      alert("Vui lòng đăng nhập để xem thông tin liên hệ!");
+      window.location.href = "{{ url_for('auth.login') }}"; // Chuyển hướng đến trang đăng nhập
+    } else {
+      document.getElementById("contact-" + postId).style.display = "block";
+    }
   }
 
   document.querySelectorAll(".contact-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
+      const isAuthenticated =
+        btn.getAttribute("data-user-authenticated") === "True";
       const postId = btn.dataset.postId;
-      const contactEl = document.getElementById("contact-" + postId);
-      if (contactEl.style.display === "none") {
-        contactEl.style.display = "block";
+      if (isAuthenticated) {
+        const contactEl = document.getElementById("contact-" + postId);
+        if (contactEl.style.display === "none") {
+          contactEl.style.display = "block";
+        } else {
+          contactEl.style.display = "none";
+          // Nếu contactEl không tìm thấy, sẽ không có gì xảy ra
+          console.error("Lỗi: Không tìm thấy phần tử #contact-" + postId);
+        }
       } else {
-        contactEl.style.display = "none";
+        console.log(
+          "Người dùng chưa đăng nhập hoặc data-user-authenticated không phải là 'True'"
+        );
       }
     });
   });

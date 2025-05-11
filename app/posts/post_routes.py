@@ -11,7 +11,7 @@ import os
 from datetime import datetime
 import pytz
 from app.models.category import Category
-
+from .form import FilterForm
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 
@@ -308,21 +308,76 @@ def remember_facebook():
     return jsonify({'status': 'success', 'message': 'facebook updated'})
 
 
+def parse_contact(content):
+    # Tách các dòng liên hệ sau "Liên hệ:"
+    contact_data = []
+    if 'Liên hệ:' not in content:
+        return contact_data
+
+    lines = content.split('Liên hệ:')[1].strip().split('\n')
+    for line in lines:
+        if ':' not in line:
+            continue
+        label, value = line.split(':', 1)
+        value = value.strip()
+        # Bỏ qua nếu giá trị rỗng hoặc là 'None'
+        if value and value.lower() != 'none':
+            contact_data.append({
+                'label': label.strip().capitalize(),  # Viết hoa nhãn
+                'value': value
+            })
+    return contact_data
 
 
-@post_blueprint.route('/view_post')
+@post_blueprint.route('/view_post', methods=['GET', 'POST'])
 def viewPost():
-    posts = Post.query.all()
+    form = FilterForm()
     users = User.query.all()
-    return render_template('post/view_post.html', posts=posts, users=users)
+    posts = Post.query.order_by(Post.create_date.desc()).all()  # mặc định ban đầu
+
+    if form.validate_on_submit():
+   
+        # KHỞI TẠO query trước
+        query = Post.query
+
+        
+
+        post_type = form.post_type.data
+        sort_order = form.sort_order.data
+
+        if post_type != 'all':
+            query = query.filter(Post.post_type == post_type)
+
+        if sort_order == 'desc':
+            query = query.order_by(Post.create_date.desc())
+        else:
+            query = query.order_by(Post.create_date.asc())
+
+        posts = query.all()
+
+    # Gắn thông tin liên hệ đã tách vào mỗi post
+    for post in posts:
+        post.contact_info = parse_contact(post.content)
+
+    return render_template('post/view_post.html', posts=posts, users=users, form=form)
+
+    
+    
 
 
-@post_blueprint.route('/interest/<int:post_id>', methods=['POST'])
+@post_blueprint.route('/interest/<string:post_id>', methods=['POST'])
+@login_required 
 def add_interest(post_id):
-    if 'user_id' not in current_user:
-        return redirect(url_for('login'))
-
     post = Post.query.get_or_404(post_id)
-    post.interest_count += 1
-    csdl.session.commit()
-    return redirect(url_for('index'))
+    # Lấy danh sách user_id đã quan tâm
+    user_ids = post.interested_user_id.split(',') if post.interested_user_id else []
+
+    if str(current_user.id) in user_ids:
+        flash("Bạn đã quan tâm bài viết này rồi.", "warning")
+    else:
+        user_ids.append(str(current_user.id))
+        post.interested_user_id = ','.join(user_ids)
+        post.interest_count += 1
+        csdl.session.commit()
+        flash("Đã quan tâm bài viết.", "success")
+    return redirect(url_for('post.viewPost'))
