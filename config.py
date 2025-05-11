@@ -19,4 +19,4 @@ class Config:
     MAIL_PASSWORD =  mail_pass_string  # <-- Thay bằng App password thật
 
     #cau hinh upload
-    MAX_CONTENT_LENGTH =  2 * 1024 * 1024  # Giới hạn 2MB ảnh
+    MAX_CONTENT_LENGTH =  20 * 1024 * 1024  # Giới hạn 2MB ảnh

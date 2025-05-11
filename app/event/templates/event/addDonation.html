@@ -1,0 +1,100 @@
+{% extends 'base.html' %} {% block title %}Trang chủ{% endblock %} {% block
+add_header %}
+<!-- Hiển thị thông báo flash -->
+<p>Welcome to the admin page!</p>
+{% if current_user.is_authenticated %}
+<p>Bạn đã đăng nhập!</p>
+{% else %}
+<p>Bạn chưa đăng nhập</p>
+{% endif %} {% endblock %} {% block content %}
+<!-- navbar -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <!-- navbar content -->
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('home.homepage') }}">Home</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('post.create_post') }}"
+          >Create Post</a
+        >
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('post.my_posts') }}">My Post</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{url_for('event.event')}}"> Events </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{url_for('event.event', user_id=current_user.id)}}">
+          Participating Events
+          <!-- sự kiện mà user đã đóng góp -->
+        </a>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+<!-- Thông tin quyên góp -->
+<div class="mt-4">
+  <h4>Quyên góp cho hạng mục: {{ category.dc_name }}</h4>
+</div>
+
+<!-- Thông tin người dùng -->
+<div class="card my-3">
+  <div class="card-body">
+    <h5 class="card-title">Thông tin cá nhân</h5>
+    <p class="card-text">
+      <strong>Tên người quyên góp:</strong> {{ current_user.username }}
+    </p>
+    <p class="card-text"><strong>Email:</strong> {{ current_user.email }}</p>
+  </div>
+</div>
+
+<!-- Danh sách vật phẩm đã quyên góp -->
+<h4>Danh sách vật phẩm/hạng mục đã quyên góp:</h4>
+<div class="row">
+  {% for item in donation_items %}
+  <div class="col-md-6 col-lg-4">
+    <div class="card mb-3 h-100">
+      <div class="card-body">
+        <h5 class="card-title">{{ item.item_name }}</h5>
+        <p class="card-text"><strong>Số lượng:</strong> {{ item.quantity }}</p>
+
+        {% if item.image %}
+        <div class="mb-2">
+          <img
+            src="{{ url_for('static', filename=item.image) }}"
+            alt="{{ item.item_name }}"
+            class="img-thumbnail"
+            style="max-width: 150px"
+          />
+        </div>
+        {% endif %}
+        <a
+          href="{{ url_for('event.manageDonationItem', category_id=category.id, item_number=loop.index0) }}"
+          >Thay đổi</a
+        >
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+<!-- Form xác nhận -->
+<form
+  action="{{ url_for('event.manageDonation', category_id=category.id) }}"
+  method="POST"
+  class="mt-4"
+>
+  {% if csrf_token %} {{ csrf_token() }} {% endif %}
+  <button type="submit" class="btn btn-success">Xác nhận đăng kí</button>
+</form>
+
+<!-- Thêm hiện vật -->
+<a href="{{ url_for('event.manageDonationItem', category_id=category.id) }}">
+  <button class="btn btn-primary mt-3">Thêm hiện vật</button>
+</a>
+
+{% endblock %}
