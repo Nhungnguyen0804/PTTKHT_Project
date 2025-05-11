@@ -29,6 +29,9 @@
         <a class="nav-link" href="{{ url_for('home.homepage') }}">Home</a>
       </li>
       <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('post.viewPost') }}">Post</a>
+      </li>
+      <li class="nav-item">
         <a class="nav-link" href="{{ url_for('post.create_post') }}"
           >Create Post</a
         >
@@ -118,96 +121,6 @@
         <a href="{{ url_for('post.my_posts') }}" class="btn btn-secondary"
           >Hủy</a
         >
-      </div>
-
-      <!-- Trường contact -->
-      <div id="contact_group" class="form-group mt-3" style="display: none">
-        <div style="display: flex">
-          <p for="contact" style="font-weight: bold">Thông tin liên hệ</p>
-          <p id="statusMessage" style="margin-left: 20px"></p>
-        </div>
-        <div class="container-input" style="display: flex; gap: 10px">
-          <div class="input-label" style="flex: 2">
-            <label for="phone">Số điện thoại</label>
-
-            <input
-              type="text"
-              name="phone"
-              id="phone"
-              class="form-control"
-              value="{{user.phone}}"
-              required
-              style="border: 2px solid black; background-color: var(--mau14)"
-            />
-          </div>
-          <div class="input-submit" style="margin-top: 13px; flex: 1">
-            <a
-              href="{{url_for('post.remember_phone')}}"
-              id="phoneID"
-              value="{{ user.phone }}"
-              class="btn btn-primary mt-4 w-100"
-              style="background-color: var(--mau4); font-weight: bold"
-              >Remember Phone</a
-            >
-          </div>
-        </div>
-
-        <div class="container-input" style="display: flex; gap: 10px">
-          <div class="input-label" style="flex: 2">
-            <div style="display: flex">
-              <label for="email">Email</label>
-              <p id="statusMessage" style="margin-left: 20px"></p>
-            </div>
-
-            <input
-              type="email"
-              name="email"
-              id="email"
-              class="form-control"
-              value="{{user.email}}"
-              required
-              style="border: 2px solid black; background-color: var(--mau14)"
-            />
-          </div>
-          <div class="input-submit" style="margin-top: 13px; flex: 1">
-            <a
-              href="{{url_for('post.remember_email')}}"
-              id="emailID"
-              value="{{ user.email }}"
-              class="btn btn-primary mt-4 w-100"
-              style="background-color: var(--mau4); font-weight: bold"
-              >Remember Email</a
-            >
-          </div>
-        </div>
-        <div class="container-input" style="display: flex; gap: 10px">
-          <div class="input-label" style="flex: 2">
-            <div style="display: flex">
-              <label for="facebook">Facebook</label>
-              <p id="statusMessage" style="margin-left: 20px"></p>
-            </div>
-
-            <input
-              type="facebook"
-              name="facebook"
-              id="facebook"
-              class="form-control"
-              value="{{user.facebook}}"
-              required
-              style="border: 2px solid black; background-color: var(--mau14)"
-            />
-          </div>
-          <div class="input-submit" style="margin-top: 13px; flex: 1">
-            <a
-              href="{{url_for('post.remember_facebook')}}"
-              id="facebookID"
-              value="{{ user.facebook }}"
-              class="btn btn-primary mt-4 w-100"
-              style="background-color: var(--mau4); font-weight: bold"
-              >Remember Facebook</a
-            >
-          </div>
-        </div>
       </div>
     </form>
   </div>
