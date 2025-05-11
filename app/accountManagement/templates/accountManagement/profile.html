@@ -30,7 +30,6 @@
       <ul>
         <li><a href="{{ url_for('home.homepage') }}">Home</a></li>
         <li><a href="{{ url_for('post.create_post') }}">Create Post</a></li>
-        <li><a href="{{ url_for('post.view_posts') }}">Posts</a></li>
         <li><a href="{{ url_for('post.my_posts') }}">My Posts</a></li>
         <li>Events</li>
         {% if has_role(current_user,'admin') %}
@@ -67,7 +66,7 @@
           <a
             href="{{url_for('accountManagement.edit_profile')}}"
             class="custom-profile-button"
-            >Edit Profile✏️</a
+            >Edit Profile</a
           >
         </div>
         <section class="profile-header">

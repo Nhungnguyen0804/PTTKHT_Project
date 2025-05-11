@@ -1,10 +1,28 @@
-{% extends 'base.html' %}
-{% block title %}Tạo Bài Đăng{% endblock %}
+{% extends 'base.html' %} {% block title %}Tạo Bài Đăng{% endblock %}
+<!--  -->
 
+{% block extra_css %}
+
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/post.css') }}"
+/>
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/color.css') }}"
+/>
+{% endblock %}
+
+<!--  -->
 {% block content %}
+
 <nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
   <a class="navbar-brand" href="{{ url_for('home.homepage') }}">
-    <img src="{{ url_for('static', filename='image/home.png') }}" style="width: 30px" alt="home image" />
+    <img
+      src="{{ url_for('static', filename='image/home.png') }}"
+      style="width: 30px"
+      alt="home image"
+    />
   </a>
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
@@ -12,7 +30,9 @@
         <a class="nav-link" href="{{ url_for('home.homepage') }}">Home</a>
       </li>
       <li class="nav-item active">
-        <a class="nav-link" href="{{ url_for('post.create_post') }}">Create Post</a>
+        <a class="nav-link" href="{{ url_for('post.create_post') }}"
+          >Create Post</a
+        >
       </li>
       <li class="nav-item">
         <a class="nav-link" href="{{ url_for('post.my_posts') }}">My Post</a>
@@ -21,70 +41,312 @@
   </div>
 </nav>
 
-<h2 style="text-align: center; font-weight: bold;">Tạo bài đăng</h2>
+<div
+  id="page-wrapper"
+  data-success="{{ '1' if success_message else '0' }}"
+  class="khung-ngoai"
+>
+  <!-- LEFT COLUMN -->
 
-<div class="container">
-  <form method="POST" enctype="multipart/form-data">
-    <div class="form-group">
-      <label for="post_type">Chọn loại bài đăng</label>
-      <select name="post_type" id="post_type" class="form-control" required>
-        <option value="">-- Chọn loại --</option>
-        <option value="thanh_ly">Thanh lý</option>
-        <option value="trao_doi">Trao đổi</option>
-        <option value="donate">Donate</option>
-      </select>
+  <div class="col-md-6">
+    <div class="form-section">
+      <h2 style="font-weight: bold">Bài đăng mới</h2>
+      
+      <hr
+        style="
+          border: none;
+          height: 2px;
+          background-color: gray;
+          margin: 20px 0;
+        "
+      />
+      <!-- Hiển thị thông báo flash -->
+        {% with messages = get_flashed_messages(with_categories=true) %} {% if
+        messages %} {% for category, message in messages %}
+        <div class="flash {{ category }}">{{ message }}</div>
+        {% endfor %} {% endif %} {% endwith %}
+      <div class="user-info">
+        <img
+          src="{{user.avatar}}"
+          alt="Avatar"
+          width="50px"
+          class="avatar-user-info"
+          style="border: 1px solid black"
+        />
+        <!-- "{{ user.avatar_url }}"  -->
+        <div style="font-size: 30px; font-weight: bold; color: #1c5d39">
+          {{ user.fullname }}
+        </div>
+      </div>
+      <form method="POST" enctype="multipart/form-data">
+        <div class="form-group mt-3">
+          <label for="category">Chọn danh mục</label>
+          <select
+            name="category"
+            id="category"
+            class="form-control"
+            required
+            style="border: 2px solid black; background-color: var(--mau14)"
+          >
+            <option value="">-- Chọn danh mục --</option>
+            {% for c in categories %}
+            <option value="{{ c.id }}">{{ c.category_name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="post_type">Chọn loại bài đăng</label>
+          <select
+            name="post_type"
+            id="post_type"
+            class="form-control"
+            required
+            style="border: 2px solid black; background-color: var(--mau14)"
+          >
+            <option value="">-- Chọn loại --</option>
+            <option value="thanh_ly">Thanh lý</option>
+            <option value="trao_doi">Trao đổi</option>
+            <option value="donate">Donate</option>
+          </select>
+        </div>
+
+        <div class="form-group mt-3">
+          <label for="content">Nội dung bài viết</label>
+          <textarea
+            name="content"
+            id="content"
+            class="form-control"
+            rows="4"
+            placeholder="Nhập nội dung..."
+            required
+            style="border: 2px solid black; background-color: var(--mau14)"
+          ></textarea>
+        </div>
+
+        <div class="form-group mt-3">
+          <label for="images">Chọn ảnh</label>
+          <input
+            type="file"
+            name="images"
+            id="images"
+            multiple
+            accept="image/*"
+            class="form-control"
+            style="border: 2px solid black; background-color: var(--mau14)"
+          />
+        </div>
+        <!-- Trường chỉ hiển thị khi chọn Thanh lý -->
+        <div id="price_group" class="form-group mt-3" style="display: none">
+          <label for="price">Giá</label>
+          <input
+            type="number"
+            name="price"
+            id="price"
+            class="form-control"
+            placeholder="Nhập giá..."
+            style="border: 2px solid black; background-color: var(--mau14)"
+          />
+        </div>
+        <!-- Trường contact -->
+        <div id="contact_group" class="form-group mt-3" style="display: none">
+          <div style="display: flex">
+            <p for="contact" style="font-weight: bold">Thông tin liên hệ</p>
+            <p id="statusMessage" style="margin-left: 20px"></p>
+          </div>
+          <div class="container-input" style="display: flex; gap: 10px">
+            <div class="input-label" style="flex: 2">
+              
+                <label for="phone">Số điện thoại</label>
+                
+              
+
+              <input
+                type="text"
+                name="phone"
+                id="phone"
+                class="form-control"
+                value="{{user.phone}}"
+                required
+                style="border: 2px solid black; background-color: var(--mau14)"
+              />
+            </div>
+            <div class="input-submit" style="margin-top: 13px; flex: 1">
+              <a
+                href="{{url_for('post.remember_phone')}}"
+                id="phoneID"
+                value="{{ user.phone }}"
+                class="btn btn-primary mt-4 w-100"
+                style="background-color: var(--mau4); font-weight: bold"
+                >Remember Phone</a
+              >
+            </div>
+          </div>
+
+          <div class="container-input" style="display: flex; gap: 10px">
+            <div class="input-label" style="flex: 2">
+              <div style="display: flex">
+                <label for="email">Email</label>
+                <p id="statusMessage" style="margin-left: 20px"></p>
+              </div>
+
+              <input
+                type="email"
+                name="email"
+                id="email"
+                class="form-control"
+                value="{{user.email}}"
+                required
+                style="border: 2px solid black; background-color: var(--mau14)"
+              />
+            </div>
+            <div class="input-submit" style="margin-top: 13px; flex: 1">
+              <a
+                href="{{url_for('post.remember_email')}}"
+                id="emailID"
+                value="{{ user.email }}"
+                class="btn btn-primary mt-4 w-100"
+                style="background-color: var(--mau4); font-weight: bold"
+                >Remember Email</a
+              >
+            </div>
+          </div>
+          <div class="container-input" style="display: flex; gap: 10px">
+            <div class="input-label" style="flex: 2">
+              <div style="display: flex">
+                <label for="facebook">Facebook</label>
+                <p id="statusMessage" style="margin-left: 20px"></p>
+              </div>
+
+              <input
+                type="facebook"
+                name="facebook"
+                id="facebook"
+                class="form-control"
+                value="{{user.facebook}}"
+                required
+                style="border: 2px solid black; background-color: var(--mau14)"
+              />
+            </div>
+            <div class="input-submit" style="margin-top: 13px; flex: 1">
+              <a
+                href="{{url_for('post.remember_facebook')}}"
+                id="facebookID"
+                value="{{ user.facebook }}"
+                class="btn btn-primary mt-4 w-100"
+                style="background-color: var(--mau4); font-weight: bold"
+                >Remember Facebook</a
+              >
+            </div>
+          </div>
+          
+          
+          </div>
+        
+        <div id="preview" class="row mt-3"></div>
+
+        <button
+          type="submit"
+          class="btn btn-primary mt-4 w-100"
+          style="background-color: var(--mau4); font-weight: bold"
+        >
+          Đăng bài
+        </button>
+        
+      </form>
+      
+    </div>
     </div>
   
-    <div class="form-group mt-3">
-      <label for="content">Nội dung bài viết</label>
-      <textarea name="content" id="content" class="form-control" rows="4" placeholder="Nhập nội dung..." required></textarea>
+
+  <!-- RIGHT COLUMN -->
+  <div class="col-md-6">
+    <div class="preview-section">
+      <h2 style="font-weight: bold">Preview</h2>
+      <p class="text-muted">
+        Xem trước bài đăng của bạn trước khi đăng chính thức.
+      </p>
+      <hr
+        style="
+          border: none;
+          height: 2px;
+          background-color: gray;
+          margin: 20px 0;
+        "
+      />
+      <div id="postPreview" class="border p-3 rounded bg-light">
+        <div class="d-flex align-items-center mb-2">
+          <img
+            src="{{user.avatar}}"
+            class="rounded-circle me-2"
+            style="width: 40px; margin-right: 10px"
+          />
+          <strong>{{user.fullname}}</strong>
+        </div>
+        <!-- <p id="previewContent" class="preview-caption"></p> -->
+        <div
+          id="previewContainer"
+          class="preview-container"
+          style="font-weight: bold"
+        >
+          <p>
+            Danh mục:
+            <span id="category-name-preview" style="font-weight: normal"
+              >Chưa chọn</span
+            >
+          </p>
+          <!--preview danh mục-->
+          <p>
+            Loại bài đăng:
+            <span id="post-type-preview" style="font-weight: normal"></span>
+          </p>
+          <p>
+            Nội dung: <br />
+            <span id="content-preview" style="font-weight: normal"></span>
+          </p>
+          <p><span id="price-preview" style="font-weight: normal"></span></p>
+          <p>
+            Thông tin liên hệ:<br>
+            <span id="phone-preview" style="font-weight: normal"></span> <br>
+            <span id="email-preview" style="font-weight: normal"></span> <br>
+            <span id="facebook-preview" style="font-weight: normal"></span> 
+          </p>
+        </div>
+
+        <div
+          id="previewImageContainer"
+          class="mb-2"
+          style="margin-top: 20px"
+        ></div>
+      </div>
     </div>
-  
-    <div class="form-group mt-3">
-      <label for="images">Chọn ảnh</label>
-      <input type="file" name="images" id="images" multiple accept="image/*">
-    </div>
-  
-    <!-- Trường chỉ hiển thị khi chọn Thanh lý -->
-    <div id="price_group" class="form-group mt-3" style="display: none;">
-      <label for="price">Giá</label>
-      <input type="number" name="price" id="price" class="form-control" placeholder="Nhập giá...">
-    </div>
-  
-    <!-- Trường contact cho tất cả ngoại trừ khi không chọn gì -->
-    <div id="contact_group" class="form-group mt-3" style="display: none;">
-      <label for="contact">Thông tin liên hệ</label>
-      <input type="text" name="contact" id="contact" class="form-control" placeholder="Nhập số điện thoại, email hoặc Facebook...">
-    </div>
-  
-    <div id="preview" class="row mt-3"></div>
-  
-    <button type="submit" class="btn btn-primary mt-3">Đăng bài</button>
-  </form>  
+  </div>
 </div>
-
+</div>
 {% if success_message %}
-<!-- Modal -->
-<div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+<div
+  class="modal fade"
+  id="successModal"
+  tabindex="-1"
+  aria-labelledby="successModalLabel"
+  aria-hidden="true"
+>
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       {% if user_role == 'admin' %}
       <div class="modal-header bg-success text-white">
         <h5 class="modal-title">🎉 Đăng bài thành công</h5>
       </div>
-      <div class="modal-body">
-        {{ success_message }}
-      </div>
       {% else %}
       <div class="modal-header bg-warning text-dark">
         <h5 class="modal-title">⏳ Gửi bài thành công</h5>
       </div>
-      <div class="modal-body">
-        {{ success_message }}
-      </div>
       {% endif %}
+      <div class="modal-body">{{ success_message }}</div>
       <div class="modal-footer">
-        <a href="{{ url_for('post.view_posts') }}" class="btn btn-primary">OK</a>
+        <a href="{{ url_for('post.view_posts') }}" class="btn btn-primary"
+          >OK</a
+        >
       </div>
     </div>
   </div>
@@ -92,74 +354,290 @@
 {% endif %}
 
 <script>
-  const input = document.getElementById('images');
-  const preview = document.getElementById('preview');
+  const input = document.getElementById("images");
+  const preview = document.getElementById("preview");
+  const previewImageContainer = document.getElementById(
+    "previewImageContainer"
+  );
+  const previewContent = document.getElementById("previewContent");
+  const contentInput = document.getElementById("content");
   let files = [];
 
-  input.addEventListener('change', function () {
-    preview.innerHTML = '';
+  input.addEventListener("change", function () {
+    preview.innerHTML = "";
     files = Array.from(this.files);
+    previewImageContainer.innerHTML = "";
 
     files.forEach((file, index) => {
       const reader = new FileReader();
       reader.onload = function (e) {
-        const col = document.createElement('div');
-        col.classList.add('col-md-3', 'mb-3');
+        const img = document.createElement("img");
+        img.src = e.target.result;
+        previewImageContainer.appendChild(img);
+
+        const col = document.createElement("div");
+        col.classList.add("col-md-3", "mb-3");
         col.innerHTML = `
           <div class="card">
             <img src="${e.target.result}" class="card-img-top" style="height: 150px; object-fit: cover;">
             <div class="card-body p-2 text-center">
               <button type="button" class="btn btn-sm btn-danger btn-block remove-btn" data-index="${index}">Xóa</button>
             </div>
-          </div>
-        `;
+          </div>`;
         preview.appendChild(col);
       };
       reader.readAsDataURL(file);
     });
   });
 
-  // Ngăn submit file đã bị xóa
-  document.addEventListener('click', function (e) {
-    if (e.target.classList.contains('remove-btn')) {
-      const index = parseInt(e.target.getAttribute('data-index'));
+  document.addEventListener("click", function (e) {
+    if (e.target.classList.contains("remove-btn")) {
+      const index = parseInt(e.target.getAttribute("data-index"));
       files.splice(index, 1);
       const dataTransfer = new DataTransfer();
-      files.forEach(f => dataTransfer.items.add(f));
+      files.forEach((f) => dataTransfer.items.add(f));
       input.files = dataTransfer.files;
-      input.dispatchEvent(new Event('change'));  // cập nhật preview
+      input.dispatchEvent(new Event("change"));
     }
   });
-</script>
 
-{% if success_message %}
-<script>
-  window.addEventListener('DOMContentLoaded', function () {
-    var modal = new bootstrap.Modal(document.getElementById('successModal'));
-    modal.show();
+  contentInput.addEventListener("input", function () {
+    previewContent.textContent = contentInput.value;
   });
-</script>
-{% endif %}
 
+  const postTypeSelect = document.getElementById("post_type");
+  const priceGroup = document.getElementById("price_group");
+  const contactGroup = document.getElementById("contact_group");
 
-<script>
-  const postTypeSelect = document.getElementById('post_type');
-  const priceGroup = document.getElementById('price_group');
-  const contactGroup = document.getElementById('contact_group');
-
-  postTypeSelect.addEventListener('change', function () {
+  postTypeSelect.addEventListener("change", function () {
     const type = this.value;
+    priceGroup.style.display = "none";
+    contactGroup.style.display = "none";
 
-    // Reset visibility
-    priceGroup.style.display = 'none';
-    contactGroup.style.display = 'none';
-
-    if (type === 'thanh_ly') {
-      priceGroup.style.display = 'block';
-      contactGroup.style.display = 'block';
-    } else if (type === 'trao_doi' || type === 'donate') {
-      contactGroup.style.display = 'block';
+    if (type === "thanh_ly") {
+      priceGroup.style.display = "block";
+      contactGroup.style.display = "block";
+    } else if (type === "trao_doi" || type === "donate") {
+      contactGroup.style.display = "block";
     }
+  });
+
+  const wrapper = document.getElementById("page-wrapper");
+  if (wrapper.dataset.success === "1") {
+    const modal = new bootstrap.Modal(document.getElementById("successModal"));
+    modal.show();
+  }
+
+  // preview category
+  function updateCategoryName() {
+    const select = document.getElementById("category");
+    const selectedOption = select.options[select.selectedIndex];
+    let categoryName = "Chưa chọn"; // Giá trị mặc định
+
+    // Kiểm tra xem selectedOption có tồn tại và có giá trị (value) không rỗng không
+    // Option "-- Chọn danh mục --" có value=""
+    if (selectedOption && selectedOption.value) {
+      categoryName = selectedOption.textContent;
+    } else {
+      // Nếu giá trị rỗng (nghĩa là đang chọn "-- Chọn danh mục --")
+      // thì vẫn giữ là chưa chọn
+      categoryName = "Chưa chọn";
+    }
+    document.getElementById("category-name-preview").textContent = categoryName;
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    updateCategoryName(); // gọi lần đầu để thiết lập trạng thái ban đầu
+    document
+      .getElementById("category")
+      .addEventListener("change", updateCategoryName);
+  });
+  //preview content
+  function updateContent() {
+    const content = document.getElementById("content").value;
+    const formatted = content.replace(/\n/g, "<br>");
+    document.getElementById("content-preview").innerHTML = formatted;
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    document.getElementById("content").addEventListener("input", updateContent);
+  });
+
+  // preview post type
+  function updatePostType() {
+    const select = document.getElementById("post_type");
+    const selectedOption = select.options[select.selectedIndex];
+
+    const postTypePreview = document.getElementById("post-type-preview");
+    const priceId = document.getElementById("price");
+    const pricePreview = document.getElementById("price-preview");
+    // Lấy thẻ cha của price-preview để ẩn/hiện cả dòng "Giá:"
+    const pricePreviewContainer = document.getElementById("previewContainer");
+    const post_type_Text = selectedOption.textContent.trim();
+
+    postTypePreview.textContent = post_type_Text;
+
+    // Kiểm tra nếu loại bài đăng là "thanh_ly"
+    if (post_type_Text === "Thanh lý") {
+      const priceValue = priceId.value;
+      pricePreview.textContent = "Giá: " + priceValue + " VNĐ";
+      // pricePreviewContainer.style.display = ""; // Hiển thị dòng chứa giá
+    } else {
+      pricePreview.textContent = ""; // Xóa nội dung giá
+      // pricePreviewContainer.style.display = "none"; // Ẩn dòng chứa giá
+    }
+  }
+  document.addEventListener("DOMContentLoaded", function () {
+    const postTypeSelect = document.getElementById("post_type");
+    const priceInput = document.getElementById("price");
+    if (postTypeSelect) {
+      postTypeSelect.addEventListener("change", updatePostType);
+    } else {
+      console.error("Không tìm thấy phần tử select 'post_type'.");
+    }
+
+    if (priceInput) {
+      // Sử dụng sự kiện 'input' để cập nhật ngay khi người dùng gõ giá
+      priceInput.addEventListener("input", updatePostType);
+    } else {
+      console.error("Không tìm thấy phần tử input 'price'.");
+    }
+
+    // Gọi hàm lần đầu để thiết lập trạng thái ban đầu dựa trên lựa chọn mặc định
+    updatePostType();
+  });
+
+  //preview content
+  function updateContact() {
+    const phone = document.getElementById("phone").value;
+    const email = document.getElementById("email").value;
+    const facebook = document.getElementById("facebook").value;
+    document.getElementById("phone-preview").textContent = phone;
+    document.getElementById("email-preview").textContent = email;
+    document.getElementById("facebook-preview").textContent = facebook;
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    document.getElementById("phone").addEventListener("input", updateContact);
+    document.getElementById("email").addEventListener("input", updateContact);
+    document
+      .getElementById("facebook")
+      .addEventListener("input", updateContact);
+
+    updateContact();
+  });
+
+  document.getElementById("phoneID").addEventListener("click", function (e) {
+    e.preventDefault();
+    var phone = document.getElementById("phone").value;
+
+    fetch("/remember-phone", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ phone: phone }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        var statusEl = document.getElementById("statusMessage");
+        if (data.status === "success") {
+          statusEl.textContent = "Đã lưu thành công!";
+          statusEl.style.color = "green";
+        } else {
+          statusEl.textContent = "Lỗi: " + data.message;
+          statusEl.style.color = "red";
+        }
+        // Xóa message sau 5 giây
+        setTimeout(() => {
+        statusEl.textContent = "";
+      }, 5000);
+      })
+      .catch((error) => {
+        document.getElementById("statusMessage").textContent = "Lỗi khi lưu!";
+        document.getElementById("statusMessage").style.color = "red";
+        // Xóa message sau 5 giây
+        setTimeout(() => {
+        statusEl.textContent = "";
+      }, 5000);
+      });
+  });
+
+
+
+  document.getElementById("emailID").addEventListener("click", function (e) {
+    e.preventDefault();
+    var email = document.getElementById("email").value;
+
+    fetch("/remember-email", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email: email }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        var statusEl = document.getElementById("statusMessage");
+        if (data.status === "success") {
+          statusEl.textContent = "Đã lưu thành công!";
+          statusEl.style.color = "orange";
+        } else {
+          statusEl.textContent = "Lỗi: " + data.message;
+          statusEl.style.color = "red";
+        }
+        // Xóa message sau 5 giây
+        setTimeout(() => {
+        statusEl.textContent = "";
+      }, 5000);
+      })
+      .catch((error) => {
+        document.getElementById("statusMessage").textContent = "Lỗi khi lưu!";
+        document.getElementById("statusMessage").style.color = "red";
+        // Xóa message sau 5 giây
+        setTimeout(() => {
+        statusEl.textContent = "";
+      }, 5000);
+      });
+  });
+
+  
+  document.getElementById("facebookID").addEventListener("click", function (e) {
+    e.preventDefault();
+    var facebook = document.getElementById("facebook").value;
+
+    fetch("/remember-facebook", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ facebook: facebook }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        var statusEl = document.getElementById("statusMessage");
+        if (data.status === "success") {
+          statusEl.textContent = "Đã lưu thành công!";
+          statusEl.style.color = "blue";
+        } else {
+          statusEl.textContent = "Lỗi: " + data.message;
+          statusEl.style.color = "red";
+        }
+        // Xóa message sau 5 giây
+        setTimeout(() => {
+        statusEl.textContent = "";
+      }, 5000);
+      })
+
+      
+      .catch((error) => {
+        document.getElementById("statusMessage").textContent = "Lỗi khi lưu!";
+        document.getElementById("statusMessage").style.color = "red";
+        // Xóa message sau 5 giây
+        setTimeout(() => {
+        statusEl.textContent = "";
+      }, 8000);
+      });
   });
 </script>
 

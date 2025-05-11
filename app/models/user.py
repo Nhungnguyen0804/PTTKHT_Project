@@ -1,6 +1,6 @@
 from flask_login import UserMixin
 from app.flask_extensions import csdl, login_manager
-
+from datetime import datetime
 
 
 class User(UserMixin, csdl.Model):
@@ -16,9 +16,8 @@ class User(UserMixin, csdl.Model):
     email = csdl.Column(csdl.String(120), unique=True, nullable=False)
     phone = csdl.Column(csdl.String(20), nullable=True) #co the null
     facebook = csdl.Column(csdl.Text, nullable =True)
-    zalo = csdl.Column(csdl.Text, nullable = True)
     roles = csdl.relationship('Role', secondary='user_role', backref=csdl.backref('users', lazy='dynamic'))
-
+    created_date = csdl.Column(csdl.DateTime, default=datetime.utcnow)  # Thêm dòng này
     def set_avatar(self, avatar):
         self.avatar = avatar
     def get_avarar(self):
@@ -83,6 +82,9 @@ class User(UserMixin, csdl.Model):
             if role.name == role_name:
                 return True
         return False
+    
+    def get_role(self):
+        return ', '.join(role.name for role in self.roles)
 
 # Bảng liên kết User_Role (many-to-many)
 user_role = csdl.Table('user_role',

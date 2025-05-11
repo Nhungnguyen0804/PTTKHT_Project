@@ -56,7 +56,10 @@ def register():
             flash('Đã tồn tại Email!', 'warning')
             return redirect(url_for('auth.register'))
         # k trung thi tao user moi 
-        new_user = User(username=form.username.data, fullname = form.fullname.data, email=form.email.data, phone = form.phone.data, date_of_birth = form.ngaySinh.data, gender = form.gender.data)
+        # ngày tạo tài khoản
+        new_created_date = datetime.now()  #thêm ngày tạo hiện tại
+
+        new_user = User(username=form.username.data, fullname = form.fullname.data, email=form.email.data, phone = form.phone.data, date_of_birth = form.ngaySinh.data, gender = form.gender.data, created_date = new_created_date)
         new_user.set_password(form.password.data)
         default_avatar = url_for('static', filename='image/avatar.png')
         new_user.set_avatar(default_avatar)

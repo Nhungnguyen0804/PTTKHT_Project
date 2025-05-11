@@ -1,0 +1,124 @@
+#postPreview img {
+  width: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.form-section {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 0 5px gray;
+}
+
+.preview-section {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 0 5px gray;
+}
+
+.preview-caption {
+  font-size: 0.95rem;
+  color: #333;
+}
+
+.navbar {
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.khung-ngoai {
+  display: flex;
+}
+
+.col-md-6 {
+  flex: 1;
+}
+
+.user-info {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 10px;
+  background-color: var(--mau14);
+  border-radius: 10px;
+  border: 2px solid gray;
+}
+.avatar-user-info {
+  border-radius: 30px;
+}
+
+main {
+  background-color: var(--mau13);
+}
+
+.preview-container {
+  background-color: var(--mau14);
+  border-radius: 10px;
+  padding: 20px;
+}
+.post-card {
+  width: 450px;
+  padding: 16px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  font-family: sans-serif;
+  margin: 20px auto;
+}
+.post-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.post-text {
+  margin: 0px 0;
+  font-size: 16px;
+}
+
+.post-image {
+  display: flex;
+
+  margin: 15px;
+
+  position: relative;
+
+  height: auto;
+}
+.post-images img {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  object-fit: cover;
+}
+.post-footer {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  margin-top: 12px;
+  font-size: 14px;
+  color: gray;
+}
+
+.post-footer .action {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  background: #f3f3f3;
+  margin: 4px 4px 0 0;
+  cursor: pointer;
+}
+
+.all-cards {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.edit-post-button-group {
+  display: flex;
+  justify-content: center;
+  gap: 10px; /* khoảng cách giữa các nút */
+  margin-top: 20px; /* tuỳ chỉnh nếu cần */
+}
