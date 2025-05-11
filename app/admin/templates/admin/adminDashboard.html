@@ -51,7 +51,11 @@
           >Quản lý bài đăng</a
         >
       </li>
-
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('event.event') }}"
+          >Sự kiện</a
+        >
+      </li>
       <li class="nav-item dropdown">
         <a
           class="nav-link dropdown-toggle"
@@ -77,13 +81,15 @@
             >Báo cáo & Thống kê Bài đăng</a
           >
           <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="#"
+          <a class="dropdown-item" href="{{ url_for('eventReport.show_eventReport') }}"
             >Báo cáo & Thống kê Hoạt động/Sự kiện</a
           >
         </div>
       </li>
       <li class="nav-item">
-        <a class="nav-link disabled" href="#">Disabled</a>
+        <a class="nav-link" href="{{url_for('admin.manageEvent')}}"
+          >Thêm sự kiện</a
+        >
       </li>
     </ul>
     <form class="form-inline my-2 my-lg-0">
@@ -99,6 +105,85 @@
     </form>
   </div>
 </nav>
-<!-- navbar -->
+<!-- List of events -->
+<!-- List of events -->
+<div class="container mt-4">
+  {% if events %}
+  <div class="row">
+    {% for event in events %}
+    <div class="col-md-12 col-lg-8 offset-lg-2">
+      <div class="card mb-4 shadow-sm">
+        <div class="row g-0">
+          <!-- Cột ảnh -->
+          <div class="col-md-4">
+            <img
+              src="{{ url_for('static', filename=event.image) }}"
+              class="img-fluid h-100 rounded-start"
+              alt="Event Image"
+              style="object-fit: cover"
+            />
+          </div>
+
+          <!-- Cột nội dung -->
+          <div class="col-md-8">
+            <div class="card-body">
+              <h4 class="card-title">{{ event.name }}</h4>
+              <p class="card-text mb-1">
+                <strong>Thời gian:</strong>
+                {{ event.start_time.strftime('%d/%m/%Y %H:%M') }} → {{
+                event.end_time.strftime('%d/%m/%Y %H:%M') }}
+              </p>
+              <p class="card-text mb-1">
+                <strong>Trạng thái:</strong> {{ event.status.name }}
+              </p>
+              <p class="card-text mb-1">
+                <strong>Loại sự kiện:</strong> {{ event.event_type }}
+              </p>
+              <div
+                class="d-flex justify-content-between mt-3"
+                style="width: 80%"
+              >
+                <a
+                  href="{{ url_for('admin.manageEvent', event_id=event.id) }}"
+                  class="btn btn-outline-primary btn-sm {% if event.status_id == 3 %}disabled{% endif %}"
+                  >Thay đổi</a
+                >
+                <a
+                  href="{{ url_for('admin.showEventDetails', event_id=event.id) }}"
+                  class="btn btn-outline-warning btn-sm {% if event.status_id == 3 %}disabled{% endif %}"
+                  >Chi tiết</a
+                >
+                {% if event.status_id == 2 %}
+                  <a
+                    href="{{ url_for('admin.updateEventStatus', event_id=event.id, status_id=1) }}"
+                    class="btn btn-outline-success btn-sm"
+                  >
+                    Tiếp tục
+                  </a>
+                {% else %}
+                  <a
+                    href="{{ url_for('admin.updateEventStatus', event_id=event.id, status_id=2) }}"
+                    class="btn btn-outline-warning btn-sm {% if event.status_id == 3 %}disabled{% endif %}"
+                  >
+                    Tạm dừng
+                  </a>
+                {% endif %}
+                <a
+                  href="{{ url_for('admin.updateEventStatus', event_id=event.id, status_id=3) }}"
+                  class="btn btn-outline-danger btn-sm {% if event.status_id == 3 %}disabled{% endif %}"
+                  >Huỷ</a
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p>Chưa có sự kiện nào bạn đang quản lý.</p>
+  {% endif %}
+</div>
 
 {% endblock %}

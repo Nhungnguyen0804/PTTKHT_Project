@@ -49,8 +49,12 @@
               Báo cáo & Thống Kê<br />Người Dùng
             </a>
           </li>
-          <li>Báo cáo & Thống Kê<br />Bài Đăng</li>
-          <li>Báo cáo & Thống Kê Event</li>
+          <li>
+            <a href="{{ url_for('report.show_postReport') }}">
+            Báo cáo & Thống Kê<br />Bài Đăng</li>
+          <li>
+            <a href="{{ url_for('eventReport.show_eventReport') }}">
+            Báo cáo & Thống Kê Event</li>
           <!-- {% if has_role(current_user,'admin') %} -->
 
           <!-- {%endif%} -->

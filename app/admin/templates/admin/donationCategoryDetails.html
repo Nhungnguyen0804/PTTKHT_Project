@@ -1,0 +1,141 @@
+{% extends 'base.html' %} {% block title %}Chi tiết Danh mục Quyên góp{%
+endblock %} {% block add_header %}
+<div class="alert alert-info mt-3">
+  <p>Welcome to the admin page!</p>
+  {% if current_user.is_authenticated %}
+  <p><strong>Bạn đã đăng nhập!</strong></p>
+  {% else %}
+  <p><strong>Bạn chưa đăng nhập</strong></p>
+  {% endif %}
+</div>
+
+{% endblock %} {% block content %}
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <a class="navbar-brand" href="{{ url_for('admin.adminPage') }}">
+    <img src="./static/image/home.png" style="width: 30px" alt="home image" />
+  </a>
+  <button
+    class="navbar-toggler"
+    type="button"
+    data-toggle="collapse"
+    data-target="#navbarSupportedContent"
+    aria-controls="navbarSupportedContent"
+    aria-expanded="false"
+    aria-label="Toggle navigation"
+  >
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item active">
+        <a class="nav-link" href="{{ url_for('home.homepage') }}">Home</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('userManagement.manage_user') }}"
+          >Quản lý người dùng</a
+        >
+      </li>
+
+      <li class="nav-item dropdown">
+        <a
+          class="nav-link dropdown-toggle"
+          href="#"
+          id="navbarDropdown"
+          role="button"
+          data-toggle="dropdown"
+          aria-haspopup="true"
+          aria-expanded="false"
+        >
+          Báo cáo & Thống Kê
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a
+            class="dropdown-item"
+            href="{{ url_for('userReport.show_userReport') }}"
+            >Báo cáo & Thống kê Người dùng</a
+          >
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="#">Báo cáo & Thống kê Bài đăng</a>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="{{ url_for('eventReport.show_eventReport') }}"
+            >Báo cáo & Thống kê Hoạt động/Sự kiện</a
+          >
+        </div>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{url_for('admin.manageEvent')}}"
+          >Thêm sự kiện</a
+        >
+      </li>
+    </ul>
+    <form class="form-inline my-2 my-lg-0">
+      <input
+        class="form-control mr-sm-2"
+        type="search"
+        placeholder="Search"
+        aria-label="Search"
+      />
+      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">
+        Search
+      </button>
+    </form>
+  </div>
+</nav>
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">Trang Admin</a>
+    <!-- Add more navbar content if needed -->
+  </div>
+</nav>
+
+<div class="container mt-4">
+  <h2 class="mb-4">Danh sách lượt quyên góp cho: {{ category.dc_name }}</h2>
+
+  {% for donation in donations_of_category %}
+  <div class="card mb-4 shadow-sm border-primary">
+    <div class="card-body">
+      <h5 class="card-title text-primary">{{ donation.donor_name }}</h5>
+      <p class="card-text mb-1">
+        <strong>Ngày quyên góp:</strong> {{
+        donation.create_time.strftime("%d/%m/%Y %H:%M") }}
+      </p>
+      <p class="card-text mb-2">
+        <strong>Trạng thái:</strong>
+        <span class="badge bg-secondary">{{ donation.status.name }}</span>
+      </p>
+
+      <h6 class="mt-3">Danh sách vật phẩm quyên góp:</h6>
+      {% if donation.items %}
+      <ul class="list-group list-group-flush">
+        {% for item in donation.items %}
+        <li class="list-group-item">
+          <strong>{{ item.item_name }}</strong> — SL: {{ item.quantity }}<br />
+          <small class="text-muted"
+            >Loại: {{ item.item_category.category_name }}</small
+          >
+        </li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <p class="text-muted">Không có vật phẩm nào được quyên góp.</p>
+      {% endif %}
+
+      <div class="mt-4 d-flex gap-2">
+        <form method="POST" action="{{ url_for('admin.confirm_donation', donation_id=donation.id) }}">
+          <button type="submit" class="btn btn-success" {% if donation.status_id != 1 %}disabled{% endif %}>
+            Xác nhận quyên góp
+          </button>
+        </form>
+        <form method="POST" action="{{ url_for('admin.cancel_donation', donation_id=donation.id) }}">
+          <button type="submit" class="btn btn-danger" {% if donation.status_id != 1 %}disabled{% endif %}>
+            Huỷ quyên góp
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+  {% else %}
+  <div class="alert alert-warning">Hiện chưa có lượt quyên góp nào.</div>
+  {% endfor %}
+</div>
+{% endblock %}

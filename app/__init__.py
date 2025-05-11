@@ -3,6 +3,8 @@
 from flask import Flask
 from flask_login import current_user
 from flask_mail import Mail
+
+from app.models.donation_status import init_status
 from .flask_extensions import csdl, login_manager, migrate
 from .auth import auth_blueprint
 from .home import home_blueprint
@@ -17,6 +19,9 @@ from .postManagement import postManagement_blueprint
 
 from datetime import datetime
 import pytz
+from .event import event_blueprint
+from .userReport import userReport_blueprint
+from .eventReport import eventReport_blueprint
 
 def create_app():
     app = Flask(__name__)
@@ -37,6 +42,15 @@ def create_app():
     from .models.category import Category, init_categories
 
     
+    from .models.event import Event, event_manager
+    from .models.donation_category import DonationCategory
+    from .models.donation_status import DonationStatus
+    from .models.donation_item import DonationItem
+    from .models.buyable_item import BuyableItem
+    from .models.buyable_item_status import BuyableItemStatus, init_status
+    from .models.dc_type import DCType, init_dc_types
+    
+    from .models.event_status import EventStatus, init_estatus
 
     # Tạo các bảng trong csdl (chỉ cần cho lần đầu)
     with app.app_context():
@@ -44,6 +58,9 @@ def create_app():
         init_roles()# Khởi tạo gt bang role
         init_categories()
         
+        init_status()
+        init_dc_types()
+        init_estatus() 
     
     # Đăng ký các blueprint
     app.register_blueprint(home_blueprint)
@@ -57,6 +74,9 @@ def create_app():
     app.register_blueprint(postManagement_blueprint)
 
 
+    app.register_blueprint(userReport_blueprint)
+    app.register_blueprint(event_blueprint)
+    app.register_blueprint(eventReport_blueprint)
     # Thiết lập route cho trang đăng nhập
     login_manager.login_view = 'auth.login'
 

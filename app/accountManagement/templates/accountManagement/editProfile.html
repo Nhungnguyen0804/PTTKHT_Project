@@ -36,7 +36,7 @@
         <li><a href="{{ url_for('home.homepage') }}">Home</a></li>
         <li><a href="{{ url_for('post.create_post') }}">Create Post</a></li>
         <li><a href="{{ url_for('post.my_posts') }}">My Posts</a></li>
-        <li>Events</li>
+        <li><a href="{{ url_for('event.event') }}">Events</a></li>
         {% if has_role(current_user,'admin') %}
         <li>Create Events</li>
         <li>My Events</li>

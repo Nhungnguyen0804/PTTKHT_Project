@@ -17,7 +17,7 @@ class Post(csdl.Model):
     category_id = csdl.Column(csdl.Integer, csdl.ForeignKey('category.id'), nullable=False)
     
     interest_count = csdl.Column(csdl.Integer, default=0)
-    interested_user_id = csdl.Column(csdl.Text, default='')
+    interested_user_id = csdl.Column(csdl.Text, nullable=True)  # Danh sách người dùng đã bày tỏ sự quan tâm
     # Dùng post.user để truy cập user
     user = csdl.relationship('User', backref='posts')
     category = csdl.relationship('Category', backref='posts')

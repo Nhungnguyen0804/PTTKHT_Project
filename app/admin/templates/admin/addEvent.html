@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+<!--...-->
+{% block title %}Trang chủ{% endblock %}
+
+<!--...-->
+{% block add_header %}
+
+<!-- Hiển thị thông báo flash -->
+<p>Welcome to the admin page!</p>
+{% if current_user.is_authenticated %}
+<p>Bạn đã đăng nhập!</p>
+{% else %}
+<p>Bạn chưa đăng nhập</p>
+
+{% endif %}
+<!--...-->
+{% endblock %}
+
+{% block content %}
+<!-- <h1>Trang Admin</h1> -->
+<!-- thanh dieu huong navbar -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <a class="navbar-brand" href="{{ url_for('admin.adminPage') }}">
+    <img src="./static/image/home.png" style="width: 30px" alt="home image" />
+  </a>
+  <button
+    class="navbar-toggler"
+    type="button"
+    data-toggle="collapse"
+    data-target="#navbarSupportedContent"
+    aria-controls="navbarSupportedContent"
+    aria-expanded="false"
+    aria-label="Toggle navigation"
+  >
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item active">
+        <a class="nav-link" href="{{ url_for('home.homepage') }}">Home</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('userManagement.manage_user') }}"
+          >Quản lý người dùng</a
+        >
+      </li>
+
+      <li class="nav-item dropdown">
+        <a
+          class="nav-link dropdown-toggle"
+          href="#"
+          id="navbarDropdown"
+          role="button"
+          data-toggle="dropdown"
+          aria-haspopup="true"
+          aria-expanded="false"
+        >
+          Báo cáo & Thống Kê
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a
+            class="dropdown-item"
+            href="{{ url_for('userReport.show_userReport') }}"
+            >Báo cáo & Thống kê Người dùng</a
+          >
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="#">Báo cáo & Thống kê Bài đăng</a>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="{{ url_for('eventReport.show_eventReport') }}"
+            >Báo cáo & Thống kê Hoạt động/Sự kiện</a
+          >
+        </div>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{url_for('admin.manageEvent')}}"
+          >Thêm sự kiện</a
+        >
+      </li>
+    </ul>
+    <form class="form-inline my-2 my-lg-0">
+      <input
+        class="form-control mr-sm-2"
+        type="search"
+        placeholder="Search"
+        aria-label="Search"
+      />
+      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">
+        Search
+      </button>
+    </form>
+  </div>
+</nav>
+
+
+<!-- Container with full width -->
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <h2 class="mb-4 text-center">
+                {{ 'Cập nhật sự kiện' if form.name.data else 'Thêm sự kiện mới' }}
+            </h2>
+            <div class="row justify-content-center">
+                <div class="col-md-10 col-lg-8">
+                    <form method="post" enctype="multipart/form-data">
+                        {{ form.hidden_tag() }}
+                        <div class="form-group">
+                            {{ form.name.label(class="form-label") }}
+                            {{ form.name(class="form-control") }}
+                        </div>
+                        <div class="form-group">
+                            {{ form.startTime.label(class="form-label") }}
+                            {{ form.startTime(class="form-control") }}
+                        </div>
+                        <div class="form-group">
+                            {{ form.endTime.label(class="form-label") }}
+                            {{ form.endTime(class="form-control") }}
+                        </div>
+                        <div class="form-group">
+                            {{ form.eventType.label(class="form-label") }}
+                            {{ form.eventType(class="form-control") }}
+                        </div>
+                        <div class="form-group">
+                            {{ form.image.label(class="form-label") }}
+                            {{ form.image(class="form-control") }}
+                            {% if event and event.image %}
+                            <img src="{{ url_for('static', filename=event.image) }}" class="img-thumbnail mt-2" width="200">
+                            {% endif %}
+                        </div>
+                        <div class="form-group mt-3 text-center">
+                            {{ form.submit(class="btn btn-primary px-4") }}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,88 @@
+{% extends 'base.html' %} {% block title %}Trang chủ{% endblock %} {% block
+add_header %}
+<!-- Hiển thị thông báo flash -->
+<p>Welcome to the admin page!</p>
+{% if current_user.is_authenticated %}
+<p>Bạn đã đăng nhập!</p>
+{% else %}
+<p>Bạn chưa đăng nhập</p>
+
+{% endif %}
+<!--...-->
+{% endblock %} {% block content %}
+<!-- <h1>Trang Admin</h1> -->
+<!-- thanh dieu huong navbar -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
+  <a class="navbar-brand" href="{{ url_for('home.homepage') }}">
+    <img
+      src="{{ url_for('static', filename='image/home.png') }}"
+      style="width: 30px"
+      alt="home image"
+    />
+  </a>
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item active">
+        <a class="nav-link" href="{{ url_for('home.homepage') }}">Home</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('post.create_post') }}"
+          >Create Post</a
+        >
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('post.my_posts') }}">My Post</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{url_for('event.event')}}"> Events </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{url_for('event.event', user_id=current_user.id)}}">
+          Participating Events
+          <!-- sự kiện mà user đã đóng góp -->
+        </a>
+      </li>
+    </ul>
+  </div>
+</nav>
+<div class="container mt-4">
+  <h2>Thêm mục quyên góp cho hạng mục: {{ category.dc_name }}</h2>
+
+  <!-- Thông báo flash -->
+  {% with messages = get_flashed_messages(with_categories=true) %} {% if
+  messages %} {% for category, message in messages %}
+  <div
+    class="alert alert-{{ category }} alert-dismissible fade show"
+    role="alert"
+  >
+    {{ message }}
+    <button
+      type="button"
+      class="btn-close"
+      data-bs-dismiss="alert"
+      aria-label="Close"
+    ></button>
+  </div>
+  {% endfor %} {% endif %} {% endwith %}
+
+  <form method="POST" enctype="multipart/form-data">
+    <!-- THÊM enctype -->
+    {{ form.hidden_tag() }} {% for field in form %} {% if field.type !=
+    'CSRFToken' and field.type != 'SubmitField' %}
+    <div class="mb-3">
+      {{ field.label(class="form-label") }} {% if field.type == 'SelectField' %}
+      {{ field(class="form-select") }} {% elif field.type == 'FileField' %} {{
+      field(class="form-control", accept="image/*") }} {% else %} {{
+      field(class="form-control") }} {% endif %} {% if field.errors %}
+      <div class="text-danger">
+        {% for error in field.errors %} {{ error }}<br />
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+    {% endif %} {% endfor %}
+
+    <button type="submit" class="btn btn-primary">Lưu</button>
+  </form>
+</div>
+{% endblock %}
