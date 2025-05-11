@@ -7,7 +7,7 @@ home_blueprint = Blueprint('home', __name__, template_folder='templates')
 @home_blueprint.route('/home')
 def homepage():
     page = request.args.get('page', 1, type=int)
-    per_page = 10
+    per_page = 6
 
     query = Post.query.filter_by(is_approved=True, status='Not done')
     pagination = query.paginate(page=page, per_page=per_page, error_out=False)

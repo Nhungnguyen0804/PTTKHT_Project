@@ -158,8 +158,19 @@ def mark_done():
 @post_blueprint.route('/my_posts')
 @login_required
 def my_posts():
-    posts = Post.query.filter_by(user_id=current_user.id).order_by(Post.is_approved.desc()).all()
-    return render_template('post/my_posts.html', posts=posts)
+    query = Post.query.filter_by(user_id=current_user.id)
+    # Phân trang
+    page = request.args.get('page', 1, type=int)
+    per_page = 6
+    pagination = query.paginate(page=page, per_page=per_page, error_out=False)
+    posts = pagination.items
+    start = (page - 1) * per_page + 1
+    end = min(start + per_page - 1, pagination.total)
+
+    posts = query.order_by(Post.is_approved.desc()).all()
+    return render_template('post/my_posts.html', posts=posts ,pagination=pagination,
+        start=start,
+        end=end)
 
 
 # Route xóa bài viết
@@ -365,16 +376,30 @@ def viewPost(category_id):
 
     posts = query.all()
 
+
+    # Phân trang
+    page = request.args.get('page', 1, type=int)
+    per_page = 6
+    pagination = query.paginate(page=page, per_page=per_page, error_out=False)
+    posts = pagination.items
+
+    
     # Gắn thông tin liên hệ nếu cần
     for post in posts:
         post.contact_info = parse_contact(post.content)
 
+
+    start = (page - 1) * per_page + 1
+    end = min(start + per_page - 1, pagination.total)
     return render_template(
         'post/view_post.html',
         posts=posts,
         users=users,
         form=form,
-        category=category
+        category=category,
+        pagination=pagination,
+        start=start,
+        end=end
     )
 
 @post_blueprint.route('/interest/<string:post_id>', methods=['POST'])
